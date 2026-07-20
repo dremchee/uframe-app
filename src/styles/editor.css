@@ -50,6 +50,7 @@
      readability — see the `:root` / `.dark` raw token blocks below. */
   --color-uf-accent: var(--uf-accent);
   --color-uf-accent-strong: var(--uf-accent-strong);
+  --color-uf-accent-foreground: var(--uf-accent-foreground);
 
   /* Components (symbol instances) get their own identity color — Tailwind
      violet-600 — so they read distinctly from the blue selection accent. */
@@ -117,6 +118,7 @@
     --uf-muted: #64748b;
     --uf-accent: oklch(0.546 0.245 262.881);
     --uf-accent-strong: oklch(0.488 0.243 264.376);
+    --uf-accent-foreground: #fff;
     --uf-danger: #be123c;
     --uf-radius: 8px;
     --uf-shadow: 0 18px 45px rgb(15 23 42 / 10%);
@@ -189,6 +191,10 @@
     --uf-border-strong: oklch(1 0 0 / 30%);
     --uf-text: oklch(0.96 0.005 248);
     --uf-muted: oklch(0.70 0.020 248);
+    /* The dark-theme accent is deliberately light, so white labels on an
+       accent-filled control fail contrast. Keep the foreground as a separate
+       semantic token rather than coupling each badge to a colour literal. */
+    --uf-accent-foreground: oklch(0.22 0.04 160);
   }
 
   html,
@@ -493,4 +499,3 @@
   mask-composite: exclude;
   animation: uf-ai-spin 2.5s linear infinite;
 }
-

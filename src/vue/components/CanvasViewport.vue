@@ -445,8 +445,8 @@ const {
         >
           <div
             ref="selectionHandleRef"
-            class="inline-flex items-center gap-1 h-5 pl-0.5 pr-1.5 rounded-[2px] text-white text-[11px] font-semibold leading-none whitespace-nowrap cursor-grab active:cursor-grabbing select-none"
-            :class="isSelectedSymbol ? 'bg-uf-symbol' : isSelectedData ? 'bg-uf-data' : isGapContainer ? 'bg-uf-gap' : 'bg-uf-accent'"
+            class="inline-flex items-center gap-1 h-5 pl-0.5 pr-1.5 rounded-[2px] text-[11px] font-semibold leading-none whitespace-nowrap cursor-grab active:cursor-grabbing select-none"
+            :class="isSelectedSymbol ? 'bg-uf-symbol text-white' : isSelectedData ? 'bg-uf-data text-white' : isGapContainer ? 'bg-uf-gap text-white' : 'bg-uf-accent text-uf-accent-foreground'"
             :title="t('canvas.dragToMove')"
           >
             <GripVertical :size="12" :stroke-width="2" class="shrink-0 -mr-0.5 opacity-70" aria-hidden="true" />
@@ -457,8 +457,8 @@ const {
             <PopoverTrigger as-child>
               <button
                 type="button"
-                class="inline-flex size-5 shrink-0 items-center justify-center rounded-[2px] text-white transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
-                :class="isSelectedSymbol ? 'bg-uf-symbol' : isSelectedData ? 'bg-uf-data' : isGapContainer ? 'bg-uf-gap' : 'bg-uf-accent'"
+                class="inline-flex size-5 shrink-0 items-center justify-center rounded-[2px] transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+                :class="isSelectedSymbol ? 'bg-uf-symbol text-white' : isSelectedData ? 'bg-uf-data text-white' : isGapContainer ? 'bg-uf-gap text-white' : 'bg-uf-accent text-uf-accent-foreground'"
                 :aria-label="t('common.add')"
                 @pointerdown.stop
                 @click.stop

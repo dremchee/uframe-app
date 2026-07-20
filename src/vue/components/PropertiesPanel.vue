@@ -56,13 +56,13 @@ const elementNameInput = useTemplateRef<{ focus: () => void }>('elementNameInput
 
 function classChipClass(name: string): string {
   if (editingClass.value === name)
-    return 'border-uf-accent bg-uf-accent text-white hover:bg-uf-accent/90'
+    return 'border-uf-accent bg-uf-accent text-uf-accent-foreground hover:bg-uf-accent/90'
   return 'border-uf-accent/25 bg-uf-accent/10 text-uf-accent hover:bg-uf-accent/15'
 }
 
 function classChipRemoveClass(name: string): string {
   return editingClass.value === name
-    ? 'text-white/75 hover:bg-black/10 hover:text-white'
+    ? 'text-uf-accent-foreground/75 hover:bg-black/10 hover:text-uf-accent-foreground'
     : 'opacity-75 hover:bg-black/15 hover:opacity-100'
 }
 
