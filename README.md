@@ -16,7 +16,7 @@ builder. It's for:
   tokens, isolated in the iframe.
 
 It's **embed-first, but not embed-only**. See the
-[documentation](https://github.com/dremchee/uframe) — start with the overview for
+[documentation](https://github.com/dremchee/uframe-app) — start with the overview for
 who it's for, what you'd build, and what it's not.
 
 Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
