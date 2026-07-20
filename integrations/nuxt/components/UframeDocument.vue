@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PageDocument, ResolveContext } from 'uframe/core'
 import type { Component } from 'vue'
-import { nameUnnamedStyles, serializeDocumentStyles } from 'uframe/core'
+import { fontStylesheetLinks, nameUnnamedStyles, serializeDocumentStyles } from 'uframe/core'
 import { computed } from 'vue'
 import { pageBaseCss } from '../assets/page-base'
 import { useUframeRegistry } from '../composables/useUframeRegistry'
@@ -37,6 +37,11 @@ const css = computed(() => [
 
 useHead(() => ({
   title: renderedDocument.value.title,
+  // The editor injects configured web-font stylesheets into its iframe. Public
+  // documents need the same links; otherwise a published page falls back to
+  // the browser font and its typography (and therefore layout) drifts.
+  link: fontStylesheetLinks(renderedDocument.value.fonts?.families)
+    .map(href => ({ key: `uframe-font-${href}`, rel: 'stylesheet', href })),
   // Unhead treats `children` as an attribute in a client-rendered style tag;
   // `innerHTML` writes the stylesheet content so browsers actually apply it.
   style: [{ key: 'uframe-page', innerHTML: css.value }],

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PageDocument, ResolveContext } from 'uframe/core'
-import { renderDocumentToFragment, resolveDocument } from 'uframe/core'
+import { fontStylesheetLinks, renderDocumentToFragment, resolveDocument } from 'uframe/core'
 import { computed } from 'vue'
 import { pageBaseCss } from '../assets/page-base'
 import { useUframeRegistry } from '../composables/useUframeRegistry'
@@ -33,6 +33,8 @@ const rendered = computed(() => {
 // Inject the page's title + stylesheet into <head> on the server.
 useHead(() => ({
   title: rendered.value.title,
+  link: fontStylesheetLinks(props.document.fonts?.families)
+    .map(href => ({ key: `uframe-font-${href}`, rel: 'stylesheet', href })),
   style: [{ key: 'uframe-page', innerHTML: rendered.value.css }],
 }))
 </script>
