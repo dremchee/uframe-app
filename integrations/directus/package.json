@@ -1,0 +1,41 @@
+{
+  "name": "directus-extension-uframe",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Directus interface that embeds the uframe block editor and stores a PageDocument as JSON.",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-custom-interface",
+    "uframe"
+  ],
+  "directus:extension": {
+    "type": "bundle",
+    "host": "^11.0.0",
+    "path": {
+      "app": "dist/app.js",
+      "api": "dist/api.js"
+    },
+    "entries": [
+      { "type": "interface", "name": "uframe-editor", "source": "src/interface/index.ts" },
+      { "type": "endpoint", "name": "uframe", "source": "src/endpoint/index.ts" },
+      { "type": "module", "name": "uframe-pages", "source": "src/module/index.ts" }
+    ]
+  },
+  "scripts": {
+    "build:embed": "pnpm -w run build:embed",
+    "build:ext": "directus-extension build",
+    "copy:embed": "node scripts/copy-embed.mjs",
+    "build": "pnpm run build:embed && pnpm run build:ext && pnpm run copy:embed",
+    "dev": "directus-extension build -w --no-minify",
+    "link": "directus-extension link"
+  },
+  "dependencies": {
+    "uframe": "workspace:*"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "^13.0.0",
+    "vue": "^3.5.34"
+  }
+}

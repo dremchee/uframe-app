@@ -1,0 +1,496 @@
+/* Establish layer order BEFORE imports. @layer statements are the only rules
+   allowed before @import per CSS spec. Utilities must be last so Tailwind
+   utility classes win over our component defaults. */
+@layer theme, reset, base, components, utilities;
+
+/* Tailwind theme + utilities only. Preflight is intentionally skipped: we have
+   our own scoped @layer reset under .uf-editor and do not want Tailwind's
+   global preflight to leak into consumer apps. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+/* Enter/exit animation utilities (animate-in, fade-*, zoom-*, slide-in-from-*)
+   used by reka-ui data-[state] transitions. Must stay in the leading @import
+   group — CSS forbids @import after normal rules. */
+@import "tw-animate-css";
+
+/* Explicitly scan the editor source for utility classes, relative to this file
+   (→ src/**). Tailwind's auto-detection keys off the Vite root, which differs
+   per build (the embed app roots at embed/); without this, that build would
+   miss every class in src/ and ship a utility-less stylesheet. */
+@source "../**/*.{vue,ts}";
+
+/* Hide a scrollable element's scrollbar (scrolling still works). Applied
+   selectively via `scrollbar-hide` on the editor's scroll containers. */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
+
+/* Editor chrome palette. Mapped via `inline` so `bg-uf-bg`, `text-uf-text`
+   etc. resolve to `var(--uf-bg)` / `var(--uf-text)` at runtime — that lets
+   `.dark` recolour every utility just by redefining the raw tokens (see the
+   `:root` / `.dark` blocks under `@layer base`). The accent / symbol /
+   danger colours are theme-agnostic and stay literal. */
+@theme inline {
+  --color-uf-bg: var(--uf-bg);
+  --color-uf-panel: var(--uf-panel);
+  --color-uf-panel-muted: var(--uf-panel-muted);
+  --color-uf-border: var(--uf-border);
+  --color-uf-border-strong: var(--uf-border-strong);
+  --color-uf-text: var(--uf-text);
+  --color-uf-muted: var(--uf-muted);
+  /* Neutral chrome with a blue accent for active/selected/focus affordances
+     (canvas selection frame, active tree row, focus rings, badges). Routed via
+     `var(--uf-accent)` (not inlined literals) so `.dark` can lighten it for
+     readability — see the `:root` / `.dark` raw token blocks below. */
+  --color-uf-accent: var(--uf-accent);
+  --color-uf-accent-strong: var(--uf-accent-strong);
+
+  /* Components (symbol instances) get their own identity color — Tailwind
+     violet-600 — so they read distinctly from the blue selection accent. */
+  --color-uf-symbol: oklch(0.541 0.281 293.009);
+  /* Data blocks (Data List / Data Item) get their own identity color — a teal,
+     distinct from the symbol violet and the blue selection accent — so dynamic
+     content reads apart on the canvas and in the navigator. */
+  --color-uf-data: oklch(0.58 0.12 200);
+  --color-uf-danger: #be123c;
+
+  /* Gap (grid/flex spacing) overlay accent — a distinct magenta so gap bands
+     and grips read apart from the blue selection accent and the orange/green
+     spacing bands. Based on #fa0aa9, softened a touch (lower chroma) so it's
+     vivid without going neon. Derived shades come from opacity modifiers
+     (bg-uf-gap/20 band, /50 grip). */
+  --color-uf-gap: oklch(0.65 0.24 355);
+
+  --radius-pb: 8px;
+  --shadow-pb: 0 18px 45px rgb(15 23 42 / 10%);
+
+  --font-pb: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Canonical shadcn token → utility mapping. MUST be `inline`: it inlines the
+   `var(--token)` indirection into generated utilities (e.g.
+   `.bg-background { background-color: var(--background) }`) so `.dark`, which
+   only redefines the raw tokens, recolors every utility at runtime. The raw
+   token values live in `@layer base` below. Disjoint from the `--color-pb-*`
+   theme above; both coexist. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  :root {
+    --uf-bg: #f8fafc;
+    --uf-panel: #ffffff;
+    --uf-panel-muted: #f1f5f9;
+    --uf-border: #d8dee8;
+    --uf-border-strong: #94a3b8;
+    --uf-text: #162033;
+    --uf-muted: #64748b;
+    --uf-accent: oklch(0.546 0.245 262.881);
+    --uf-accent-strong: oklch(0.488 0.243 264.376);
+    --uf-danger: #be123c;
+    --uf-radius: 8px;
+    --uf-shadow: 0 18px 45px rgb(15 23 42 / 10%);
+    color: var(--uf-text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  /* Canonical shadcn neutral palette (stock, oklch). Pure variable
+     declarations — they emit nothing until a utility or scoped rule consumes
+     them, so they do not leak into consumer apps. The `ui/` components use the
+     `bg-background`/`border`/`ring-ring`/… utilities mapped from these. */
+  :root {
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+  }
+
+  /* Dark theme. Must sit on <body>/<html> (or the reka portal target),
+     NOT only on .uf-editor, otherwise portaled Dialog / Select content
+     keeps its light tokens. PageEditor.vue toggles the class on
+     documentElement based on editor.storage.theme. */
+  .dark {
+    /* shadcn neutral palette, retoned to the cool chrome hue (242). Control
+       surfaces use two tiers, both LIGHTER than the chrome `--uf-bg` (0.21) so
+       they read as raised: resting/track 0.29, active/hover (`--background`,
+       `--accent`) 0.39. */
+    --background: oklch(0.39 0.01 242);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.25 0.01 242);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.29 0.01 242);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.29 0.01 242);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.29 0.01 242);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.39 0.01 242);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+
+    /* Editor chrome `--pb-*` palette. The accent stays the same brand blue
+       (still readable on dark backgrounds); everything else flips dark. */
+    --uf-bg: oklch(0.21 0.013 248);
+    --uf-panel: oklch(0.25 0.013 248);
+    --uf-panel-muted: oklch(0.30 0.013 248);
+    --uf-border: oklch(1 0 0 / 12%);
+    --uf-border-strong: oklch(1 0 0 / 30%);
+    --uf-text: oklch(0.96 0.005 248);
+    --uf-muted: oklch(0.70 0.020 248);
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .uf-editor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--uf-bg);
+    color: var(--uf-text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Tailwind-style preflight, scoped to the editor. */
+@layer reset {
+
+  .uf-editor,
+  .uf-editor *,
+  .uf-editor *::before,
+  .uf-editor *::after {
+    box-sizing: border-box;
+    /* Default border-color is the shadcn `--border` token — the scoped
+       equivalent of canonical shadcn's `* { @apply border-border }`. pb-*
+       chrome always sets border-color explicitly, so it is unaffected. */
+    border: 0 solid var(--border);
+  }
+
+
+  /* Inside the editor, overlays teleport into the .uf-editor root (see
+     UI_PORTAL_TARGET) and inherit the scoped reset above. These portal-root
+     rules remain as a fallback for content that still lands in <body> — a ui
+     component used without the editor shell providing a target — where the
+     scoped reset misses it: utilities like `w-full` overflow under default
+     content-box sizing and bare `border` renders nothing. */
+  .uf-dialog-content,
+  .uf-dialog-content *,
+  .uf-dialog-content *::before,
+  .uf-dialog-content *::after,
+  .uf-ui-select-content,
+  .uf-ui-select-content *,
+  .uf-ui-select-content *::before,
+  .uf-ui-select-content *::after,
+  .uf-ui-tooltip-content,
+  .uf-ui-tooltip-content *,
+  .uf-ui-tooltip-content *::before,
+  .uf-ui-tooltip-content *::after,
+  .uf-ui-dropdown-content,
+  .uf-ui-dropdown-content *,
+  .uf-ui-dropdown-content *::before,
+  .uf-ui-dropdown-content *::after,
+  .uf-ui-popover-content,
+  .uf-ui-popover-content *,
+  .uf-ui-popover-content *::before,
+  .uf-ui-popover-content *::after {
+    box-sizing: border-box;
+    border: 0 solid var(--border);
+  }
+
+  /* Form-control reset for the same portal roots. The `.uf-editor button/input`
+     rules further down don't reach portaled content, so bare <button>/<input>
+     there fall back to the UA button font (Arial), the native grey button face,
+     and intrinsic padding. Mirror the editor's reset for any portal content. */
+  :is(.uf-dialog-content, .uf-ui-select-content, .uf-ui-tooltip-content, .uf-ui-dropdown-content, .uf-ui-popover-content)
+    :is(button, input, optgroup, select, textarea) {
+    margin: 0;
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    color: inherit;
+    line-height: inherit;
+    background: transparent;
+  }
+
+  :is(.uf-dialog-content, .uf-ui-select-content, .uf-ui-tooltip-content, .uf-ui-dropdown-content, .uf-ui-popover-content)
+    button {
+    padding: 0;
+    text-transform: none;
+    background-image: none;
+    cursor: pointer;
+  }
+
+  .uf-editor h1,
+  .uf-editor h2,
+  .uf-editor h3,
+  .uf-editor h4,
+  .uf-editor h5,
+  .uf-editor h6 {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .uf-editor p,
+  .uf-editor figure,
+  .uf-editor blockquote,
+  .uf-editor dl,
+  .uf-editor dd,
+  .uf-editor pre,
+  .uf-editor hr {
+    margin: 0;
+  }
+
+  .uf-editor hr {
+    height: 0;
+    color: inherit;
+    border-top: 1px solid var(--uf-border);
+  }
+
+  .uf-editor a {
+    color: inherit;
+    text-decoration: inherit;
+    cursor: pointer;
+  }
+
+  .uf-editor b,
+  .uf-editor strong {
+    font-weight: 650;
+  }
+
+  .uf-editor small {
+    font-size: 80%;
+  }
+
+  .uf-editor sub,
+  .uf-editor sup {
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+
+  .uf-editor sub {
+    bottom: -0.25em;
+  }
+
+  .uf-editor sup {
+    top: -0.5em;
+  }
+
+  .uf-editor table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+
+  .uf-editor ol,
+  .uf-editor ul,
+  .uf-editor menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .uf-editor fieldset {
+    margin: 0;
+    padding: 0;
+  }
+
+  .uf-editor legend {
+    padding: 0;
+  }
+
+  .uf-editor dialog {
+    padding: 0;
+  }
+
+  .uf-editor summary {
+    display: list-item;
+    cursor: pointer;
+  }
+
+  .uf-editor textarea {
+    resize: vertical;
+  }
+
+  .uf-editor button,
+  .uf-editor input,
+  .uf-editor optgroup,
+  .uf-editor select,
+  .uf-editor textarea {
+    margin: 0;
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    color: inherit;
+    background: transparent;
+    line-height: inherit;
+  }
+
+  .uf-editor button {
+    padding: 0;
+  }
+
+  .uf-editor button,
+  .uf-editor select {
+    text-transform: none;
+  }
+
+  .uf-editor button,
+  .uf-editor [type='button'],
+  .uf-editor [type='reset'],
+  .uf-editor [type='submit'] {
+    -webkit-appearance: button;
+    appearance: button;
+    background: transparent;
+    background-image: none;
+    cursor: pointer;
+  }
+
+  .uf-editor [role='button'] {
+    cursor: pointer;
+  }
+
+  .uf-editor :disabled {
+    cursor: not-allowed;
+  }
+
+  .uf-editor input,
+  .uf-editor textarea {
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .uf-editor input::placeholder,
+  .uf-editor textarea::placeholder {
+    opacity: 1;
+    color: var(--uf-muted);
+  }
+
+  .uf-editor img,
+  .uf-editor svg,
+  .uf-editor video,
+  .uf-editor canvas,
+  .uf-editor audio,
+  .uf-editor iframe,
+  .uf-editor embed,
+  .uf-editor object {
+    display: block;
+  }
+
+  .uf-editor img,
+  .uf-editor video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .uf-editor [hidden] {
+    display: none;
+  }
+
+  .uf-editor :focus {
+    outline: none;
+  }
+
+  .uf-editor :focus-visible {
+    outline: 2px solid rgb(15 118 110 / 40%);
+    outline-offset: 2px;
+  }
+}
+
+/* AI "thinking" indicator — an animated, brand-colour gradient ring drawn over
+   the block being generated while the AI works (CanvasViewport overlay). The
+   conic gradient rotates via the animatable `--uf-ai-angle` custom property; a
+   mask cuts out the centre so only the 2px ring shows and the block stays
+   visible through it. */
+@property --uf-ai-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes uf-ai-spin {
+  to {
+    --uf-ai-angle: 360deg;
+  }
+}
+
+.uf-ai-thinking {
+  padding: 2px;
+  background: conic-gradient(
+    from var(--uf-ai-angle),
+    oklch(0.546 0.245 262.881 / 0),
+    oklch(0.546 0.245 262.881),
+    oklch(0.546 0.245 262.881 / 0)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: uf-ai-spin 2.5s linear infinite;
+}
+

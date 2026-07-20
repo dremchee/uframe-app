@@ -1,0 +1,17 @@
+# Netlify deploy for the VitePress docs site.
+# `docs:build` also builds the standalone embed editor into /embed/ and the
+# TypeDoc API reference, then runs `vitepress build docs`.
+[build]
+command = "pnpm docs:build"
+publish = "docs/.vitepress/dist"
+
+[build.environment]
+# VitePress needs Node 18+; pin an LTS for reproducible builds.
+NODE_VERSION = "22"
+
+# Long-cache the fingerprinted Vite assets of the embedded editor.
+[[headers]]
+for = "/embed/assets/*"
+
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"

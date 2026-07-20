@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>uframe — iframe embed demo</title>
+    <style>
+      body { margin: 0; font: 14px system-ui, sans-serif; display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+      header { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid #ddd; }
+      #editor { min-height: 0; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Host page</strong> (no Vue)
+      <button id="dark">Toggle theme</button>
+      <button id="save">Request save</button>
+      <span id="status" style="margin-left:auto;color:#64748b"></span>
+    </header>
+    <div id="editor"></div>
+
+    <!--
+      Run:
+        pnpm build:lib     # builds dist/embed.js (the client)
+        pnpm build:embed   # builds build/embed/ (the editor app)
+      then serve the repo root statically, e.g.  npx serve .
+      and open /examples/embed.html
+    -->
+    <script type="module">
+      import { createUframeEditor } from '../dist/embed.js'
+
+      const status = document.getElementById('status')
+      let dark = false
+
+      const editor = createUframeEditor({
+        target: document.getElementById('editor'),
+        src: '../build/embed/index.html',
+        // No initial document → the editor starts with an empty page.
+        onReady: () => (status.textContent = 'ready'),
+        onChange: doc => (status.textContent = `changed: ${doc.blocks.length} blocks`),
+        onSave: (doc) => {
+          status.textContent = `saved: ${doc.blocks.length} blocks`
+          // e.g. fetch('/api/pages/1', { method: 'PUT', body: JSON.stringify(doc) })
+        },
+      })
+
+      document.getElementById('dark').onclick = () => {
+        dark = !dark
+        editor.setTheme(dark ? 'dark' : 'light')
+      }
+      document.getElementById('save').onclick = () => editor.requestSave()
+    </script>
+  </body>
+</html>

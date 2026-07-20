@@ -1,0 +1,76 @@
+/*
+ * Shared baseline for rendered page content: a moderate global reset plus the
+ * page's default typography. Injected into the canvas/preview iframe (as part
+ * of pageFrameStyles) AND shipped as the base of an HTML export — so it must
+ * stay free of editor machinery and `uf-*` class hooks; exported markup
+ * carries only user-authored classes.
+ *
+ * Intentionally moderate: default margins are removed and media/forms
+ * normalized, but list markers/indentation are left intact so rich-text lists
+ * keep their bullets.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #162033;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  min-height: 100%;
+  padding: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}

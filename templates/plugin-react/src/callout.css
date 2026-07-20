@@ -1,0 +1,15 @@
+/* Block styles, co-located with the component. Imported as a string via
+   `./callout.css?inline` and set on the definition's `css` field — the editor
+   injects it into the canvas iframe + export. Colors are CSS variables with
+   fallbacks: set `--callout-*` in the editor's Variables panel to retheme. */
+.uf-callout-block {
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  border-left: 4px solid transparent;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.uf-callout-block--info { background: var(--callout-info-bg, #eff6ff); border-color: var(--callout-info-border, #3b82f6); color: var(--callout-info-fg, #1e3a8a); }
+.uf-callout-block--success { background: var(--callout-success-bg, #ecfdf5); border-color: var(--callout-success-border, #10b981); color: var(--callout-success-fg, #065f46); }
+.uf-callout-block--warning { background: var(--callout-warning-bg, #fffbeb); border-color: var(--callout-warning-border, #f59e0b); color: var(--callout-warning-fg, #92400e); }
+.uf-callout-block--danger { background: var(--callout-danger-bg, #fef2f2); border-color: var(--callout-danger-border, #ef4444); color: var(--callout-danger-fg, #991b1b); }

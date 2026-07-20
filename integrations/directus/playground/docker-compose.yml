@@ -1,0 +1,33 @@
+# Local Directus playground for the uframe extension.
+#
+#   1. build the extension (from repo root):
+#        pnpm --filter directus-extension-uframe build
+#   2. start Directus (from this folder):
+#        docker compose up
+#   3. open http://localhost:8055  →  log in with the admin creds below
+#
+# The built extension is mounted read-only into Directus's extensions dir.
+# EXTENSIONS_AUTO_RELOAD picks up rebuilds without restarting the container.
+services:
+  directus:
+    image: directus/directus:11
+    ports:
+      - '8055:8055'
+    volumes:
+      - ./data/database:/directus/database
+      - ./data/uploads:/directus/uploads
+      # Mount only what Directus needs to load the bundle — not node_modules
+      # (its pnpm symlinks point at host paths and would break in-container).
+      - ../dist:/directus/extensions/directus-extension-uframe/dist:ro
+      - ../package.json:/directus/extensions/directus-extension-uframe/package.json:ro
+    environment:
+      KEY: uframe-playground-key
+      SECRET: uframe-playground-secret
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: admin
+      DB_CLIENT: sqlite3
+      DB_FILENAME: /directus/database/data.db
+      WEBSOCKETS_ENABLED: 'true'
+      EXTENSIONS_AUTO_RELOAD: 'true'
+      # Allow the admin page to frame our same-origin embed endpoint.
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC: "'self'"

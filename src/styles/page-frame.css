@@ -1,0 +1,139 @@
+/*
+ * Editor-only styles for page content inside the canvas/preview <iframe>.
+ * Injected verbatim into the iframe document after page-reset.css (see
+ * page-frame.ts) — it is the iframe's OWN stylesheet, independent of the
+ * editor chrome (editor.css) and NOT processed by Tailwind. Keep it
+ * self-contained: it defines its own tokens because the iframe does not
+ * inherit the editor's :root.
+ *
+ * Everything in here is service styling — canvas wrappers, drop-zone
+ * placeholders and the `uf-*` block defaults that dress the canvas markup.
+ * None of it ships with an HTML export (which gets page-reset.css only), so
+ * nothing here may be load-bearing for the exported page.
+ */
+
+:root {
+  --uf-bg: #f8fafc;
+  --uf-panel-muted: #f1f5f9;
+  --uf-border: #d8dee8;
+  --uf-border-strong: #94a3b8;
+  --uf-text: #162033;
+  --uf-muted: #64748b;
+  --uf-accent: #0f766e;
+  --uf-radius: 8px;
+}
+
+.uf-frame-document {
+  display: contents;
+}
+
+/* The per-block editor wrapper uses display: contents so it adds no box and
+   does NOT participate in the parent's flex/grid layout — the real block
+   element becomes the parent's child, so the canvas matches the exported
+   markup (which has no wrapper). The wrapper stays in the DOM for hit-testing
+   (data-block-id) and click selection, which work regardless of display.
+   Selection/hover outlines are drawn by the editor overlay in the main
+   window, not inside the iframe. */
+.uf-canvas-block {
+  display: contents;
+  user-select: none;
+}
+
+.uf-canvas-block--editable {
+  cursor: pointer;
+}
+
+/* Utility marker: a block that renders user-authored interactive content
+   (anchor, iframe, form field, …) opts into "pass clicks through to the
+   selecting wrapper" in edit mode by adding `uf-no-click` to its root.
+   Preview mode keeps `.uf-canvas-block--editable` off, so the content
+   stays interactive there. */
+.uf-canvas-block--editable .uf-no-click,
+.uf-canvas-block--editable .uf-no-click * {
+  pointer-events: none;
+}
+
+.uf-image-block img {
+  height: auto;
+}
+
+.uf-image-block figcaption {
+  margin-top: 8px;
+  color: var(--uf-muted);
+  font-size: 13px;
+}
+
+.uf-image-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  border: 1px dashed var(--uf-border-strong);
+  border-radius: var(--uf-radius);
+  color: var(--uf-muted);
+  background: var(--uf-panel-muted);
+}
+
+/* The Button block has no hardcoded look — its appearance comes from the
+   block's own editable styles (a "primary" preset applied on creation). */
+
+/* No default sizing on section/container: an empty one is kept visible and
+   droppable by the .uf-container-placeholder (rendered only while empty),
+   and a populated one sizes to its content — nothing forced, nothing leaked
+   into the export. */
+
+.uf-container-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 60px;
+  color: var(--uf-muted);
+  font-size: 12px;
+  pointer-events: none;
+  /* Diagonal striped SVG pattern (seamless 10px tile) so an empty container
+     reads as a drop zone. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M0 10 L10 0 M-2.5 2.5 L2.5 -2.5 M7.5 12.5 L12.5 7.5' stroke='rgba(148,163,184,0.35)' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+
+.uf-spacer-block {
+  background: repeating-linear-gradient(-45deg,
+      transparent,
+      transparent 8px,
+      rgb(15 23 42 / 4%) 8px,
+      rgb(15 23 42 / 4%) 16px);
+}
+
+/* Editor affordance only: keep an empty Div / Link Block grabbable on the
+   canvas. Block-level display, list indents, field chrome and the rest of the
+   old `uf-*` defaults now live in each block's editable defaultStyle preset —
+   user-owned classes that ship with a clean export. */
+
+.uf-div-block,
+.uf-link-block {
+  min-height: 24px;
+}
+
+.uf-embed-block {
+  /* Default visual hint when the embedded HTML renders nothing visible. */
+  min-height: 24px;
+}
+
+.uf-embed-block iframe {
+  max-width: 100%;
+}
+
+/* Untrusted embeds render in a sandboxed iframe which — unlike inlined HTML —
+   can't auto-size to its content, so give it a sensible default box. (The
+   export renderer inlines the same box on the iframe itself.) */
+.uf-embed-frame {
+  display: block;
+  width: 100%;
+  min-height: 240px;
+  border: 0;
+}
+
+.uf-empty-state,
+.uf-canvas-empty {
+  margin: 0;
+  padding: 24px;
+  color: var(--uf-muted);
+  font-size: 13px;
+}

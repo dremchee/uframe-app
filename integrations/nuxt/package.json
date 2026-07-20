@@ -1,0 +1,20 @@
+{
+  "name": "uframe-frontend-nuxt",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "SSR frontend (Nuxt) that renders uframe PageDocument templates with the uframe core renderer.",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@lucide/vue": "^1.16.0",
+    "nuxt": "^3.14.0",
+    "uframe": "workspace:*",
+    "vue": "^3.5.34"
+  }
+}
