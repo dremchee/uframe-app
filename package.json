@@ -1,8 +1,25 @@
 {
-  "name": "uframe",
+  "name": "@uframe/editor",
   "type": "module",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "Block-based page editor for Vue applications.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dremchee/uframe-app.git"
+  },
+  "homepage": "https://u-frame.ru",
+  "bugs": {
+    "url": "https://github.com/dremchee/uframe-app/issues"
+  },
+  "keywords": [
+    "editor",
+    "page-builder",
+    "vue",
+    "visual-editor"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "pnpm@9.10.0",
   "exports": {
     ".": {
@@ -66,6 +83,7 @@
     "build:lib": "tsdown && tailwindcss -i src/styles/editor.css -o dist/styles.css --minify",
     "build:playground": "vite build",
     "build:embed": "vite build --config vite.config.embed.ts",
+    "prepack": "pnpm build:lib",
     "typecheck": "vue-tsc -b",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
