@@ -7,7 +7,7 @@
   "homepage": "https://uframe-app.netlify.app/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dremchee/uframe-app.git"
+    "url": "https://github.com/dremchee/uframe-app"
   },
   "bugs": {
     "url": "https://github.com/dremchee/uframe-app/issues"
