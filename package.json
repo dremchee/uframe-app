@@ -84,6 +84,7 @@
     "build:playground": "vite build",
     "build:embed": "vite build --config vite.config.embed.ts",
     "prepack": "pnpm build:lib",
+    "release:npm": "npm publish --access public",
     "typecheck": "vue-tsc -b",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
