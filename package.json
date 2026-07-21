@@ -1,8 +1,8 @@
 {
   "name": "@dremchee/uframe",
   "type": "module",
-  "version": "0.1.0",
-  "description": "Block-based page editor for Vue applications.",
+  "version": "0.1.1",
+  "description": "Embeddable block-based page editor with a framework-agnostic iframe client and Vue library.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dremchee/uframe-app.git"
