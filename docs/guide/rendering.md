@@ -1,10 +1,10 @@
 # Rendering pages
 
 The editor produces a `PageDocument` — plain JSON. To publish it you render that
-document on your own frontend. `uframe/core` does this framework-agnostically:
+document on your own frontend. `@dremchee/uframe/core` does this framework-agnostically:
 it's **pure and synchronous**, so it works in SSR, SSG, or the browser.
 
-> A complete, runnable reference lives in [`integrations/nuxt`](https://github.com/dremchee/uframe/tree/main/integrations/nuxt)
+> A complete, runnable reference lives in [`integrations/nuxt`](https://github.com/dremchee/uframe-app/tree/main/integrations/nuxt)
 > — a Nuxt SSR app that renders templates from Directus.
 
 ## The pipeline
@@ -37,8 +37,13 @@ const { html, css } = renderDocumentToFragment(resolved, registry)
 ```
 
 `renderDocumentToHtml(document, registry, options)` is the same thing wrapped in
-a full `<!doctype html>` document (with `<title>`, `<head>` and a `baseStyles`
-option) when you want one self-contained page string.
+a full `<!doctype html>` document. Provide `baseStyles` for one self-contained
+page, or `cssHref` to link an external stylesheet instead of inlining CSS.
+
+For a multi-page static export, `renderSiteFiles(documents, registry)` returns
+an `index.html`, additional page files, and a shared `styles.css` file. This is
+the preferred form for a CDN or object-storage deployment because the stylesheet
+can be cached independently of each page.
 
 ## Two ways to render
 
@@ -60,8 +65,16 @@ Nuxt reference ships both (`UframeRenderer` and `UframeDocument`).
 `renderHtml` and `renderComponent` rely on per-block-type base classes
 (`.uf-div-block`, `.uf-paragraph-block`, …) plus a reset and design tokens. These
 are **not** returned by `collectBlockCss` / `serializeDocumentStyles` — ship the
-base stylesheet yourself (pass it as `renderDocumentToHtml`'s `baseStyles`, or
-see `assets/page-base.ts` in the Nuxt integration). `collectBlockCss` then adds
+base stylesheet yourself. The public `exportBaseStyles` is suitable for static
+exports:
+
+```ts
+import { exportBaseStyles } from '@dremchee/uframe/styles/page-frame'
+
+renderDocumentToHtml(document, registry, { baseStyles: exportBaseStyles })
+```
+
+`collectBlockCss` then adds
 each used block type's own `css`, and `serializeDocumentStyles` adds the
 document's per-block / class / variable rules.
 

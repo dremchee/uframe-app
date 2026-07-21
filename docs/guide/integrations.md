@@ -1,11 +1,11 @@
 # Integrations
 
 uframe ships reference integrations under
-[`integrations/`](https://github.com/dremchee/uframe/tree/main/integrations) —
+[`integrations/`](https://github.com/dremchee/uframe-app/tree/main/integrations) —
 prebuilt ways to slot the editor into a CMS and to render its output on a
 frontend. They're deliberately thin: the only contract is the `PageDocument`
-JSON, plus [`uframe/embed`](./embedding) on the authoring side and
-[`uframe/core`](./rendering) on the rendering side.
+JSON, plus [`@dremchee/uframe/embed`](./embedding) on the authoring side and
+[`@dremchee/uframe/core`](./rendering) on the rendering side.
 
 They split into two roles:
 
@@ -14,9 +14,9 @@ They split into two roles:
 
 | Integration | Role | Stack | Status |
 | --- | --- | --- | --- |
-| [Directus extension](https://github.com/dremchee/uframe/tree/main/integrations/directus) | Author & store | Directus 11 | Available |
-| [Nuxt frontend](https://github.com/dremchee/uframe/tree/main/integrations/nuxt) | Render & publish | Nuxt 3 | Available |
-| [Strapi plugin](https://github.com/dremchee/uframe/tree/main/integrations/strapi) | Author & store | Strapi (React) | Planned |
+| [Directus extension](https://github.com/dremchee/uframe-app/tree/main/integrations/directus) | Author & store | Directus 11 | Available |
+| [Nuxt frontend](https://github.com/dremchee/uframe-app/tree/main/integrations/nuxt) | Render & publish | Nuxt 3 | Available |
+| [Strapi plugin](https://github.com/dremchee/uframe-app/tree/main/integrations/strapi) | Author & store | Strapi (React) | Planned |
 
 ## Directus extension
 
@@ -31,11 +31,11 @@ They split into two roles:
 - **endpoint** — serves the bundled embed app at `/uframe/index.html`, so the
   iframe loads same-origin with no external hosting.
 
-The editor runs isolated in an `<iframe>` via `uframe/embed`; Directus owns the
+The editor runs isolated in an `<iframe>` via `@dremchee/uframe/embed`; Directus owns the
 page list, permissions, revisions and draft/publish. Your frontend reads the raw
 `PageDocument` over the items API (`GET /items/uframe_pages/:id` and
 `GET /items/uframe_globals`). See the
-[extension README](https://github.com/dremchee/uframe/tree/main/integrations/directus).
+[extension README](https://github.com/dremchee/uframe-app/tree/main/integrations/directus).
 
 ## Nuxt frontend
 
@@ -49,12 +49,12 @@ It ships both renderers described in [Rendering pages](./rendering): a string
 `renderHtml` path and a recursive Vue-component path (with per-type overrides).
 The data access (token optional / public read) lives in a server route, so the
 caching recommendations from that guide apply directly. See the
-[frontend README](https://github.com/dremchee/uframe/tree/main/integrations/nuxt).
+[frontend README](https://github.com/dremchee/uframe-app/tree/main/integrations/nuxt).
 
 ## Strapi plugin (planned)
 
 `strapi-plugin-uframe` will be a Strapi custom-field plugin. Strapi's admin is
-React, so the field is a thin React wrapper around the same `uframe/embed` iframe
+React, so the field is a thin React wrapper around the same `@dremchee/uframe/embed` iframe
 client the Directus extension uses, storing a `PageDocument` as a JSON custom
 field. The embed-delivery model (bundle the built editor app, serve it locally)
 is shared. Status: **scaffold pending.**
@@ -63,11 +63,11 @@ is shared. Status: **scaffold pending.**
 
 There's nothing special about these — the integration surface is small:
 
-- **Authoring host** (any stack): mount `createUframeEditor` from `uframe/embed`
+- **Authoring host** (any stack): mount `createUframeEditor` from `@dremchee/uframe/embed`
   and persist the `PageDocument` JSON it emits. See [Client API & protocol](./embedding).
 - **Frontend** (any stack, SSR/SSG/CSR): feed the stored document through
   `resolveDocument` + `renderDocumentToHtml` / `renderDocumentToFragment` from
-  `uframe/core`. See [Rendering pages](./rendering).
+  `@dremchee/uframe/core`. See [Rendering pages](./rendering).
 
 Because both sides speak plain JSON, an integration is mostly glue: where the
 document is stored, and how the data its bindings need is fetched.

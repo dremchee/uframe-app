@@ -11,7 +11,7 @@ const apiSidebar = existsSync(apiSidebarPath)
 
 export default defineConfig({
   title: 'uframe',
-  description: 'Block-based page editor you drop into any app — library-first.',
+  description: 'Embeddable page editor for any host — iframe client or Vue library.',
   cleanUrls: true,
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]],
   themeConfig: {
@@ -28,6 +28,7 @@ export default defineConfig({
           items: [
             { text: 'Overview', link: '/guide/overview' },
             { text: 'Getting started', link: '/guide/getting-started' },
+            { text: 'Localization', link: '/guide/localization' },
             { text: 'Editing on the canvas', link: '/guide/editing' },
             { text: 'Client API & protocol', link: '/guide/embedding' },
             { text: 'Rendering pages', link: '/guide/rendering' },
@@ -40,7 +41,7 @@ export default defineConfig({
       '/api/': apiSidebar,
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/dremchee/uframe' },
+      { icon: 'github', link: 'https://github.com/dremchee/uframe-app' },
     ],
     search: { provider: 'local' },
   },

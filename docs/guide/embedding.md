@@ -1,105 +1,142 @@
 # Client API & protocol
 
-`uframe/embed` exposes one function, `createUframeEditor`, which mounts the iframe
-and drives it over a small typed `postMessage` protocol.
+`@dremchee/uframe/embed` mounts the standalone editor app into an iframe and
+controls it through a typed `postMessage` protocol. It is the integration path
+for any host framework.
 
-## `createUframeEditor(options)`
+## Create an editor
 
 ```ts
 import { createUframeEditor } from '@dremchee/uframe/embed'
 
 const editor = createUframeEditor({
-  target, // HTMLElement: a container (an <iframe> is created inside) or an existing <iframe>
-  src, // URL of the hosted editor app (index.html)
-  document, // optional initial PageDocument
-  readonly, // optional, default false
-  theme, // 'light' | 'dark'
-  locale, // optional editor locale, defaults to 'en'
-  messages, // optional editor/plugin message overrides
-  uiTheme, // optional semantic light/dark editor palettes
-  styleTokens, // optional prefix-free semantic overrides
-  onReady, // editor mounted and handshaked
-  onChange, // (document) => void — fired on edits
-  onSave, // (document) => void — fired on explicit save
-  onError, // (message) => void
+  target: document.querySelector('#editor')!,
+  src: 'https://uframe-app.netlify.app/embed/index.html',
+  document: initialDocument,
+  toolbarVisible: true,
+  onChange: document => persistDraft(document),
+  onSave: document => publish(document),
+  onError: message => console.error(message),
 })
 ```
 
-### Options
+`target` can be a container (the client creates an iframe inside it) or an
+existing `<iframe>`. The returned handle is ready to use immediately; commands
+issued before the iframe handshake are queued.
+
+## Options
 
 | Option | Type | Notes |
 | --- | --- | --- |
-| `target` | `HTMLElement` | Where to mount. A non-`<iframe>` element is used as a **container** (an `<iframe>` is created inside it); pass an existing `<iframe>` to drive it directly. |
-| `src` | `string` | URL of the hosted editor app. |
-| `document` | `PageDocument` | Initial page; omitted → starts empty. |
-| `readonly` | `boolean` | Render without editing affordances. |
-| `theme` | `'light' \| 'dark'` | Initial theme. |
-| `locale` | `string` | Initial editor UI locale. |
-| `messages` | `LocaleMessages` | Host overrides for editor and plugin translations. |
-| `uiTheme` | `EditorUiTheme` | Semantic `light` and `dark` editor palettes. |
-| `styleTokens` | `EditorStyleTokens` | Prefix-free overrides such as `{ accent, panel, radius }`. |
-| `plugins` | `string[]` | URLs of plugin ESM modules to load + register on `ready` (e.g. the official AI plugin — see below). |
-| `onReady` / `onChange` / `onSave` / `onError` | callbacks | Lifecycle + data out. |
+| `target` | `HTMLElement` | Mount container or existing iframe. |
+| `src` | `string` | Hosted editor `index.html`. |
+| `document` | `PageDocument` | Initial single-page document. |
+| `pages` / `activePageId` | `PageDocument[]` / `string` | Multi-page site and the selected page. |
+| `globals` | `GlobalSettings \| null` | Shared site data for multi-page editing. |
+| `readonly` | `boolean` | Hides editing affordances. |
+| `toolbarVisible` | `boolean` | Shows or hides the editor toolbar. |
+| `state` | `Partial<UframeEditorState>` | Initial editor state, such as viewport and preview mode. |
+| `theme` | `UframeTheme` | Initial light/dark document theme. |
+| `locale` / `messages` | `string` / `UframeMessages` | UI language and translation catalogs. |
+| `uiTheme` / `styleTokens` | `EditorUiTheme` / `EditorStyleTokens` | Semantic editor UI styling. |
+| `plugins` | `string[]` | ESM plugin URLs to load after the handshake. |
+| `schema` | `NormalizedSchema` | Limits and extends the editable document schema. |
+| `dataContext` | `ResolveContext` | Dynamic values available to blocks and bindings. |
+| `onReady` | `() => void` | Iframe has completed its handshake. |
+| `onChange` / `onSave` | `(document) => void` | Draft changes and explicit save requests. |
+| `onPagesChange` / `onActivePageChange` | callbacks | Multi-page changes. |
+| `onGlobalsChange` | `(globals) => void` | Shared settings changed. |
+| `onStateChange` | `(state) => void` | Viewport, mode, and other public editor state changed. |
+| `onRequestAsset` | callback | Editor requests an asset from the host. |
+| `onError` | `(message) => void` | Recoverable protocol or editor error. |
 
-### Returned handle
+For non-English UI, import a locale catalog separately; the base package ships
+English only. See [Localization](./localization).
+
+## Control the mounted editor
 
 ```ts
-editor.setDocument(doc) // replace the current document
-editor.setReadonly(true) // toggle read-only
-editor.setTheme('dark') // switch theme
-editor.setLocale('ru') // switch editor/plugin translations
-editor.setMessages({ ru: { /* host overrides */ } })
-editor.setUiTheme(uiTheme) // replace both semantic palettes
-editor.setStyleTokens({ accent: '#0f172a' }) // override active palette
-editor.loadPlugins(['/plugins/callout/dist/index.js']) // load + register plugin dists by URL
-editor.requestSave() // ask the editor to emit a `save`
-editor.destroy() // remove listeners + iframe
-editor.iframe // the underlying <iframe> element
+editor.setDocument(document)
+editor.setPages(pages, 'home')
+editor.setActivePage('pricing')
+editor.setGlobals(globals)
+
+editor.setReadonly(true)
+editor.setToolbarVisible(false)
+editor.setViewport('tablet')
+editor.setEditBreakpoint('md')
+editor.setState({ preview: true })
+editor.openAddBreakpoint()
+
+editor.setTheme('dark')
+editor.setLocale('ru')
+editor.setMessages({ ru: { 'toolbar.save': 'Сохранить' } })
+editor.setUiTheme(uiTheme)
+editor.setStyleTokens({ accent: '#14b8a6' })
+
+editor.setSchema(schema)
+editor.setDataContext({ user: { name: 'Ada' } })
+editor.loadPlugins(['https://cdn.example.com/uframe/callout.js'])
+
+editor.requestSave()
+editor.destroy()
 ```
 
-## Plugins
+The underlying iframe is exposed as `editor.iframe` when host-level focus,
+layout, or lifecycle work is needed.
 
-Plugins load into the embed **by URL** — pass `plugins: [url]` up front or call
-`editor.loadPlugins([url])` later. On `ready` the iframe dynamically imports each
-module and registers its default export, so a plugin can contribute blocks *and*
-UI (toolbar buttons, panels, overlays, canvas layers, Settings sections).
+## Supply assets from the host
 
-A URL-loaded plugin must share the editor's runtime — the same Vue instance and
-the same editor-context module (its `inject` key) — or `useEditorContext()`
-inside it won't resolve. The official **AI plugin** is co-built with the embed
-app and served next to it (`…/embed/plugins/ai.js`), so it shares those chunks
-automatically:
+The editor never needs direct access to your media API. React to an asset
+request, upload or choose a file in the host UI, and send the resulting URL
+back using the request ID:
+
+```ts
+const editor = createUframeEditor({
+  target,
+  src,
+  onRequestAsset: async ({ requestId, kind }) => {
+    const asset = await selectAssetInHostApp(kind)
+
+    editor.setAsset(requestId, {
+      url: asset.url,
+      alt: asset.alt,
+      width: asset.width,
+      height: asset.height,
+    })
+  },
+})
+```
+
+## Runtime plugins
+
+Pass plugin module URLs on creation or load them later. The official AI plugin
+is built beside the hosted editor, so it can be enabled with a stable URL:
 
 ```ts
 createUframeEditor({
   target,
-  src: '/embed/index.html',
-  plugins: ['/embed/plugins/ai.js'], // AI: toolbar toggle, chat window, Settings section
+  src: 'https://uframe-app.netlify.app/embed/index.html',
+  plugins: ['https://uframe-app.netlify.app/embed/plugins/ai.js'],
 })
 ```
 
-The provider API key the AI plugin asks for lives only in the editor's
-per-browser local prefs — never in the document or its exports. To load your own
-plugin this way, build it against the same uframe version and serve it so it
-resolves the shared runtime (co-building alongside the embed app is the simplest
-route; a shared-runtime import map is the general one).
+URL-loaded plugins must share the editor runtime. Co-building them with the
+embed app is the simplest option; otherwise configure a shared runtime/import
+map. For authoring blocks and Vue plugins, see [Extending the editor](./extending).
 
-## Protocol
+## Protocol and security
 
-The handshake: the iframe posts `uframe:ready`; the client replies with
-`uframe:load` (document + options). Every message is namespaced with a `uframe:`
-prefix and carries a numeric `v` (protocol version) field.
+The iframe emits `uframe:ready`; the client answers with `uframe:load`. Further
+messages are namespaced with `uframe:` and include a protocol version.
 
 | Host → editor | Editor → host |
 | --- | --- |
-| `uframe:load`, `uframe:setDocument`, `uframe:setReadonly`, `uframe:setTheme`, `uframe:setUiTheme`, `uframe:setStyleTokens`, `uframe:loadPlugins`, `uframe:requestSave` | `uframe:ready`, `uframe:change`, `uframe:save`, `uframe:error` |
+| `uframe:load`, `uframe:setDocument`, `uframe:setPages`, `uframe:setActivePage`, `uframe:setGlobals`, `uframe:setState`, `uframe:setMessages`, `uframe:setSchema`, `uframe:setAsset`, `uframe:loadPlugins`, `uframe:requestSave` | `uframe:ready`, `uframe:change`, `uframe:save`, `uframe:pagesChange`, `uframe:activePageChange`, `uframe:globalsChange`, `uframe:stateChange`, `uframe:requestAsset`, `uframe:error` |
 
-`PageDocument` is plain JSON, so it travels through `postMessage`'s structured
-clone unchanged.
-
-## Security
-
-- Serve the editor app from an origin you control and pass it as `src`.
-- Both sides validate the message `origin` and `source`; the host origin is
-  passed to the iframe on its URL so replies are targeted, never `*`.
-- Allow framing that origin in your host's CSP (`frame-src`).
+- Serve the editor from an origin you control, and allow it in your host CSP's
+  `frame-src` directive.
+- The client passes the host origin in the iframe URL. Both sides validate the
+  window and origin before accepting messages; replies are not sent to `*`.
+- `PageDocument` and `GlobalSettings` are plain structured-cloneable JSON. Treat
+  untrusted document content as untrusted when rendering it outside the editor.

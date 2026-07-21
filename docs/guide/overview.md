@@ -49,7 +49,7 @@ block for *your* product — not a hosted website builder.
 
 | | Embed client | Vue component |
 | --- | --- | --- |
-| Import | `uframe/embed` | `uframe` (`<PageEditor>`) |
+| Import | `@dremchee/uframe/embed` | `@dremchee/uframe` (`<PageEditor>`) |
 | Host stack | Any (iframe + postMessage) | Vue |
 | Bundle impact | Tiny — DOM + postMessage | Pulls in Vue |
 | Isolation | Full (iframe sandbox) | In-app |

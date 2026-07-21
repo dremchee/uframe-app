@@ -36,15 +36,26 @@ const doc = ref()
 | `blocks` | `BlockRegistry` | Block registry; defaults to the built-ins. |
 | `plugins` | `UframePlugin[]` | Bundles of blocks / tokens / panels / toolbar slots. |
 | `readonly` | `boolean` | Render without editing affordances. |
+| `toolbarVisible` | `boolean` | Show or hide the built-in toolbar. |
 | `autosaveKey` | `string` | Shorthand for a `localStorage` storage adapter. |
 | `storage` | `EditorStorageAdapter` | Custom (sync or async) `load` / `save`. |
 | `prefsKey` | `string` | Namespace for UI prefs (pin / mode / panel width). |
 | `features` | `EditorFeatureFlags` | Toggle `autosave` / `history` / `hotkeys` / `preview`. |
+| `schema` / `dataContext` | `NormalizedSchema` / `ResolveContext` | Schema and sample data for binding and collection blocks. |
+| `requestAsset` | callback | Open the host media library for an editor asset request. |
+| `untrustedEmbeds` | `boolean` | Sandbox raw Embed block HTML. |
 | `locale` | `string` | Active editor locale (defaults to `en`). |
 | `messages` | `LocaleMessages` | Host overrides for editor-chrome translations. |
+| `uiTheme` / `styleTokens` | theme objects | Semantic editor UI palettes and token overrides. |
 
 Emits: `save` (explicit save), `error` (validation errors), `draftRestored` (an
-autosave draft was loaded).
+autosave draft was loaded), and `stateChange` (public viewport, preview, theme,
+and toolbar state).
+
+`PageEditor` also supports multi-page sites with `v-model:pages`,
+`v-model:active-page-id`, and `v-model:globals`. Use `v-model` for the
+single-page mode. Locale catalogs are imported separately; see
+[Localization](./localization).
 
 ## Feature flags
 
@@ -145,7 +156,7 @@ export const brandPlugin = definePlugin({
 ```
 
 Plugins can ship their own locale messages. Components mounted by the plugin
-import the public `useUframeI18n()` composable from `uframe/vue`, just like built-in components; plugin
+import the public `useUframeI18n()` composable from `@dremchee/uframe/vue`, just like built-in components; plugin
 messages are merged by locale and host messages take precedence:
 
 ```ts
@@ -213,7 +224,7 @@ import { aiPlugin } from '@dremchee/uframe/plugins/ai'
 It contributes a toolbar toggle, a floating chat window (`overlays`), a
 "generating" ring over the target block (`canvasLayers`), and an API-key / model
 section in Settings (`settingsSections`). Config (key / base URL / model) is kept
-in the editor's per-browser local prefs, never in the document. `uframe/plugins/ai`
+in the editor's per-browser local prefs, never in the document. `@dremchee/uframe/plugins/ai`
 also re-exports the headless `generateBlocks` helper for calling generation
 directly.
 
@@ -322,7 +333,7 @@ export default { name: 'callout-svelte', blocks: [{
 > Bundle React/Svelte **into** the plugin (don't externalize them) so the element
 > is self-contained, and use `shadow: 'none'` for Svelte if you want the block's
 > `css` (light-DOM classes) to apply. Full runnable starters for Vue, React and
-> Svelte live under [`templates/`](https://github.com/dremchee/uframe/tree/main/templates).
+> Svelte live under [`templates/`](https://github.com/dremchee/uframe-app/tree/main/templates).
 
 ### Loading plugins at runtime
 
@@ -336,7 +347,7 @@ createUframeEditor({ src, plugins: ['/plugins/callout/dist/index.js'] })
 
 See [Client API & protocol](./embedding) for the `plugins` option and the
 `loadPlugins` handle. Starter templates for Vue, React and Svelte live under
-[`templates/`](https://github.com/dremchee/uframe/tree/main/templates).
+[`templates/`](https://github.com/dremchee/uframe-app/tree/main/templates).
 
 ## Storage
 

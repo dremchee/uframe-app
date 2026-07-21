@@ -7,7 +7,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 const SVG = 'width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
 
 // Drop-in host snippet — proves the "tiny client" claim at a glance.
-const code = `import { createUframeEditor } from 'uframe/embed'
+const code = `import { createUframeEditor } from '@dremchee/uframe/embed'
 
 const editor = createUframeEditor({
   target: document.querySelector('#editor'),
