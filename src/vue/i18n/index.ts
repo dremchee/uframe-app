@@ -41,9 +41,8 @@ function translator(active: MessageTree): I18n['t'] {
 }
 
 /**
- * Provide the editor's i18n from reactive sources. English is the bundled base;
- * the host's messages for the active locale merge over it (so a host only
- * overrides the keys it cares about). Getters keep locale switching reactive.
+ * Provide editor i18n from reactive sources. English is the bundled fallback;
+ * hosts opt into other locales by importing a catalog entrypoint separately.
  */
 export function provideUframeI18n(
   getLocale: () => string | undefined,

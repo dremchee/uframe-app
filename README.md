@@ -29,6 +29,26 @@ Pushing Conventional Commits to `main` publishes the package via GitHub Actions:
 `@dremchee/uframe` with this repository and the
 `.github/workflows/publish-npm.yml` workflow before the first automated release.
 
+## Editor locales
+
+English is bundled as the editor fallback. Other catalogs are standalone entry
+points, so applications only load the language they use:
+
+```ts
+import { createUframeEditor } from '@dremchee/uframe/embed'
+import { ru } from '@dremchee/uframe/i18n/ru'
+
+createUframeEditor({
+  locale: 'ru',
+  messages: { ru },
+})
+```
+
+Available catalogs: `de`, `es`, `fr`, `ja`, `pt-BR`, `ru`, and `zh-CN`.
+For regional catalog names, use their lowercase path: `i18n/pt-br` or
+`i18n/zh-cn`. Every catalog can be partial; missing strings continue to use
+English.
+
 ## AI review workflow
 
 This project includes a local Plannotator setup for reviewing Codex plans and

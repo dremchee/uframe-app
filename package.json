@@ -2,12 +2,13 @@
   "name": "@dremchee/uframe",
   "type": "module",
   "version": "0.1.3",
+  "packageManager": "pnpm@9.10.0",
   "description": "Embeddable block-based page editor with a framework-agnostic iframe client and Vue library.",
+  "homepage": "https://uframe-app.netlify.app/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dremchee/uframe-app.git"
   },
-  "homepage": "https://uframe-app.netlify.app/",
   "bugs": {
     "url": "https://github.com/dremchee/uframe-app/issues"
   },
@@ -20,7 +21,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "packageManager": "pnpm@9.10.0",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -46,6 +46,41 @@
       "types": "./dist/ui.d.ts",
       "import": "./dist/ui.js",
       "require": "./dist/ui.cjs"
+    },
+    "./i18n/de": {
+      "types": "./dist/i18n/de.d.ts",
+      "import": "./dist/i18n/de.js",
+      "require": "./dist/i18n/de.cjs"
+    },
+    "./i18n/es": {
+      "types": "./dist/i18n/es.d.ts",
+      "import": "./dist/i18n/es.js",
+      "require": "./dist/i18n/es.cjs"
+    },
+    "./i18n/fr": {
+      "types": "./dist/i18n/fr.d.ts",
+      "import": "./dist/i18n/fr.js",
+      "require": "./dist/i18n/fr.cjs"
+    },
+    "./i18n/ja": {
+      "types": "./dist/i18n/ja.d.ts",
+      "import": "./dist/i18n/ja.js",
+      "require": "./dist/i18n/ja.cjs"
+    },
+    "./i18n/pt-br": {
+      "types": "./dist/i18n/pt-br.d.ts",
+      "import": "./dist/i18n/pt-br.js",
+      "require": "./dist/i18n/pt-br.cjs"
+    },
+    "./i18n/ru": {
+      "types": "./dist/i18n/ru.d.ts",
+      "import": "./dist/i18n/ru.js",
+      "require": "./dist/i18n/ru.cjs"
+    },
+    "./i18n/zh-cn": {
+      "types": "./dist/i18n/zh-cn.d.ts",
+      "import": "./dist/i18n/zh-cn.js",
+      "require": "./dist/i18n/zh-cn.cjs"
     },
     "./plugins/ai": {
       "types": "./dist/plugins/ai.d.ts",

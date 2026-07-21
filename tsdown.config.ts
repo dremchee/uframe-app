@@ -25,6 +25,14 @@ export default defineConfig({
     'vue': 'src/vue/index.ts',
     'blocks': 'src/blocks/index.ts',
     'ui': 'src/components/ui/index.ts',
+    // Optional editor UI translations stay out of the main library bundle.
+    'i18n/de': 'src/vue/i18n/de.ts',
+    'i18n/es': 'src/vue/i18n/es.ts',
+    'i18n/fr': 'src/vue/i18n/fr.ts',
+    'i18n/ja': 'src/vue/i18n/ja.ts',
+    'i18n/pt-br': 'src/vue/i18n/pt-br.ts',
+    'i18n/ru': 'src/vue/i18n/ru.ts',
+    'i18n/zh-cn': 'src/vue/i18n/zh-cn.ts',
     // Official AI plugin (chat window, canvas ring, settings section). A
     // separate entry so it only lands in a consumer's bundle when imported;
     // `plugins/ai` mirrors the source folder and namespaces official plugins.
