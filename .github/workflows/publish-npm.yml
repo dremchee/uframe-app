@@ -33,6 +33,27 @@ jobs:
       - name: Use current npm CLI
         run: npm install --global npm@latest
 
+      - name: Show npm trusted-publisher identity
+        run: |
+          node --input-type=module <<'NODE'
+          const url = new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL)
+          url.searchParams.set('audience', 'npm:registry.npmjs.org')
+
+          const response = await fetch(url, {
+            headers: { Authorization: `Bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}` },
+          })
+          if (!response.ok)
+            throw new Error(`Could not request OIDC identity: ${response.status}`)
+
+          const { value } = await response.json()
+          const claim = JSON.parse(Buffer.from(value.split('.')[1], 'base64url').toString())
+          console.log(JSON.stringify({
+            repository: claim.repository,
+            workflow_ref: claim.workflow_ref,
+            environment: claim.environment,
+          }, null, 2))
+          NODE
+
       - name: Release from Conventional Commits
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
