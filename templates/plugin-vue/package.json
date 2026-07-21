@@ -10,7 +10,7 @@
     "typecheck": "vue-tsc -b --noEmit"
   },
   "peerDependencies": {
-    "uframe": "*",
+    "@dremchee/uframe": "*",
     "vue": "^3.5.34",
     "zod": "^4.4.3"
   },

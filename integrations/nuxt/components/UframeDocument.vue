@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { PageDocument, ResolveContext } from 'uframe/core'
+import type { PageDocument, ResolveContext } from '@dremchee/uframe/core'
 import type { Component } from 'vue'
-import { fontStylesheetLinks, nameUnnamedStyles, serializeDocumentStyles } from 'uframe/core'
+import { fontStylesheetLinks, nameUnnamedStyles, serializeDocumentStyles } from '@dremchee/uframe/core'
 import { computed } from 'vue'
 import { pageBaseCss } from '../assets/page-base'
 import { useUframeRegistry } from '../composables/useUframeRegistry'

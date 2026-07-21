@@ -27,7 +27,7 @@ You'll point the client at its `index.html` URL.
 ## 2. Mount it
 
 ```ts
-import { createUframeEditor } from 'uframe/embed'
+import { createUframeEditor } from '@dremchee/uframe/embed'
 
 const editor = createUframeEditor({
   target: document.getElementById('editor')!, // a container element

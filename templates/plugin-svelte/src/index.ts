@@ -4,7 +4,7 @@ import './Callout.svelte' // compiling with customElement auto-defines <uf-callo
 // NOTE: targets the planned framework-neutral contract — see
 // docs/plans/plugin-sdk-plan.md. Neutral fields (`element`, `settings`) are
 // declared locally until the neutral SDK lands; then replace with
-// `import { definePlugin, type NeutralBlockDefinition } from 'uframe'`.
+// `import { definePlugin, type NeutralBlockDefinition } from '@dremchee/uframe'`.
 interface HtmlCtx { classes: string, escape: (s: string) => string }
 interface SettingsField {
   key: string

@@ -1,4 +1,4 @@
-import type { PageDocument, ResolveContext } from 'uframe/core'
+import type { PageDocument, ResolveContext } from '@dremchee/uframe/core'
 
 export interface UframePagePayload {
   source: 'directus' | 'sample'

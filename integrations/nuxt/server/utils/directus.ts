@@ -1,5 +1,5 @@
-import type { AssetRef, GlobalSettings, PageBlock, PageDocument, ResolveContext } from 'uframe/core'
-import { assetKey, collectDataRequirements, mergeGlobalsIntoDocument } from 'uframe/core'
+import type { AssetRef, GlobalSettings, PageBlock, PageDocument, ResolveContext } from '@dremchee/uframe/core'
+import { assetKey, collectDataRequirements, mergeGlobalsIntoDocument } from '@dremchee/uframe/core'
 
 // Server-side Directus adapter. Reads the page template stored by the uframe
 // module (`uframe_pages.document`), merges shared globals, then fetches exactly

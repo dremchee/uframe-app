@@ -1,5 +1,5 @@
-import type { BlockDefinition, UframePlugin } from 'uframe'
-import { definePlugin } from 'uframe'
+import type { BlockDefinition, UframePlugin } from '@dremchee/uframe'
+import { definePlugin } from '@dremchee/uframe'
 import { h } from 'vue'
 import CalloutBlock from './CalloutBlock.vue'
 import calloutCss from './CalloutBlock.vue?uframe-css' // <style> lifted to a string

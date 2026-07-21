@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "uframe": "*"
+    "@dremchee/uframe": "*"
   },
   "dependencies": {
     "react": "^19.0.0",

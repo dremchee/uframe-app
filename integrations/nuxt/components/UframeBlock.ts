@@ -1,4 +1,4 @@
-import type { BlockRegistry, PageBlock, ResolveContext, SymbolDefinition } from 'uframe/core'
+import type { BlockRegistry, PageBlock, ResolveContext, SymbolDefinition } from '@dremchee/uframe/core'
 import type { Component, PropType, VNode } from 'vue'
 import {
   assetKey,
@@ -9,7 +9,7 @@ import {
   resolveBindingPath,
   styleClassName,
   SYMBOL_INSTANCE_BLOCK_TYPE,
-} from 'uframe/core'
+} from '@dremchee/uframe/core'
 import { defineComponent, h } from 'vue'
 
 // Recursive, component-based renderer for a published block subtree.

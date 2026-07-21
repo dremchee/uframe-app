@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { PageDocument } from 'uframe'
-import { PageEditor } from 'uframe'
+import type { PageDocument } from '@dremchee/uframe'
+import { PageEditor } from '@dremchee/uframe'
 import { shallowRef } from 'vue'
 // Import the plugin by SOURCE (not the built dist) so Vite HMR applies to the
 // block/settings components while you edit them.
 import { calloutPlugin } from '../src'
-import 'uframe/styles.css'
+import '@dremchee/uframe/styles.css'
 
 const document = shallowRef<PageDocument>()
 </script>

@@ -1,6 +1,6 @@
-import type { BlockRegistry } from 'uframe/core'
-import { defaultBlockDefinitions } from 'uframe/blocks'
-import { createBlockRegistry } from 'uframe/core'
+import type { BlockRegistry } from '@dremchee/uframe/core'
+import { defaultBlockDefinitions } from '@dremchee/uframe/blocks'
+import { createBlockRegistry } from '@dremchee/uframe/core'
 
 // The default block manifest is static, so build the type→definition index once
 // and reuse it for every render (and across SSR requests — it's immutable). The

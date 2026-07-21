@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   // `uframe` ships prebuilt ESM; transpiling lets Nuxt's Vite process the
   // bundled Vue block components (renderComponent) cleanly during SSR.
   build: {
-    transpile: ['uframe'],
+    transpile: ['@dremchee/uframe'],
   },
   runtimeConfig: {
     // Server-only Directus access token (set NUXT_DIRECTUS_TOKEN). Empty →

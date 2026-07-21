@@ -5,7 +5,7 @@ import './register' // defines <uf-callout-react>
 // docs/plans/plugin-sdk-plan.md. The neutral fields (`element`,
 // `settings: 'auto'`) aren't in the current Vue-only BlockDefinition yet, so the
 // types are declared locally here. When the neutral SDK lands, replace this with
-// `import { definePlugin, type NeutralBlockDefinition } from 'uframe'`.
+// `import { definePlugin, type NeutralBlockDefinition } from '@dremchee/uframe'`.
 interface HtmlCtx { classes: string, escape: (s: string) => string }
 interface SettingsField {
   key: string

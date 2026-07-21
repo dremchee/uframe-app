@@ -6,7 +6,7 @@ and drives it over a small typed `postMessage` protocol.
 ## `createUframeEditor(options)`
 
 ```ts
-import { createUframeEditor } from 'uframe/embed'
+import { createUframeEditor } from '@dremchee/uframe/embed'
 
 const editor = createUframeEditor({
   target, // HTMLElement: a container (an <iframe> is created inside) or an existing <iframe>

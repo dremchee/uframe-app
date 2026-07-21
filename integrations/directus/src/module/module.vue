@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { GlobalSettings, PageDocument } from 'uframe/core'
-import type { UframeEditorHandle } from 'uframe/embed'
+import type { GlobalSettings, PageDocument } from '@dremchee/uframe/core'
+import type { UframeEditorHandle } from '@dremchee/uframe/embed'
 import { useApi } from '@directus/extensions-sdk'
-import { createGlobalSettings, createPageDocument } from 'uframe/core'
-import { createUframeEditor } from 'uframe/embed'
+import { createGlobalSettings, createPageDocument } from '@dremchee/uframe/core'
+import { createUframeEditor } from '@dremchee/uframe/embed'
 import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import { useUframeDirectusBridge } from '../shared/useUframeDirectusBridge'
 

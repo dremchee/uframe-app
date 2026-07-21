@@ -23,9 +23,10 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
 
 ## Publishing
 
-Pushing a new `version` from `package.json` to `main` publishes the package via
-GitHub Actions. The workflow skips versions that are already in npm. Configure
-npm Trusted Publishing for `@dremchee/uframe` with this repository and the
+Pushing Conventional Commits to `main` publishes the package via GitHub Actions:
+`fix:` creates a patch release, `feat:` creates a minor release, and
+`BREAKING CHANGE` creates a major release. Configure npm Trusted Publishing for
+`@dremchee/uframe` with this repository and the
 `.github/workflows/publish-npm.yml` workflow before the first automated release.
 
 ## AI review workflow

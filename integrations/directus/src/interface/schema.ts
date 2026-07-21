@@ -1,4 +1,4 @@
-import type { CollectionSchema, FieldSchema, NormalizedSchema, SchemaFieldType } from 'uframe/core'
+import type { CollectionSchema, FieldSchema, NormalizedSchema, SchemaFieldType } from '@dremchee/uframe/core'
 
 // Maps Directus introspection (/collections, /fields, /relations) into uframe's
 // CMS-agnostic NormalizedSchema for the binding picker.

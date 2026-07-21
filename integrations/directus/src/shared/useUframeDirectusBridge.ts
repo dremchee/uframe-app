@@ -1,8 +1,8 @@
-import type { AssetPick, AssetRef, GlobalSettings, PageBlock, PageDocument, ResolveContext } from 'uframe/core'
-import type { UframeEditorHandle } from 'uframe/embed'
+import type { AssetPick, AssetRef, GlobalSettings, PageBlock, PageDocument, ResolveContext } from '@dremchee/uframe/core'
+import type { UframeEditorHandle } from '@dremchee/uframe/embed'
 import type { Ref } from 'vue'
 import { useApi } from '@directus/extensions-sdk'
-import { assetKey, collectDataRequirements } from 'uframe/core'
+import { assetKey, collectDataRequirements } from '@dremchee/uframe/core'
 import { ref } from 'vue'
 import { toNormalizedSchema } from '../interface/schema'
 

@@ -10,7 +10,7 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "peerDependencies": {
-    "uframe": "*"
+    "@dremchee/uframe": "*"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.0",

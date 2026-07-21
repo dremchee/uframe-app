@@ -13,13 +13,13 @@ A document declares **what** data it needs; your adapter fetches it; the core
 maps it in and renders:
 
 ```ts
-import { defaultBlockDefinitions } from 'uframe/blocks'
+import { defaultBlockDefinitions } from '@dremchee/uframe/blocks'
 import {
   collectDataRequirements,
   createBlockRegistry,
   renderDocumentToFragment,
   resolveDocument,
-} from 'uframe/core'
+} from '@dremchee/uframe/core'
 
 const registry = createBlockRegistry(defaultBlockDefinitions)
 

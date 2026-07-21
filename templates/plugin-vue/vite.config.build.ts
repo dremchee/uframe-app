@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-// In a standalone project this is `import { uframeCss } from 'uframe/vite'`.
+// In a standalone project this is `import { uframeCss } from '@dremchee/uframe/vite'`.
 import { uframeCss } from '../../src/vite/uframe-css'
 
 // Build config — produces the runtime artifact `dist/index.js` that the editor
@@ -19,7 +19,7 @@ export default defineConfig({
       fileName: () => 'index.js',
     },
     rollupOptions: {
-      external: ['vue', 'zod', 'uframe', /^uframe\//],
+      external: ['vue', 'zod', '@dremchee/uframe', /^@dremchee\/uframe\//],
     },
   },
 })

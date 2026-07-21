@@ -16,8 +16,8 @@ Blocks come in two flavours:
 
 ```vue
 <script setup lang="ts">
-import { PageEditor } from 'uframe'
-import 'uframe/dist/styles.css'
+import { PageEditor } from '@dremchee/uframe'
+import '@dremchee/uframe/styles.css'
 
 const doc = ref()
 </script>
@@ -70,7 +70,7 @@ A `BlockDefinition` describes one block type — how it renders, its settings UI
 default props, and (optionally) a schema that validates props on load:
 
 ```ts
-import type { BlockDefinition } from 'uframe'
+import type { BlockDefinition } from '@dremchee/uframe'
 
 const calloutBlock: BlockDefinition = {
   type: 'callout',
@@ -133,7 +133,7 @@ just an object, a plugin is an npm package that exports one. Use `definePlugin`
 for type inference:
 
 ```ts
-import { definePlugin } from 'uframe'
+import { definePlugin } from '@dremchee/uframe'
 
 export const brandPlugin = definePlugin({
   name: 'brand',
@@ -203,7 +203,7 @@ rather than a built-in feature, so hosts opt in (and it stays out of the bundle
 until imported):
 
 ```ts
-import { aiPlugin } from 'uframe/plugins/ai'
+import { aiPlugin } from '@dremchee/uframe/plugins/ai'
 ```
 
 ```vue

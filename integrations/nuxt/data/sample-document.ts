@@ -1,4 +1,4 @@
-import type { PageDocument, ResolveContext } from 'uframe/core'
+import type { PageDocument, ResolveContext } from '@dremchee/uframe/core'
 
 // A bundled sample template + the data its dynamic blocks need, so the app
 // renders something meaningful with no CMS wired up. Mirrors what the uframe

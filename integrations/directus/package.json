@@ -32,7 +32,7 @@
     "link": "directus-extension link"
   },
   "dependencies": {
-    "uframe": "workspace:*"
+    "@dremchee/uframe": "workspace:*"
   },
   "devDependencies": {
     "@directus/extensions-sdk": "^13.0.0",

@@ -20,7 +20,7 @@ tokens. The editor translates them to its internal CSS properties, including
 for dialogs and selects rendered through portals:
 
 ```ts
-import { defineEditorTheme } from 'uframe/core'
+import { defineEditorTheme } from '@dremchee/uframe/core'
 
 const uiTheme = defineEditorTheme({
   light: {
