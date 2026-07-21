@@ -1,5 +1,5 @@
 {
-  "name": "@uframe/editor",
+  "name": "@dremchee/uframe",
   "type": "module",
   "version": "0.1.0",
   "description": "Block-based page editor for Vue applications.",
