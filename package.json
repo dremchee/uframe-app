@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/dremchee/uframe-app.git"
   },
-  "homepage": "https://u-frame.ru",
+  "homepage": "https://uframe-app.netlify.app/",
   "bugs": {
     "url": "https://github.com/dremchee/uframe-app/issues"
   },
