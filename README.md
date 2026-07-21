@@ -21,6 +21,13 @@ who it's for, what you'd build, and what it's not.
 
 Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
 
+## Publishing
+
+Pushing a new `version` from `package.json` to `main` publishes the package via
+GitHub Actions. The workflow skips versions that are already in npm. Configure
+npm Trusted Publishing for `@dremchee/uframe` with this repository and the
+`.github/workflows/publish-npm.yml` workflow before the first automated release.
+
 ## AI review workflow
 
 This project includes a local Plannotator setup for reviewing Codex plans and
