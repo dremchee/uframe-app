@@ -986,7 +986,7 @@ describe('usePageEditor', () => {
       })
     })
 
-    it('renaming changes only the label — the key and every var() ref stay put', () => {
+    it('renaming derives a new key and rewrites every var() reference', () => {
       withEditor((editor) => {
         editor.addVariable({ name: 'brand', value: '#14b8a6', type: 'color' })
 
@@ -1009,26 +1009,24 @@ describe('usePageEditor', () => {
 
         expect(editor.renameVariable(0, 'Primary brand')).toBe(true)
 
-        // label updated, CSS key frozen
-        expect(editor.variables.value[0]).toMatchObject({ key: 'brand', name: 'Primary brand' })
-        // every reference is untouched — the point of a stable key
+        expect(editor.variables.value[0]).toMatchObject({ key: 'primary-brand', name: 'Primary brand' })
         const block = findBlock(editor.document.value.blocks, id)!
-        expect(block.style?.color).toBe('var(--brand)')
-        expect(block.style?.states?.hover?.backgroundColor).toBe('var(--brand)')
-        expect(editor.document.value.styles?.card?.borderColor).toBe('var(--brand)')
-        expect(editor.document.value.settings.style?.backgroundColor).toBe('var(--brand)')
+        expect(block.style?.color).toBe('var(--primary-brand)')
+        expect(block.style?.states?.hover?.backgroundColor).toBe('var(--primary-brand)')
+        expect(editor.document.value.styles?.card?.borderColor).toBe('var(--primary-brand)')
+        expect(editor.document.value.settings.style?.backgroundColor).toBe('var(--primary-brand)')
       })
     })
 
-    it('renaming does not touch references held by other variables', () => {
+    it('renaming updates references held by other variables', () => {
       withEditor((editor) => {
         editor.addVariable({ name: 'brand', value: '#14b8a6', type: 'color' })
         editor.addVariable({ name: 'accent', value: 'var(--brand)', type: 'color' })
 
         editor.renameVariable(0, 'Primary')
 
-        expect(editor.variables.value[0]).toMatchObject({ key: 'brand', name: 'Primary' })
-        expect(editor.variables.value[1]?.value).toBe('var(--brand)')
+        expect(editor.variables.value[0]).toMatchObject({ key: 'primary', name: 'Primary' })
+        expect(editor.variables.value[1]?.value).toBe('var(--primary)')
       })
     })
 
@@ -1043,7 +1041,7 @@ describe('usePageEditor', () => {
         editor.renameVariable(0, 'Primary')
 
         const master = editor.document.value.symbols![symbolId]
-        expect(master.root.style?.color).toBe('var(--brand)')
+        expect(master.root.style?.color).toBe('var(--primary)')
       })
     })
 
@@ -1136,7 +1134,7 @@ describe('usePageEditor', () => {
       })
     })
 
-    it('renaming a variable changes only its label on the globals — refs stay put', () => {
+    it('renaming a shared variable rewrites references in the active document', () => {
       withGlobalsEditor((editor) => {
         editor.addVariable({ name: 'brand', value: '#14b8a6', type: 'color' })
         editor.addBlock('heading')
@@ -1144,9 +1142,8 @@ describe('usePageEditor', () => {
         editor.updateBlockStyle(id, { color: 'var(--brand)' })
 
         expect(editor.renameVariable(0, 'Primary')).toBe(true)
-        expect(editor.globals.value!.variables?.[0]).toMatchObject({ key: 'brand', name: 'Primary' })
-        // the document reference is untouched — stable key, cross-page safe
-        expect(findBlock(editor.document.value.blocks, id)?.style?.color).toBe('var(--brand)')
+        expect(editor.globals.value!.variables?.[0]).toMatchObject({ key: 'primary', name: 'Primary' })
+        expect(findBlock(editor.document.value.blocks, id)?.style?.color).toBe('var(--primary)')
 
         // undo reverts the label on the globals
         editor.undo()

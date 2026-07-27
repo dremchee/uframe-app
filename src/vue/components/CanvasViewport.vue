@@ -2,7 +2,7 @@
 import type { CanvasDropIndicator } from '@/vue/composables/canvas/useCanvasDropOverlay'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Component as ComponentIcon, GripVertical, Plus } from '@lucide/vue'
-import { useEventListener } from '@vueuse/core'
+import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { computed, h, nextTick, render, shallowRef, useTemplateRef, watch } from 'vue'
 import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigger } from '@/components/ui'
 import { findBlock, findBlockParentId, isDescendantOf } from '@/core'
@@ -29,6 +29,7 @@ const { t } = i18n
 const frameRef = useTemplateRef<HTMLIFrameElement>('frameRef')
 const overlayRef = useTemplateRef<HTMLElement>('overlayRef')
 const canvasPaneRef = useTemplateRef<HTMLElement>('canvasPaneRef')
+const canvasFrameRef = useTemplateRef<HTMLElement>('canvasFrameRef')
 const selectionHandleRef = useTemplateRef<HTMLElement>('selectionHandleRef')
 const { iframeDoc, iframeWin, renderFrame } = useCanvasFrame({
   frame: frameRef,
@@ -218,6 +219,85 @@ function closeInsertMenu() {
   isInsertMenuOpen.value = false
 }
 
+// ── Manual canvas-width resize ─────────────────────────────────────────────
+
+type CanvasResizeSide = 'left' | 'right'
+
+const canvasResize = shallowRef<{ pointerId: number, side: CanvasResizeSide, startX: number, startWidth: number } | null>(null)
+const isResizeHandleHovered = shallowRef(false)
+const actualCanvasWidth = shallowRef<number | null>(null)
+const MIN_CANVAS_WIDTH = 320
+const resizeHandlePlacement = shallowRef({ leftInside: false, rightInside: false })
+const RESIZE_HANDLE_INSIDE_OFFSET = 4
+const RESIZE_HANDLE_OUTSIDE_OFFSET = 8
+const RESIZE_HANDLE_HIT_WIDTH = 12
+const RESIZE_HANDLE_OUTSET = RESIZE_HANDLE_HIT_WIDTH
+
+function updateResizeHandlePlacement() {
+  const pane = canvasPaneRef.value
+  const frame = canvasFrameRef.value
+  if (!pane || !frame)
+    return
+  const paneRect = pane.getBoundingClientRect()
+  const frameRect = frame.getBoundingClientRect()
+  actualCanvasWidth.value = Math.round(frameRect.width)
+  resizeHandlePlacement.value = {
+    leftInside: frameRect.left - paneRect.left < RESIZE_HANDLE_OUTSET,
+    rightInside: paneRect.right - frameRect.right < RESIZE_HANDLE_OUTSET,
+  }
+}
+
+const resizeHandleClass = 'group absolute top-1/2 z-30 h-7 w-[12px] -translate-y-1/2 cursor-col-resize touch-none outline-none focus-visible:ring-1 focus-visible:ring-uf-accent'
+
+function resizeHandleStyle(side: CanvasResizeSide) {
+  const isInside = side === 'left' ? resizeHandlePlacement.value.leftInside : resizeHandlePlacement.value.rightInside
+  const position = isInside ? 0 : -RESIZE_HANDLE_HIT_WIDTH
+  return side === 'left' ? { left: `${position}px` } : { right: `${position}px` }
+}
+
+function resizeHandleStripStyle(side: CanvasResizeSide) {
+  const isInside = side === 'left' ? resizeHandlePlacement.value.leftInside : resizeHandlePlacement.value.rightInside
+  const offset = isInside ? RESIZE_HANDLE_INSIDE_OFFSET : RESIZE_HANDLE_OUTSIDE_OFFSET
+  if (side === 'left')
+    return isInside ? { left: `${offset}px` } : { right: `${offset}px` }
+  return isInside ? { right: `${offset}px` } : { left: `${offset}px` }
+}
+
+useResizeObserver(canvasPaneRef, updateResizeHandlePlacement)
+useResizeObserver(canvasFrameRef, updateResizeHandlePlacement)
+watch([canvasPaneRef, canvasFrameRef, () => editor.canvasWidth.value, () => editor.isCanvasResizeMode.value], () => {
+  void nextTick(updateResizeHandlePlacement)
+}, { immediate: true, flush: 'post' })
+
+function onCanvasResizeStart(event: PointerEvent, side: CanvasResizeSide) {
+  const frame = canvasFrameRef.value
+  if (!frame)
+    return
+  canvasResize.value = {
+    pointerId: event.pointerId,
+    side,
+    startX: event.clientX,
+    startWidth: frame.getBoundingClientRect().width,
+  }
+  const handle = event.currentTarget as HTMLElement
+  handle.setPointerCapture(event.pointerId)
+}
+
+function onCanvasResizeMove(event: PointerEvent) {
+  const resize = canvasResize.value
+  const pane = canvasPaneRef.value
+  if (!resize || resize.pointerId !== event.pointerId || !pane)
+    return
+  const delta = event.clientX - resize.startX
+  const nextWidth = resize.startWidth + (resize.side === 'right' ? delta : -delta)
+  editor.setCustomWidth(Math.min(pane.clientWidth, Math.max(MIN_CANVAS_WIDTH, nextWidth)))
+}
+
+function onCanvasResizeEnd(event: PointerEvent) {
+  if (canvasResize.value?.pointerId === event.pointerId)
+    canvasResize.value = null
+}
+
 // ── Selection badge as a drag-handle ────────────────────────────────────────
 
 // The selection name badge doubles as a drag handle: dragging it reorders the
@@ -286,9 +366,15 @@ const {
 </script>
 
 <template>
-  <section ref="canvasPaneRef" class="flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+  <section ref="canvasPaneRef" class="relative flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
     <div
-      class="relative flex-1 min-h-0 mx-auto bg-uf-panel overflow-hidden"
+      ref="canvasFrameRef"
+      :class="[
+        'relative flex-1 min-h-0 mx-auto bg-uf-panel',
+        editor.isCanvasResizeMode.value && (isResizeHandleHovered
+          ? 'ring-2 ring-uf-accent ring-offset-2 ring-offset-uf-bg'
+          : 'ring-1 ring-uf-border-strong ring-offset-2 ring-offset-uf-bg'),
+      ]"
       :style="{ width: canvasWidthStyle, backgroundColor: editor.effectiveDocument.value.settings.background }"
     >
       <iframe
@@ -297,6 +383,36 @@ const {
         :style="{ pointerEvents: isDragging ? 'none' : undefined }"
         :title="t('canvas.pageCanvas')"
       />
+      <template v-if="editor.isCanvasResizeMode.value">
+        <button
+          type="button"
+          :class="resizeHandleClass"
+          :style="resizeHandleStyle('left')"
+          :aria-label="t('toolbar.resizeCanvas')"
+          @pointerdown.prevent.stop="onCanvasResizeStart($event, 'left')"
+          @pointermove="onCanvasResizeMove"
+          @pointerup="onCanvasResizeEnd"
+          @lostpointercapture="onCanvasResizeEnd"
+          @mouseenter="isResizeHandleHovered = true"
+          @mouseleave="isResizeHandleHovered = false"
+        >
+          <span :style="resizeHandleStripStyle('left')" class="absolute top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-uf-muted opacity-60 transition-[background-color,opacity] group-hover:bg-uf-accent group-hover:opacity-100" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          :class="resizeHandleClass"
+          :style="resizeHandleStyle('right')"
+          :aria-label="t('toolbar.resizeCanvas')"
+          @pointerdown.prevent.stop="onCanvasResizeStart($event, 'right')"
+          @pointermove="onCanvasResizeMove"
+          @pointerup="onCanvasResizeEnd"
+          @lostpointercapture="onCanvasResizeEnd"
+          @mouseenter="isResizeHandleHovered = true"
+          @mouseleave="isResizeHandleHovered = false"
+        >
+          <span :style="resizeHandleStripStyle('right')" class="absolute top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-uf-muted opacity-60 transition-[background-color,opacity] group-hover:bg-uf-accent group-hover:opacity-100" aria-hidden="true" />
+        </button>
+      </template>
       <!-- In-place component editing: a dark island banner stuck over the canvas
            (absolute), bottom-centered, above the dim scrim. -->
       <Alert
@@ -535,7 +651,14 @@ const {
           :style="indicatorStyle ?? undefined"
         />
       </div>
-      <CanvasBreadcrumbs v-if="!isDragging && !editor.isPreviewMode.value" />
     </div>
+    <CanvasBreadcrumbs v-if="!isDragging && !editor.isPreviewMode.value" />
+    <output
+      v-if="editor.isCanvasResizeMode.value && actualCanvasWidth != null"
+      class="absolute bottom-2 right-2 z-20 rounded-md bg-uf-panel/95 px-2 py-1 text-[11px] font-medium tabular-nums text-uf-muted shadow-pb backdrop-blur-sm"
+      :aria-label="`${actualCanvasWidth} px`"
+    >
+      {{ actualCanvasWidth }} px
+    </output>
   </section>
 </template>

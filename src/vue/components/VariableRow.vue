@@ -86,8 +86,7 @@ useRowReorderDnd({
       class="shrink-0 size-4 rounded-sm border border-input"
       :style="{ backgroundColor: variable.value || 'transparent' }"
     />
-    <!-- The css custom property (--key) usually mirrors the name — it lives
-         in the hover title instead of duplicating the label in the row. -->
+    <!-- The CSS custom property lives in the hover title. -->
     <span class="shrink-0 max-w-[40%] truncate text-xs text-uf-text" :title="`--${variable.key}`">{{ variable.name }}</span>
     <span class="flex-1 min-w-0 truncate text-right text-xs text-uf-muted">{{ variable.value || '—' }}</span>
     <span class="shrink-0 text-[10px] uppercase tracking-wide text-uf-muted">{{ variable.type }}</span>

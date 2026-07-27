@@ -12,19 +12,23 @@ function createVariables(globalsValue: GlobalSettings | null = null) {
     globals,
     commit: (next) => { document.value = next },
     commitGlobals: (next) => { globals.value = next },
+    commitBoth: (nextDocument, nextGlobals) => {
+      document.value = nextDocument
+      globals.value = nextGlobals
+    },
   })
   return { document, globals, variables }
 }
 
 describe('useEditorVariables', () => {
-  it('keeps the generated CSS key stable while changing the display name', () => {
+  it('derives a new CSS key from the display name when renaming', () => {
     const state = createVariables()
     const key = state.variables.addVariable({ name: 'Brand color', value: '#14b8a6' })
 
     expect(key).toBe('Brand-color')
     expect(state.variables.renameVariable(0, 'Primary brand')).toBe(true)
     expect(state.variables.variables.value).toEqual([{
-      key: 'Brand-color',
+      key: 'primary-brand',
       name: 'Primary brand',
       value: '#14b8a6',
       type: 'color',

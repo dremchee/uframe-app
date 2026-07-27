@@ -12,7 +12,7 @@ describe('useEditorViewport', () => {
 
     viewport.setEditBreakpoint('narrow')
     expect(viewport.canvasWidth.value).toBe(720)
-    viewport.customWidth.value = 640
+    viewport.setCustomWidth(640)
     expect(viewport.canvasWidth.value).toBe(640)
   })
 
@@ -27,5 +27,41 @@ describe('useEditorViewport', () => {
 
     expect(editBreakpoint.value).toBe('tablet')
     expect(viewport.viewport.value).toBe('tablet')
+  })
+
+  it('keeps manual canvas resizing as editor-only state', () => {
+    const viewport = useEditorViewport({
+      editBreakpoint: shallowRef<'base'>('base'),
+      breakpoints: shallowRef([]),
+    })
+
+    viewport.setCanvasResizeMode(true)
+    viewport.setCustomWidth(641.6)
+
+    expect(viewport.isCanvasResizeMode.value).toBe(true)
+    expect(viewport.customWidth.value).toBe(642)
+    expect(viewport.canvasWidth.value).toBe(642)
+  })
+
+  it('constrains a manual width to the active breakpoint interval', () => {
+    const editBreakpoint = shallowRef<'base' | 'tablet' | 'mobile' | 'wide'>('base')
+    const viewport = useEditorViewport({
+      editBreakpoint,
+      breakpoints: shallowRef([
+        { id: 'wide', label: 'Wide', direction: 'min', width: 1440 },
+        { id: 'tablet', label: 'Tablet', direction: 'max', width: 1024 },
+        { id: 'mobile', label: 'Mobile', direction: 'max', width: 768 },
+      ]),
+    })
+
+    viewport.setEditBreakpoint('tablet')
+    viewport.setCustomWidth(700)
+    expect(viewport.canvasWidth.value).toBe(769)
+    viewport.setCustomWidth(1200)
+    expect(viewport.canvasWidth.value).toBe(1024)
+
+    viewport.setEditBreakpoint('wide')
+    viewport.setCustomWidth(1200)
+    expect(viewport.canvasWidth.value).toBe(1440)
   })
 })

@@ -80,7 +80,7 @@ const emit = defineEmits<{
   error: [errors: string[]]
   draftRestored: [document: PageDocument]
   /** Public UI state for embedding hosts. */
-  stateChange: [state: Pick<UframeEditorState, 'viewport' | 'preview' | 'theme'>]
+  stateChange: [state: Pick<UframeEditorState, 'viewport' | 'preview' | 'canvasResizeMode' | 'theme'>]
 }>()
 
 const model = defineModel<PageDocument>()
@@ -206,13 +206,17 @@ function setTheme(theme: EditorTheme) {
 function setPreview(preview: boolean) {
   editor.isPreviewMode.value = preview
 }
+function setCanvasResizeMode(enabled: boolean) {
+  editor.setCanvasResizeMode(enabled)
+}
 function openAddBreakpoint() {
   editorShell.value?.openAddBreakpoint()
 }
-function getState(): Pick<UframeEditorState, 'viewport' | 'preview' | 'theme'> {
+function getState(): Pick<UframeEditorState, 'viewport' | 'preview' | 'canvasResizeMode' | 'theme'> {
   return {
     viewport: editor.editBreakpoint.value,
     preview: editor.isPreviewMode.value,
+    canvasResizeMode: editor.isCanvasResizeMode.value,
     theme: editor.storage.value.theme,
   }
 }
@@ -223,12 +227,13 @@ defineExpose({
   setViewport: editor.setViewport,
   setEditBreakpoint: editor.setEditBreakpoint,
   setPreview,
+  setCanvasResizeMode,
   openAddBreakpoint,
   getState,
 })
 
 watch(
-  [editor.editBreakpoint, editor.isPreviewMode, () => editor.storage.value.theme],
+  [editor.editBreakpoint, editor.isPreviewMode, editor.isCanvasResizeMode, () => editor.storage.value.theme],
   () => emit('stateChange', getState()),
 )
 

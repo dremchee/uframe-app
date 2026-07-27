@@ -151,12 +151,15 @@ export function usePageEditor(options: UsePageEditorOptions = {}) {
   const editorViewport = useEditorViewport({ breakpoints, editBreakpoint })
   const {
     isPreviewMode,
+    isCanvasResizeMode,
     viewport,
     customWidth,
     canvasWidth,
     spacingOverlay,
     setViewport,
     setEditBreakpoint,
+    setCanvasResizeMode,
+    setCustomWidth,
     setSpacingOverlay,
   } = editorViewport
 
@@ -249,7 +252,7 @@ export function usePageEditor(options: UsePageEditorOptions = {}) {
     movePage,
   } = editorPages
 
-  const editorVariables = useEditorVariables({ document, globals, commit, commitGlobals })
+  const editorVariables = useEditorVariables({ document, globals, commit, commitGlobals, commitBoth })
   const {
     variables,
     addVariable,
@@ -489,6 +492,7 @@ export function usePageEditor(options: UsePageEditorOptions = {}) {
     setHoveredBlock,
     selectedBlock,
     isPreviewMode,
+    isCanvasResizeMode,
     viewport,
     setViewport,
     customWidth,
@@ -500,6 +504,8 @@ export function usePageEditor(options: UsePageEditorOptions = {}) {
     resetBreakpoints,
     editBreakpoint,
     setEditBreakpoint,
+    setCanvasResizeMode,
+    setCustomWidth,
     spacingOverlay,
     setSpacingOverlay,
     beginTransient,

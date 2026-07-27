@@ -1,13 +1,14 @@
 import type { ShallowRef } from 'vue'
 import type { CssVariable, GlobalSettings, PageDocument } from '@/core'
 import { computed } from 'vue'
-import { appendListItem, createUniqueName, moveListItem, removeListItem, replaceListItem, sanitizeVarName } from '@/core'
+import { appendListItem, createUniqueName, moveListItem, removeListItem, replaceListItem, rewriteStyleVarRefs, sanitizeVarName } from '@/core'
 
 export interface UseEditorVariablesOptions {
   document: ShallowRef<PageDocument>
   globals: ShallowRef<GlobalSettings | null>
   commit: (document: PageDocument, label?: string, coalesce?: boolean) => void
   commitGlobals: (globals: GlobalSettings, label?: string, coalesce?: boolean) => void
+  commitBoth: (document: PageDocument, globals: GlobalSettings, label?: string) => void
 }
 
 /**
@@ -15,7 +16,7 @@ export interface UseEditorVariablesOptions {
  * available; otherwise they remain local to the active page document.
  */
 export function useEditorVariables(options: UseEditorVariablesOptions) {
-  const { document, globals, commit, commitGlobals } = options
+  const { document, globals, commit, commitGlobals, commitBoth } = options
   const variables = computed<CssVariable[]>(() =>
     globals.value ? (globals.value.variables ?? []) : (document.value.variables ?? []),
   )
@@ -27,8 +28,6 @@ export function useEditorVariables(options: UseEditorVariablesOptions) {
       commit({ ...document.value, variables: next })
   }
 
-  // The CSS key never changes after creation, so existing var(--key)
-  // references survive a display-name edit.
   function addVariable(input: Partial<CssVariable> = {}): string {
     const type = input.type ?? 'color'
     const base = sanitizeVarName(input.name ?? input.key ?? '') || sanitizeVarName(`var-${variables.value.length + 1}`) || 'var'
@@ -49,15 +48,34 @@ export function useEditorVariables(options: UseEditorVariablesOptions) {
       if (!label)
         return false
       next.name = label
+      // The display label is the source of truth for the custom-property name.
+      // CSS identifiers are lowercase kebab-case; an invalid label keeps the
+      // existing key, so an already usable variable cannot become invalid.
+      const base = sanitizeVarName(label).toLowerCase() || current.key
+      next.key = createUniqueName(base, variables.value.filter((_, candidateIndex) => candidateIndex !== index).map(variable => variable.key))
     }
     if (patch.value !== undefined)
       next.value = patch.value
     if (patch.type !== undefined)
       next.type = patch.type
-    if (next.name === current.name && next.value === current.value && next.type === current.type)
+    if (next.key === current.key && next.name === current.name && next.value === current.value && next.type === current.type)
       return true
 
-    commitVariables(replaceListItem(variables.value, index, next))
+    const nextVariables = rewriteStyleVarRefs(replaceListItem(variables.value, index, next), current.key, next.key)
+    if (next.key === current.key) {
+      commitVariables(nextVariables)
+      return true
+    }
+
+    // Changing the CSS key also updates every current var(--key) reference,
+    // including nested state, class and symbol styles.
+    const rewrittenDocument = rewriteStyleVarRefs(document.value, current.key, next.key)
+    if (globals.value) {
+      commitBoth(rewrittenDocument, { ...globals.value, variables: nextVariables })
+    }
+    else {
+      commit({ ...rewrittenDocument, variables: nextVariables })
+    }
     return true
   }
 

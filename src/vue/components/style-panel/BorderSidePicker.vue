@@ -35,7 +35,7 @@ function isModified(side: Side) {
 function sideBtnClass(side: SelectedSide) {
   return cn(
     'inline-flex items-center justify-center size-9 rounded-lg cursor-pointer transition-colors',
-    isActive(side) ? 'bg-uf-accent/10' : 'hover:bg-white',
+    isActive(side) ? 'bg-uf-accent/10' : 'hover:bg-uf-panel-muted',
   )
 }
 

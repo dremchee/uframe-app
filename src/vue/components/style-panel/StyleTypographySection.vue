@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BaseBlockStyles } from '@/core'
 import { computed } from 'vue'
-import { ColorInput, NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput } from '@/components/ui'
+import { AdvancedSizeInput, ColorInput, NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput } from '@/components/ui'
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
 import { useUframeI18n } from '@/vue/i18n'
 import BindableField from './BindableField.vue'
@@ -52,7 +52,7 @@ function updateFontWeight(value: number | undefined) {
       <StyleField :label="t('style.fontSize')" field="fontSize">
         <BindableField type="size" :model-value="styles.fontSize ?? ''" @update:model-value="value => update({ fontSize: value })">
           <template #default="{ value, setValue, requestBind }">
-            <SizeInput bindable :model-value="value" :placeholder="inheritedPh('fontSize', '16')" @request-bind="requestBind" @update:model-value="setValue" />
+            <AdvancedSizeInput bindable :model-value="value" :placeholder="inheritedPh('fontSize', '16px')" @request-bind="requestBind" @update:model-value="setValue" />
           </template>
         </BindableField>
       </StyleField>

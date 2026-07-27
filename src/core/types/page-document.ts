@@ -22,9 +22,9 @@ export type CssVarType = 'color' | 'size' | 'number' | 'font' | 'shadow' | 'othe
 
 export interface CssVariable {
   /**
-   * Stable CSS identifier (stored without the leading `--`), frozen at creation
-   * and used in `var(--key)` references. Renaming a variable edits `name` (the
-   * display label) only — never this — so references never break. Unique per set.
+   * CSS identifier (stored without the leading `--`) used in `var(--key)`
+   * references. It follows the display label; a rename updates references in
+   * the current document. Unique per set.
    */
   key: string
   /** Editable display label shown in the Variables panel + token pickers. */

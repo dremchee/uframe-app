@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EditorTheme } from '@/vue/composables/editor/useEditorStorage'
-import { Check, CircleAlert, Edit3, Eye, MonitorSmartphone, Moon, Sun, SunMoon } from '@lucide/vue'
+import { Check, CircleAlert, Edit3, Eye, MonitorSmartphone, Moon, ScanLine, Sun, SunMoon } from '@lucide/vue'
 import { computed } from 'vue'
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, Tooltip } from '@/components/ui'
 import { breakpointRangeLabel, breakpointUpperBound } from '@/core'
@@ -112,6 +112,19 @@ const savedLabel = computed(() => {
           </SelectItem>
         </SelectContent>
       </Select>
+      <Tooltip :text="editor.isCanvasResizeMode.value ? t('toolbar.resizeCanvasStop') : t('toolbar.resizeCanvas')">
+        <Button
+          variant="outline"
+          size="icon"
+          type="button"
+          :aria-label="editor.isCanvasResizeMode.value ? t('toolbar.resizeCanvasStop') : t('toolbar.resizeCanvas')"
+          :aria-pressed="editor.isCanvasResizeMode.value"
+          :class="editor.isCanvasResizeMode.value && 'border-uf-accent bg-uf-accent/10 text-uf-accent'"
+          @click="editor.setCanvasResizeMode(!editor.isCanvasResizeMode.value)"
+        >
+          <ScanLine />
+        </Button>
+      </Tooltip>
       <Tooltip :text="t('toolbar.theme', { name: THEME_LABEL[editor.storage.value.theme] })">
         <Button
           variant="outline"

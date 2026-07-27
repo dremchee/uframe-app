@@ -13,6 +13,7 @@ export type UframeTheme = 'light' | 'dark' | 'system'
 export interface UframeEditorState {
   viewport: StyleViewport
   preview: boolean
+  canvasResizeMode: boolean
   toolbarVisible: boolean
   readonly: boolean
   theme: UframeTheme

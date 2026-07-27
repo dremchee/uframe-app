@@ -41,7 +41,8 @@ const editorRef = ref<{
   setEditBreakpoint: (breakpoint: StyleViewport) => void
   openAddBreakpoint: () => void
   setPreview: (preview: boolean) => void
-  getState: () => Pick<UframeEditorState, 'viewport' | 'preview' | 'theme'>
+  setCanvasResizeMode: (enabled: boolean) => void
+  getState: () => Pick<UframeEditorState, 'viewport' | 'preview' | 'canvasResizeMode' | 'theme'>
 } | null>(null)
 
 function post(message: WithoutVersion<EditorMessage>) {
@@ -56,6 +57,7 @@ function currentState(): UframeEditorState {
   return {
     viewport: editorState?.viewport ?? 'base',
     preview: editorState?.preview ?? false,
+    canvasResizeMode: editorState?.canvasResizeMode ?? false,
     theme: editorState?.theme ?? 'light',
     toolbarVisible: toolbarVisible.value,
     readonly: readonly.value,
@@ -81,6 +83,8 @@ function applyState(state: Partial<UframeEditorState>) {
     editorRef.value?.setEditBreakpoint(state.viewport)
   if (state.preview !== undefined)
     editorRef.value?.setPreview(state.preview)
+  if (state.canvasResizeMode !== undefined)
+    editorRef.value?.setCanvasResizeMode(state.canvasResizeMode)
   if (state.theme !== undefined)
     editorRef.value?.setTheme(state.theme)
 }
