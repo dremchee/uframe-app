@@ -13,7 +13,7 @@
     [
       "@semantic-release/exec",
       {
-        "publishCmd": "npm publish --provenance"
+        "publishCmd": "npm publish --access public --provenance"
       }
     ],
     [
