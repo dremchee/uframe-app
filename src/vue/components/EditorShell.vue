@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SidebarPanelAction } from '@/vue/composables/ui/useSidebar'
 import { nextTick, useTemplateRef, watch } from 'vue'
 import {
   ResizableHandle,
@@ -14,7 +15,6 @@ import SidebarPanels from '@/vue/components/SidebarPanels.vue'
 import SidebarRail from '@/vue/components/SidebarRail.vue'
 import { useEditorShellLayout } from '@/vue/composables/ui/useEditorShellLayout'
 import { useSidebar } from '@/vue/composables/ui/useSidebar'
-import type { SidebarPanelAction } from '@/vue/composables/ui/useSidebar'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 
@@ -49,6 +49,13 @@ watch(() => editor.revealInTreeRequest.value?.nonce, (nonce) => {
 // thickens the line to 3px accent — drawn over the 1px footprint so the panel
 // never resizes, matching ResizableHandle.
 const RESIZE_HANDLE = 'z-20 w-px shrink-0 cursor-col-resize bg-uf-border transition-colors after:absolute after:z-20 after:inset-y-0 after:left-1/2 after:w-2.5 after:-translate-x-1/2 before:absolute before:z-20 before:inset-y-0 before:left-1/2 before:w-[3px] before:-translate-x-1/2 before:content-[""] before:bg-transparent before:transition-colors hover:before:bg-uf-accent'
+
+// Keep the inspector compact on wide screens while preserving drag-resize.
+// Reka's px sizing is the splitter equivalent of clamp(320px, 380px, 480px):
+// the canvas takes the remaining relative space and the inspector stays fixed.
+const PROPERTIES_PANEL_DEFAULT_WIDTH = 380
+const PROPERTIES_PANEL_MIN_WIDTH = 320
+const PROPERTIES_PANEL_MAX_WIDTH = 480
 
 const {
   startPanelResize,
@@ -120,13 +127,18 @@ defineExpose({ openAddBreakpoint, runPanelAction })
           auto-save-id="uf-editor-shell-v2"
           class="h-full"
         >
-          <ResizablePanel :default-size="73" :min-size="40">
+          <ResizablePanel :min-size="40">
             <main class="h-full min-w-0 min-h-0 overflow-hidden">
               <CanvasViewport />
             </main>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel :default-size="27" :min-size="18" :max-size="50">
+          <ResizablePanel
+            size-unit="px"
+            :default-size="PROPERTIES_PANEL_DEFAULT_WIDTH"
+            :min-size="PROPERTIES_PANEL_MIN_WIDTH"
+            :max-size="PROPERTIES_PANEL_MAX_WIDTH"
+          >
             <ResizablePanelGroup
               direction="vertical"
               auto-save-id="uf-properties-css-preview-v1"
