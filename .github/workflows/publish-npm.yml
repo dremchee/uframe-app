@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      recovery_version:
+        description: Existing package version to publish after a failed release
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -16,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.recovery_version != '' && format('v{0}', inputs.recovery_version) || github.sha }}
 
       - uses: pnpm/action-setup@v4
         with:
@@ -54,7 +61,29 @@ jobs:
           }, null, 2))
           NODE
 
+      - name: Verify recovery version
+        if: github.event_name == 'workflow_dispatch' && inputs.recovery_version != ''
+        env:
+          RECOVERY_VERSION: ${{ inputs.recovery_version }}
+        run: |
+          package_version="$(node --input-type=module -e "import packageJson from './package.json' with { type: 'json' }; console.log(packageJson.version)")"
+
+          if [ "$package_version" != "$RECOVERY_VERSION" ]; then
+            echo "::error::package.json contains $package_version, not $RECOVERY_VERSION"
+            exit 1
+          fi
+
+          if npm view "@dremchee/uframe@$RECOVERY_VERSION" version >/dev/null 2>&1; then
+            echo "::error::@dremchee/uframe@$RECOVERY_VERSION is already published"
+            exit 1
+          fi
+
+      - name: Publish existing version
+        if: github.event_name == 'workflow_dispatch' && inputs.recovery_version != ''
+        run: npm publish --access public
+
       - name: Release from Conventional Commits
+        if: github.event_name != 'workflow_dispatch' || inputs.recovery_version == ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx --yes --package semantic-release@24 --package @semantic-release/exec --package @semantic-release/git semantic-release
