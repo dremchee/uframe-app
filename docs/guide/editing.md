@@ -17,11 +17,6 @@ or replace block types — see [Extending the editor](./extending).
 Select a block to edit it in the **Properties** panel, which splits into a
 **Content** tab (block props) and a **Style** tab.
 
-The Properties panel uses a stable pixel width instead of scaling with the
-editor viewport. It opens at `380px`, can be resized between `320px` and
-`480px`, and keeps the chosen width while the canvas takes the remaining
-space.
-
 ## Layout: flex & grid
 
 Selecting a block reveals its layout controls in the Style panel, and the canvas
