@@ -18,8 +18,8 @@ const props = defineProps<{
   /**
    * Render a built-in trigger icon on the right edge of the control. Used by
    * controls without a natural slot for the action (ColorInput, text Input).
-   * SizeInput instead surfaces the action inside its unit dropdown and drives
-   * the picker through the exposed `requestBind` slot prop.
+   * SizeInput renders its own adjacent binding action and drives the picker
+   * through the exposed `requestBind` slot prop.
    */
   iconTrigger?: boolean
 }>()

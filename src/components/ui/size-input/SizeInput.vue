@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<{
   /** Initial unit (a CSS_UNITS value) used while the field is empty. */
   defaultUnit?: string
   units?: CssUnitOption[]
-  /** Add a "Variable…" action to the unit dropdown (emits `request-bind`). */
+  /** Add a variable-binding action to the unit dropdown (emits `request-bind`). */
   bindable?: boolean
   /** Reject (don't commit) numbers below this — e.g. 0 for sizes that can't go negative. */
   min?: number
@@ -38,6 +38,10 @@ const unitOptions = computed(() => props.units ?? CSS_UNITS)
 
 const number = ref('')
 const unit = ref(props.defaultUnit)
+const hasSelectedUnit = computed(() => unit.value !== '—')
+const unitTriggerClass = computed(() => [
+  !hasSelectedUnit.value && 'w-7 px-0 [&>span]:hidden',
+].filter(Boolean).join(' '))
 
 // Controlled from the outside: re-derive number/unit whenever the model changes.
 // An empty value keeps the last chosen unit so the field still remembers it, and
@@ -99,10 +103,12 @@ function onUnit(value: unknown) {
       :aria-invalid="invalid || undefined"
       @update:model-value="onNumber"
     />
-    <!-- With a real choice, a Select; when the unit is locked to a single option
-         (e.g. a px-only field) it's a static label — no chevron, saves space. -->
     <Select v-if="unitOptions.length > 1 || bindable" :model-value="unit" @update:model-value="onUnit">
-      <SelectTrigger class="w-auto shrink-0 h-auto rounded-none border-0 shadow-none focus:ring-0 pl-1.5 pr-2 gap-0.5 text-uf-muted [&>svg]:size-3 [&>svg]:opacity-60">
+      <SelectTrigger
+        class="w-auto shrink-0 h-auto rounded-none border-0 shadow-none focus:ring-0 pl-1.5 pr-2 gap-0.5 text-uf-muted [&>svg]:size-3 [&>svg]:opacity-60"
+        :class="unitTriggerClass"
+        aria-label="Select unit"
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent class="min-w-14">

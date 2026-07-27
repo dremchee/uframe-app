@@ -3,8 +3,7 @@ import type { FlexBox, GridBox, Rect, SpacingBox } from './canvas-overlay-types'
 import type { CanvasDropIndicator } from './useCanvasDropOverlay'
 import type { PageEditorInstance } from '@/vue/context/editor-context'
 import { computed } from 'vue'
-import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, findBlock, parseCssPixels, SYMBOL_INSTANCE_BLOCK_TYPE } from '@/core'
-import { findRenderedBlockElement } from '@/vue/utils/canvas-dom'
+import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, findBlock, SYMBOL_INSTANCE_BLOCK_TYPE } from '@/core'
 
 interface SpacingBand {
   key: string
@@ -18,7 +17,6 @@ interface SpacingBand {
 export interface UseCanvasOverlayPresentationOptions {
   editor: PageEditorInstance
   frameRef: Ref<HTMLIFrameElement | null>
-  iframeWin: Ref<Window | null>
   indicator: Ref<CanvasDropIndicator | null>
   selectionRect: Ref<Rect | null>
   hoverRect: Ref<Rect | null>
@@ -26,7 +24,6 @@ export interface UseCanvasOverlayPresentationOptions {
   gridBox: Ref<GridBox | null>
   flexBox: Ref<FlexBox | null>
   editScopeRect: Ref<Rect | null>
-  hoveredLabelId: Ref<string | null>
 }
 
 /**
@@ -37,7 +34,6 @@ export function useCanvasOverlayPresentation(options: UseCanvasOverlayPresentati
   const {
     editor,
     frameRef,
-    iframeWin,
     indicator,
     selectionRect,
     hoverRect,
@@ -45,7 +41,6 @@ export function useCanvasOverlayPresentation(options: UseCanvasOverlayPresentati
     gridBox,
     flexBox,
     editScopeRect,
-    hoveredLabelId,
   } = options
 
   const spacingBands = computed<SpacingBand[]>(() => {
@@ -154,34 +149,16 @@ export function useCanvasOverlayPresentation(options: UseCanvasOverlayPresentati
   const hoverStyle = computed(() => rectStyle(hoverRect.value, '1px solid rgb(148 163 184 / 0.9)'))
 
   const BADGE_H = 20
-  const BADGE_FIT = BADGE_H - 4
-  const BADGE_MIN_LEFT = 88
-
-  function topRoomFor(id: string | null): number {
-    const win = iframeWin.value
-    if (!id || !win)
-      return 0
-    const el = findRenderedBlockElement(win.document, win, id)
-    if (!el)
-      return 0
-    const style = win.getComputedStyle(el)
-    return parseCssPixels(style.borderTopWidth) + parseCssPixels(style.paddingTop)
-  }
-
-  function labelStyleFor(rect: Rect | null, topRoom: number): Record<string, string> | null {
+  function labelStyleFor(rect: Rect | null): Record<string, string> | null {
     if (!rect)
       return null
     if (rect.top >= BADGE_H + 4)
       return { top: `${rect.top - BADGE_H - 3}px`, left: `${rect.left}px` }
-    if (topRoom >= BADGE_FIT)
-      return { top: `${rect.top + 3}px`, left: `${rect.left + 3}px` }
-    if (rect.left >= BADGE_MIN_LEFT)
-      return { top: `${rect.top + 1}px`, left: `${rect.left - 6}px`, transform: 'translateX(-100%)' }
     return { top: `${rect.top + rect.height + 3}px`, left: `${rect.left}px` }
   }
 
-  const selectionLabelStyle = computed(() => labelStyleFor(selectionRect.value, topRoomFor(editor.selectedBlockId.value)))
-  const hoverLabelStyle = computed(() => labelStyleFor(hoverRect.value, topRoomFor(hoveredLabelId.value)))
+  const selectionLabelStyle = computed(() => labelStyleFor(selectionRect.value))
+  const hoverLabelStyle = computed(() => labelStyleFor(hoverRect.value))
 
   const editScrimStyle = computed(() => {
     const rect = editScopeRect.value

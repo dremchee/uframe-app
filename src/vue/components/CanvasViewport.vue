@@ -353,7 +353,6 @@ const {
 } = useCanvasOverlayPresentation({
   editor,
   frameRef,
-  iframeWin,
   indicator,
   selectionRect,
   hoverRect,
@@ -361,7 +360,6 @@ const {
   gridBox,
   flexBox,
   editScopeRect,
-  hoveredLabelId,
 })
 </script>
 
