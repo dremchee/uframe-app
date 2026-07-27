@@ -129,10 +129,7 @@
     "docs:embed": "npm run build:embed && rm -rf docs/public/embed && mkdir -p docs/public && cp -R build/embed docs/public/embed",
     "docs:dev": "npm run docs:embed && npm run docs:api && vitepress dev docs",
     "docs:build": "npm run docs:embed && npm run docs:api && vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "review:plan": "plannotator annotate ../docs/plans/page-editor-plan.md",
-    "review:changes": "plannotator review",
-    "review:sessions": "plannotator sessions --open"
+    "docs:preview": "vitepress preview docs"
   },
   "peerDependencies": {
     "@vueuse/core": "^14.3.0",

@@ -48,8 +48,3 @@ Available catalogs: `de`, `es`, `fr`, `ja`, `pt-BR`, `ru`, and `zh-CN`.
 For regional catalog names, use their lowercase path: `i18n/pt-br` or
 `i18n/zh-cn`. Every catalog can be partial; missing strings continue to use
 English.
-
-## AI review workflow
-
-This project includes a local Plannotator setup for reviewing Codex plans and
-AI-generated code changes. See [docs/plannotator.md](docs/plannotator.md).
