@@ -133,8 +133,9 @@ function resolveProps(block: PageBlock, scope: DataScope, env: ResolveEnv): Reco
  * `data-list` template stay unique (block styles key off `id`). Keeps
  * `bindings`/`source` so the clone can still be resolved.
  *
- * Caveat: `htmlId` is intentionally NOT suffixed (it's an author-facing DOM id);
- * avoid setting `htmlId` inside a `data-list` item — it would repeat.
+ * Caveat: author-facing `id` attributes (`htmlId` or `attributes.id`) are
+ * intentionally NOT suffixed; avoid setting one inside a `data-list` item
+ * because it would repeat.
  */
 function cloneSubtreeWithSuffix(block: PageBlock, suffix: string): PageBlock {
   return {
@@ -143,6 +144,7 @@ function cloneSubtreeWithSuffix(block: PageBlock, suffix: string): PageBlock {
     props: cloneJsonValue(block.props),
     style: block.style ? cloneJsonValue(block.style) : undefined,
     classes: block.classes ? [...block.classes] : undefined,
+    attributes: block.attributes ? { ...block.attributes } : undefined,
     bindings: block.bindings ? { ...block.bindings } : undefined,
     source: block.source ? { ...block.source } : undefined,
     asset: block.asset ? { ...block.asset } : undefined,

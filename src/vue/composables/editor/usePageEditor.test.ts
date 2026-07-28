@@ -155,6 +155,31 @@ describe('usePageEditor', () => {
     })
   })
 
+  it('sets, normalizes and clears root HTML attributes', () => {
+    withEditor((editor) => {
+      editor.addBlock('heading')
+      const id = editor.selectedBlockId.value!
+
+      expect(editor.setBlockAttributes(id, {
+        ' ID ': 'hero',
+        'DATA-TestId': 'heading',
+        'aria-label': 'Hero heading',
+        'onclick': 'alert(1)',
+      })).toBe(true)
+
+      const block = findBlock(editor.document.value.blocks, id)
+      expect(block?.htmlId).toBe('hero')
+      expect(block?.attributes).toEqual({
+        'data-testid': 'heading',
+        'aria-label': 'Hero heading',
+      })
+
+      expect(editor.setBlockAttributes(id, {})).toBe(true)
+      expect(findBlock(editor.document.value.blocks, id)?.htmlId).toBeUndefined()
+      expect(findBlock(editor.document.value.blocks, id)?.attributes).toBeUndefined()
+    })
+  })
+
   it('createClass + applyClass + updateClassStyle update the registry', () => {
     withEditor((editor) => {
       editor.addBlock('heading')

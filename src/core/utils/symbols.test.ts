@@ -77,6 +77,34 @@ describe('materializeSymbolInstance', () => {
     expect(result.root).toBe(source.root)
   })
 
+  it('applies instance HTML attributes to the materialized master root', () => {
+    const source = symbol()
+    source.root.htmlId = 'master-root'
+    source.root.attributes = {
+      'data-scope': 'master',
+      'aria-label': 'Master card',
+    }
+    const customized = {
+      ...instance(),
+      htmlId: 'instance-root',
+      attributes: {
+        'data-scope': 'instance',
+        'data-testid': 'card-instance',
+      },
+    }
+
+    const result = materializeSymbolInstance(customized, source)
+
+    expect(result.root.htmlId).toBe('instance-root')
+    expect(result.root.attributes).toEqual({
+      'data-scope': 'instance',
+      'aria-label': 'Master card',
+      'data-testid': 'card-instance',
+    })
+    expect(source.root.htmlId).toBe('master-root')
+    expect(source.root.attributes?.['data-scope']).toBe('master')
+  })
+
   it('forwards instance values into their target props without mutating the master', () => {
     const source = symbol()
     const result = materializeSymbolInstance(instance({

@@ -17,6 +17,18 @@ or replace block types — see [Extending the editor](./extending).
 Select a block to edit it in the **Properties** panel, which splits into a
 **Content** tab (block props) and a **Style** tab.
 
+### HTML attributes
+
+Every block can add attributes to its rendered root element from the **Attributes**
+section in the Style tab. Standard attributes such as `id`, accessibility
+attributes such as `aria-label`, test/analytics hooks such as `data-testid`, and
+custom names such as `x-analytics-key` are supported. An empty value is kept as
+a presence attribute.
+
+`class` and `style` stay under the editor's class and style systems, and inline
+event-handler attributes such as `onclick` are rejected. The same normalized
+attributes appear on the canvas, in preview, and in exported HTML.
+
 ## Layout: flex & grid
 
 Selecting a block reveals its layout controls in the Style panel, and the canvas

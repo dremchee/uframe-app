@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HtmlAttributes } from '@/core'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 // Hosts a framework-neutral block: a registered custom element (`tag`) authored
@@ -11,15 +12,18 @@ const props = defineProps<{
   // Per-block style class + applied named classes (so `.uf-block-<id>` rules and
   // the block's `css` apply); placed on the custom element itself.
   elementClass?: string[]
-  elementId?: string
+  elementAttributes?: HtmlAttributes
 }>()
 
 const host = ref<HTMLElement | null>(null)
 let el: HTMLElement | null = null
+let mirroredPropAttributes = new Set<string>()
+let appliedElementAttributes = new Set<string>()
 
 function syncProps() {
   if (!el)
     return
+  const nextMirrored = new Set<string>()
   for (const [key, value] of Object.entries(props.blockProps)) {
     // Push as a DOM property so objects/arrays survive; also mirror primitives to
     // attributes so elements that read attributes (observedAttributes) update.
@@ -27,21 +31,34 @@ function syncProps() {
       (el as unknown as Record<string, unknown>)[key] = value
     }
     catch {}
-    if (value == null)
+    if (value == null) {
       el.removeAttribute(key)
-    else if (typeof value !== 'object')
+    }
+    else if (typeof value !== 'object') {
       el.setAttribute(key, String(value))
+      nextMirrored.add(key)
+    }
   }
+  for (const key of mirroredPropAttributes) {
+    if (!nextMirrored.has(key) && !(key in (props.elementAttributes ?? {})))
+      el.removeAttribute(key)
+  }
+  mirroredPropAttributes = nextMirrored
 }
 
 function syncAttrs() {
   if (!el)
     return
   el.className = (props.elementClass ?? []).join(' ')
-  if (props.elementId)
-    el.id = props.elementId
-  else
-    el.removeAttribute('id')
+  const next = props.elementAttributes ?? {}
+  for (const name of appliedElementAttributes) {
+    if (!(name in next) && !mirroredPropAttributes.has(name))
+      el.removeAttribute(name)
+  }
+  for (const [name, value] of Object.entries(next)) {
+    el.setAttribute(name, value)
+  }
+  appliedElementAttributes = new Set(Object.keys(next))
 }
 
 onMounted(() => {
@@ -55,8 +72,15 @@ onMounted(() => {
   host.value?.appendChild(el)
 })
 
-watch(() => props.blockProps, syncProps, { deep: true })
-watch([() => props.elementClass, () => props.elementId], syncAttrs, { deep: true })
+watch(() => props.blockProps, () => {
+  syncAttrs()
+  // Definition props are the semantic source of truth on name collisions.
+  syncProps()
+}, { deep: true })
+watch([() => props.elementClass, () => props.elementAttributes], () => {
+  syncAttrs()
+  syncProps()
+}, { deep: true })
 
 onBeforeUnmount(() => {
   el?.remove()

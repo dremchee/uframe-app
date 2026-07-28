@@ -21,7 +21,9 @@ import {
   SelectValue,
   Tooltip,
 } from '@/components/ui'
+import { resolveBlockHtmlAttributes } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
+import AttributesSection from '@/vue/components/AttributesSection.vue'
 import ClassNameInput from '@/vue/components/ClassNameInput.vue'
 import SymbolInstanceOverview from '@/vue/components/SymbolInstanceOverview.vue'
 import SymbolInstancePropertiesSection from '@/vue/components/SymbolInstancePropertiesSection.vue'
@@ -220,6 +222,13 @@ const {
         </p>
       </div>
     </section>
+
+    <div class="-mx-3 mt-1 border-t border-uf-border px-3 pt-3">
+      <AttributesSection
+        :model-value="resolveBlockHtmlAttributes(instance)"
+        @update:model-value="editor.setBlockAttributes(instance.id, $event)"
+      />
+    </div>
 
     <ConfirmDialog
       v-model:open="confirm.open.value"

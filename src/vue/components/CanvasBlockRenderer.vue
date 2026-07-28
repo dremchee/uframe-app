@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import {
   blockClassName,
   COMPONENT_SLOT_BLOCK_TYPE,
+  resolveBlockHtmlAttributes,
   styleClassName,
 } from '@/core'
 import NeutralBlockHost from '@/vue/components/NeutralBlockHost.vue'
@@ -111,6 +112,7 @@ const renderComponent = computed(() => definition.value?.renderComponent)
 // Vue component — hosted by NeutralBlockHost. Vue `renderComponent` wins when both
 // are present (first-party path).
 const elementTag = computed(() => (renderComponent.value ? undefined : definition.value?.element))
+const elementAttributes = computed(() => resolveBlockHtmlAttributes(props.block))
 const blockClass = computed(() => {
   const classes: string[] = []
   for (const name of props.block.classes ?? [])
@@ -201,7 +203,7 @@ const slotDropTarget = computed(() =>
       <component
         :is="renderComponent"
         v-if="renderComponent"
-        :id="block.htmlId || undefined"
+        v-bind="elementAttributes"
         :props="displayProps"
         :class="blockClass"
         :has-children="hasChildren"
@@ -271,7 +273,7 @@ const slotDropTarget = computed(() =>
         :tag="elementTag"
         :block-props="displayProps"
         :element-class="blockClass"
-        :element-id="block.htmlId || undefined"
+        :element-attributes="elementAttributes"
       />
       <div v-else class="uf-empty-state">
         {{ unknownBlockLabel ? unknownBlockLabel(block.type) : t('canvas.unknownBlock', { type: block.type }) }}

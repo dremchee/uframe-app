@@ -1,6 +1,6 @@
 import type { ShallowRef } from 'vue'
-import type { BlockRegistry, BlockStyles, PageBlock, PageDocument } from '@/core'
-import { findBlock, validateBlockProps } from '@/core'
+import type { BlockRegistry, BlockStyles, HtmlAttributes, PageBlock, PageDocument } from '@/core'
+import { findBlock, normalizeHtmlAttributes, resolveBlockHtmlAttributes, validateBlockProps } from '@/core'
 
 export interface UseEditorBlockPropsOptions {
   document: ShallowRef<PageDocument>
@@ -60,8 +60,26 @@ export function useEditorBlockProps(options: UseEditorBlockPropsOptions) {
   }
 
   function setBlockHtmlId(id: string, value: string) {
-    const next = value.trim()
-    updateBlock(id, current => ({ ...current, htmlId: next || undefined }))
+    const block = findBlock(document.value.blocks, id)
+    if (!block)
+      return false
+    return setBlockAttributes(id, {
+      ...resolveBlockHtmlAttributes(block),
+      id: value.trim(),
+    })
+  }
+
+  function setBlockAttributes(id: string, attributes: HtmlAttributes) {
+    if (!findBlock(document.value.blocks, id))
+      return false
+
+    const normalized = normalizeHtmlAttributes(attributes)
+    const { id: htmlId, ...rest } = normalized
+    updateBlock(id, current => ({
+      ...current,
+      htmlId: htmlId || undefined,
+      attributes: Object.keys(rest).length ? rest : undefined,
+    }))
     return true
   }
 
@@ -84,6 +102,7 @@ export function useEditorBlockProps(options: UseEditorBlockPropsOptions) {
     updateBlockProps,
     replaceBlockProps,
     updateBlockStyle,
+    setBlockAttributes,
     setBlockHtmlId,
     setBlockName,
     updatePageStyle,

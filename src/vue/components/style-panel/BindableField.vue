@@ -18,8 +18,9 @@ const props = defineProps<{
   /**
    * Render a built-in trigger icon on the right edge of the control. Used by
    * controls without a natural slot for the action (ColorInput, text Input).
-   * SizeInput renders its own adjacent binding action and drives the picker
-   * through the exposed `requestBind` slot prop.
+   * Basic controls drive this picker through the exposed `requestBind` slot
+   * prop. AdvancedSizeInput consumes the filtered `variables` slot prop and
+   * renders variables together with CSS functions in its own menu.
    */
   iconTrigger?: boolean
 }>()
@@ -165,7 +166,12 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
 
       <!-- Unbound: the raw control, plus an optional right-edge trigger icon. -->
       <template v-else>
-        <slot :value="modelValue" :set-value="setValue" :request-bind="requestBind" />
+        <slot
+          :value="modelValue"
+          :set-value="setValue"
+          :request-bind="requestBind"
+          :variables="options"
+        />
         <Tooltip v-if="iconTrigger" :text="t('style.variables')">
           <button
             type="button"

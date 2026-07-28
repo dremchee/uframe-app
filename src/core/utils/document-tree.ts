@@ -63,6 +63,7 @@ export function cloneBlockWithNewIds(block: PageBlock): PageBlock {
     props: cloneJsonValue(block.props),
     style: block.style ? cloneJsonValue(block.style) : undefined,
     classes: block.classes ? [...block.classes] : undefined,
+    attributes: block.attributes ? { ...block.attributes } : undefined,
     children: block.children?.map(cloneBlockWithNewIds),
   }
 }

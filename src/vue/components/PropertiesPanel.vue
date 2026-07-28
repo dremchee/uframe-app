@@ -21,9 +21,10 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui'
-import { COMPONENT_SLOT_BLOCK_TYPE, DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
+import { COMPONENT_SLOT_BLOCK_TYPE, DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { cn } from '@/lib/utils'
+import AttributesSection from '@/vue/components/AttributesSection.vue'
 import BlockActionsMenu from '@/vue/components/BlockActionsMenu.vue'
 import ClassNameInput from '@/vue/components/ClassNameInput.vue'
 import ContentTab from '@/vue/components/ContentTab.vue'
@@ -179,7 +180,6 @@ const {
   toggleComboMenu,
   createComboFromParts,
   editingClass,
-  editingClassUsageCount,
   sanitizeClassName,
   focusClass,
   applyClassNamed,
@@ -292,10 +292,6 @@ const targetLabel = computed(() => {
         {{ targetLabel }}
       </h2>
       <div class="flex items-center gap-1.5">
-        <span v-if="editingClass" class="text-[11px] text-uf-muted">
-          {{ editingClassUsageCount }}
-          {{ editingClassUsageCount === 1 ? t('properties.element') : t('properties.elements') }}
-        </span>
         <BlockActionsMenu
           v-if="block && !isPageSelected"
           :block="block"
@@ -505,20 +501,6 @@ const targetLabel = computed(() => {
             />
           </section>
 
-          <section v-if="block" class="flex flex-col gap-1.5 mb-2">
-            <span
-              class="text-uf-muted text-[11px] font-semibold uppercase tracking-wider"
-            >{{ t('properties.elementId') }}</span>
-            <Input
-              :model-value="block.htmlId ?? ''"
-              type="text"
-              placeholder="id"
-              @update:model-value="
-                (v) => block && editor.setBlockHtmlId(block.id, String(v))
-              "
-            />
-          </section>
-
           <StyleVariantSelector
             v-model:viewport="viewport"
             v-model:state="styleState"
@@ -530,6 +512,17 @@ const targetLabel = computed(() => {
                extracts into an auto-named class and the panel retargets to it,
                so styles still always land in a named class. -->
           <StylePanel v-model="blockSlice" :parent-is-grid="parentIsGrid" :parent-is-flex="parentIsFlex" />
+
+          <div
+            v-if="block"
+            class="-mx-3 mt-1 border-t border-uf-border px-3 pt-3"
+          >
+            <AttributesSection
+              :key="block.id"
+              :model-value="resolveBlockHtmlAttributes(block)"
+              @update:model-value="editor.setBlockAttributes(block.id, $event)"
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

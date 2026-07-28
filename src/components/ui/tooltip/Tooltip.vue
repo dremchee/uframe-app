@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ReferenceElement } from 'reka-ui'
 import {
   TooltipContent,
   TooltipPortal,
@@ -6,25 +7,40 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from 'reka-ui'
+import { computed } from 'vue'
 import { usePortalTarget } from '@/components/ui/portal-target'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   text: string
   side?: 'top' | 'right' | 'bottom' | 'left'
   delay?: number
+  /** Controlled visibility for a tooltip anchored to an external element. */
+  open?: boolean
+  /** External anchor used by manual tooltips next to nested popup triggers. */
+  reference?: ReferenceElement
+  /** Render an inert internal trigger instead of wrapping the default slot. */
+  manual?: boolean
 }>(), {
   side: 'top',
   delay: 300,
+  open: undefined,
+  manual: false,
 })
 
 const portalTarget = usePortalTarget()
+const rootProps = computed(() => (
+  props.open === undefined ? {} : { open: props.open }
+))
 </script>
 
 <template>
   <TooltipProvider :delay-duration="delay">
-    <TooltipRoot>
-      <TooltipTrigger as-child>
+    <TooltipRoot v-bind="rootProps">
+      <TooltipTrigger v-if="!manual" as-child :reference="reference">
         <slot />
+      </TooltipTrigger>
+      <TooltipTrigger v-else as-child :reference="reference">
+        <span class="pointer-events-none fixed size-px opacity-0" aria-hidden="true" />
       </TooltipTrigger>
       <TooltipPortal :to="portalTarget ?? undefined">
         <TooltipContent

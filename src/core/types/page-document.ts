@@ -144,6 +144,9 @@ export const DATA_LIST_BLOCK_TYPE = 'data-list'
 /** A single-record region (singleton or relation); `children` render once. */
 export const DATA_ITEM_BLOCK_TYPE = 'data-item'
 
+/** String-valued attributes emitted on a block's rendered root element. */
+export type HtmlAttributes = Record<string, string>
+
 export interface PageBlock<TProps = Record<string, unknown>> {
   id: string
   type: string
@@ -152,7 +155,17 @@ export interface PageBlock<TProps = Record<string, unknown>> {
   name?: string
   style?: BlockStyles
   classes?: string[]
-  /** Custom `id` attribute emitted on the rendered element. */
+  /**
+   * HTML attributes emitted on the rendered root element. Attribute names are
+   * normalized and unsafe inline event handlers are ignored at render time.
+   * Empty strings are preserved (including for boolean/presence attributes).
+   */
+  attributes?: HtmlAttributes
+  /**
+   * Legacy storage for the rendered `id` attribute. New editor changes expose
+   * it through the generic `attributes` UI; retained for document/API
+   * compatibility.
+   */
   htmlId?: string
   /**
    * Hidden elements render with an inline `style="display: none"` — on the

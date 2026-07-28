@@ -77,7 +77,9 @@ export interface BlockDefinition<TProps = Record<string, unknown>, TComponent = 
   propsSchema?: StandardSchemaV1<unknown, TProps>
   /**
    * Vue render component (Vue-native path). Neutral plugins omit this and
-   * provide `element` instead.
+   * provide `element` instead. The editor forwards a block's root HTML
+   * attributes as Vue fallthrough attributes; multi-root components must bind
+   * `$attrs` to the element that represents the block.
    */
   renderComponent?: TComponent
   /**

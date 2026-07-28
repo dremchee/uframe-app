@@ -2,6 +2,8 @@
 import type { ButtonBlockProps } from '@/core'
 import { computed } from 'vue'
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps<{
   props: ButtonBlockProps
 }>()
@@ -13,10 +15,10 @@ const buttonType = computed(() => (kind.value === 'link' ? undefined : kind.valu
 </script>
 
 <template>
-  <a v-if="kind === 'link'" class="uf-button-block uf-no-click" :href="props.props.href">
+  <a v-if="kind === 'link'" v-bind="$attrs" class="uf-button-block uf-no-click" :href="props.props.href">
     {{ props.props.label }}
   </a>
-  <button v-else class="uf-button-block uf-no-click" :type="buttonType">
+  <button v-else v-bind="$attrs" class="uf-button-block uf-no-click" :type="buttonType">
     {{ props.props.label }}
   </button>
 </template>

@@ -92,6 +92,7 @@ export const pageBlockSchema: z.ZodType<{
   name?: string
   style?: z.infer<typeof blockStylesSchema>
   classes?: string[]
+  attributes?: Record<string, string>
   htmlId?: string
   hidden?: boolean
   children?: unknown[]
@@ -106,6 +107,7 @@ export const pageBlockSchema: z.ZodType<{
     name: z.string().trim().min(1).optional(),
     style: blockStylesSchema.optional(),
     classes: z.array(z.string().min(1)).optional(),
+    attributes: z.record(z.string(), z.string()).optional(),
     htmlId: z.string().optional(),
     hidden: z.boolean().optional(),
     children: z.array(pageBlockSchema).optional(),

@@ -30,7 +30,7 @@ describe('neutralBlockHost', () => {
       tag: 'uf-test-el',
       blockProps: { tone: 'info', text: 'Hi', count: 3 },
       elementClass: ['uf-block-x', 'uf-cls-card'],
-      elementId: 'my-id',
+      elementAttributes: { 'id': 'my-id', 'data-testid': 'neutral' },
     })
     await nextTick()
 
@@ -38,6 +38,7 @@ describe('neutralBlockHost', () => {
     expect(el).toBeTruthy()
     expect(el.className).toBe('uf-block-x uf-cls-card')
     expect(el.id).toBe('my-id')
+    expect(el.getAttribute('data-testid')).toBe('neutral')
     // Primitives mirrored to attributes (for observedAttributes-style elements).
     expect(el.getAttribute('tone')).toBe('info')
     expect(el.getAttribute('count')).toBe('3')
@@ -63,5 +64,27 @@ describe('neutralBlockHost', () => {
     ;(app._instance!.data as { props: Record<string, unknown> }).props.tone = 'danger'
     await nextTick()
     expect(el.getAttribute('tone')).toBe('danger')
+  })
+
+  it('reacts to custom attribute changes and removals', async () => {
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    const app = createApp({
+      components: { NeutralBlockHost },
+      data: () => ({ attributes: { 'data-state': 'idle', 'title': 'Card' } as Record<string, string> }),
+      template: '<NeutralBlockHost tag="uf-test-el" :block-props="{}" :element-attributes="attributes" />',
+    })
+    app.mount(container)
+    apps.push(app)
+    await nextTick()
+
+    const el = container.querySelector('uf-test-el') as HTMLElement
+    expect(el.getAttribute('data-state')).toBe('idle')
+    expect(el.title).toBe('Card')
+
+    ;(app._instance!.data as { attributes: Record<string, string> }).attributes = { 'data-state': 'ready' }
+    await nextTick()
+    expect(el.getAttribute('data-state')).toBe('ready')
+    expect(el.hasAttribute('title')).toBe(false)
   })
 })

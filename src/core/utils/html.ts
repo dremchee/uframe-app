@@ -2,6 +2,7 @@ import type { BlockHtmlContext, BlockRegistry } from '@/core/types/block-registr
 import type { PageBlock, PageDocument, SymbolDefinition } from '@/core/types/page-document'
 import { SYMBOL_INSTANCE_BLOCK_TYPE } from '@/core/types/page-document'
 import { getInstanceSymbolId } from '@/core/utils/document-tree'
+import { resolveBlockHtmlAttributes } from '@/core/utils/html-attributes'
 import { blockClassName, styleClassName } from '@/core/utils/styles'
 import { materializeSymbolInstance } from '@/core/utils/symbols'
 
@@ -33,6 +34,23 @@ function buildBlockClasses(block: PageBlock, extra: string[] = []): string {
 function renderUnknown(block: PageBlock, ctx: BlockHtmlContext): string {
   const inner = ctx.renderChildren()
   return `<div class="${ctx.classes}" data-uf-unknown-type="${escapeHtml(block.type)}">${inner}</div>`
+}
+
+function injectBlockAttributes(html: string, block: PageBlock): string {
+  const attributes = resolveBlockHtmlAttributes(block)
+  const serialized = Object.entries(attributes)
+    .map(([name, value]) => ` ${name}="${escapeHtml(value)}"`)
+    .join('')
+  if (!serialized)
+    return html
+
+  // All registry renderers return a single HTML root. Append attributes at the
+  // end of that opening tag so renderer-owned semantic props (href, type, ...)
+  // remain authoritative when a duplicate name is present.
+  return html.replace(
+    /^(\s*<[a-z][^>]*?)(\/?>)/i,
+    (_match, head: string, close: string) => `${head}${serialized}${close}`,
+  )
 }
 
 /**
@@ -144,10 +162,9 @@ export function renderBlocksToHtml(
       return cleaned ? `${head} class="${cleaned}"` : head
     })
 
-    // Inject the custom element id into the block's opening tag (centralised so
-    // individual block renderers don't each have to handle it).
-    if (block.htmlId)
-      html = html.replace(/^(\s*<[a-z][\w:-]*)/i, `$1 id="${escapeHtml(block.htmlId)}"`)
+    // Generic HTML attributes are injected centrally so first-party, plugin
+    // and unknown block renderers all receive the exact same safe set.
+    html = injectBlockAttributes(html, block)
 
     // Hidden elements ship with an inline display:none — no class is minted
     // and inline specificity beats any class/combo display value.

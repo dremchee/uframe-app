@@ -15,6 +15,7 @@ import {
   getInstanceVariantId,
   resolveActiveVariant,
 } from '@/core/utils/document-tree'
+import { resolveBlockHtmlAttributes } from '@/core/utils/html-attributes'
 import { isRecord } from '@/core/utils/records'
 import {
   getInstanceSlotFills,
@@ -230,6 +231,23 @@ export function materializeSymbolInstance(
       return fill ? { ...block, children: fill.children ? [...fill.children] : [] } : block
     })
     resolvedRoot = slotRoot ?? resolvedRoot
+  }
+
+  // A component instance renders away, so its root attributes belong on the
+  // materialized master root. Instance values override master values while an
+  // instance without attributes keeps the original root reference unchanged.
+  const instanceAttributes = resolveBlockHtmlAttributes(instance)
+  if (Object.keys(instanceAttributes).length) {
+    const mergedAttributes = {
+      ...resolveBlockHtmlAttributes(resolvedRoot),
+      ...instanceAttributes,
+    }
+    const { id: htmlId, ...attributes } = mergedAttributes
+    resolvedRoot = {
+      ...resolvedRoot,
+      htmlId: htmlId || undefined,
+      attributes: Object.keys(attributes).length ? attributes : undefined,
+    }
   }
 
   return {

@@ -23,49 +23,13 @@ export const CSS_UNITS: CssUnitOption[] = [
   { value: 'em', label: 'em' },
   { value: 'vw', label: 'vw' },
   { value: 'vh', label: 'vh' },
-  { value: 'vmin', label: 'vmin' },
-  { value: 'vmax', label: 'vmax' },
-  { value: 'ch', label: 'ch' },
   { value: UNITLESS, label: UNITLESS },
   { value: 'auto', label: 'auto', keyword: true },
   { value: 'none', label: 'none', keyword: true },
 ]
 
-/** Full CSS dimension unit list for AdvancedSizeInput. */
-export const CSS_SIZING_UNITS: CssUnitOption[] = [
-  ...CSS_UNITS,
-  { value: 'ex', label: 'ex' },
-  { value: 'cap', label: 'cap' },
-  { value: 'ic', label: 'ic' },
-  { value: 'lh', label: 'lh' },
-  { value: 'rlh', label: 'rlh' },
-  { value: 'vi', label: 'vi' },
-  { value: 'vb', label: 'vb' },
-  { value: 'svw', label: 'svw' },
-  { value: 'svh', label: 'svh' },
-  { value: 'svi', label: 'svi' },
-  { value: 'svb', label: 'svb' },
-  { value: 'lvw', label: 'lvw' },
-  { value: 'lvh', label: 'lvh' },
-  { value: 'lvi', label: 'lvi' },
-  { value: 'lvb', label: 'lvb' },
-  { value: 'dvw', label: 'dvw' },
-  { value: 'dvh', label: 'dvh' },
-  { value: 'dvi', label: 'dvi' },
-  { value: 'dvb', label: 'dvb' },
-  { value: 'cqw', label: 'cqw' },
-  { value: 'cqh', label: 'cqh' },
-  { value: 'cqi', label: 'cqi' },
-  { value: 'cqb', label: 'cqb' },
-  { value: 'cqmin', label: 'cqmin' },
-  { value: 'cqmax', label: 'cqmax' },
-  { value: 'cm', label: 'cm' },
-  { value: 'mm', label: 'mm' },
-  { value: 'q', label: 'Q' },
-  { value: 'in', label: 'in' },
-  { value: 'pt', label: 'pt' },
-  { value: 'pc', label: 'pc' },
-]
+/** Practical unit list shown by AdvancedSizeInput. */
+export const CSS_SIZING_UNITS: CssUnitOption[] = [...CSS_UNITS]
 
 const KEYWORDS = new Set(CSS_UNITS.filter(u => u.keyword).map(u => u.value))
 
@@ -99,6 +63,16 @@ export function parseLength(raw: string | number | undefined | null): ParsedLeng
     return { number: s, unit: '' }
   const [, number, rawUnit] = match
   return { number, unit: rawUnit ? rawUnit.toLowerCase() : UNITLESS }
+}
+
+/**
+ * Size inputs render their unit in a separate control, so a scalar placeholder
+ * should show only its numeric part (`16`, not `16px`). Keywords and CSS
+ * expressions stay untouched.
+ */
+export function sizeInputPlaceholder(value?: string): string | undefined {
+  const parsed = parseLength(value)
+  return parsed?.unit && parsed.number ? parsed.number : value
 }
 
 // A plain decimal number (optionally signed) — the same grammar parseLength

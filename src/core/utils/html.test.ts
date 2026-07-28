@@ -85,6 +85,52 @@ describe('renderBlocksToHtml', () => {
     expect(html).toContain('<h1 id="hero">')
   })
 
+  it('renders escaped standard, data, aria and custom attributes on the root', () => {
+    const html = renderBlocksToHtml(
+      [{
+        id: 'h',
+        type: 'heading',
+        props: { level: 1, content: 'Hi' },
+        attributes: {
+          'title': `Tom & "Jerry"`,
+          'data-template': '$&',
+          'data-testid': 'hero-title',
+          'aria-label': 'Hero',
+          'x-analytics-key': 'landing',
+          'hidden': '',
+        },
+      }],
+      makeRegistry(),
+    )
+    expect(html).toContain(' title="Tom &amp; &quot;Jerry&quot;"')
+    expect(html).toContain(' data-template="$&amp;"')
+    expect(html).toContain(' data-testid="hero-title"')
+    expect(html).toContain(' aria-label="Hero"')
+    expect(html).toContain(' x-analytics-key="landing"')
+    expect(html).toContain(' hidden=""')
+  })
+
+  it('does not render unsafe or renderer-owned custom attributes', () => {
+    const html = renderBlocksToHtml(
+      [{
+        id: 'h',
+        type: 'heading',
+        props: { level: 1, content: 'Hi' },
+        attributes: {
+          onclick: 'alert(1)',
+          class: 'outside',
+          style: 'display:none',
+          title: 'Safe',
+        },
+      }],
+      makeRegistry(),
+    )
+    expect(html).toContain(' title="Safe"')
+    expect(html).not.toContain('onclick')
+    expect(html).not.toContain('outside')
+    expect(html).not.toContain('display:none')
+  })
+
   it('renders hidden blocks with an inline display:none (no extra class)', () => {
     const html = renderBlocksToHtml(
       [{ id: 'h', type: 'heading', props: { level: 1, content: 'Hi' }, classes: ['title'], hidden: true }],
@@ -162,13 +208,16 @@ describe('renderBlocksToHtml', () => {
         id: 'instance',
         type: '__symbol',
         props: { symbolId: symbol.id, propertyValues: { prop_text: 'Buy now' } },
+        attributes: { 'data-testid': 'heading-instance', 'aria-label': 'Instance heading' },
       }],
       makeRegistry(),
       0,
       { [symbol.id]: symbol },
     )
 
-    expect(html).toContain('<h2>Buy now</h2>')
+    expect(html).toContain('>Buy now</h2>')
+    expect(html).toContain('data-testid="heading-instance"')
+    expect(html).toContain('aria-label="Instance heading"')
     expect(html).not.toContain('Fallback')
   })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CSS_SIZING_UNITS, formatLength, isCssExpression, isValidLengthInput, parseLength, UNITLESS } from './units'
+import { CSS_SIZING_UNITS, formatLength, isCssExpression, isValidLengthInput, parseLength, sizeInputPlaceholder, UNITLESS } from './units'
 
 describe('isValidLengthInput', () => {
   it('accepts a finite number with a measurement unit', () => {
@@ -46,6 +46,20 @@ describe('parseLength / formatLength round-trip', () => {
   })
 })
 
+describe('sizeInputPlaceholder', () => {
+  it('removes a duplicated scalar unit', () => {
+    expect(sizeInputPlaceholder('16px')).toBe('16')
+    expect(sizeInputPlaceholder('1.5rem')).toBe('1.5')
+    expect(sizeInputPlaceholder('1fr')).toBe('1')
+  })
+
+  it('keeps unitless, keyword and expression placeholders intact', () => {
+    expect(sizeInputPlaceholder('1.5')).toBe('1.5')
+    expect(sizeInputPlaceholder('auto')).toBe('auto')
+    expect(sizeInputPlaceholder('calc(100% - 2rem)')).toBe('calc(100% - 2rem)')
+  })
+})
+
 describe('isCssExpression', () => {
   it('recognizes complete CSS functions used by size properties', () => {
     expect(isCssExpression('minmax(0, 1fr)')).toBe(true)
@@ -61,8 +75,18 @@ describe('isCssExpression', () => {
   })
 })
 
-describe('CSS_SIZING_UNITS', () => {
-  it('includes modern viewport, container and physical units', () => {
-    expect(CSS_SIZING_UNITS.map(unit => unit.value)).toEqual(expect.arrayContaining(['dvw', 'cqw', 'cm', 'q']))
+describe('css sizing units', () => {
+  it('keeps the unit menu focused on common values', () => {
+    expect(CSS_SIZING_UNITS.map(unit => unit.value)).toEqual([
+      'px',
+      '%',
+      'rem',
+      'em',
+      'vw',
+      'vh',
+      UNITLESS,
+      'auto',
+      'none',
+    ])
   })
 })
