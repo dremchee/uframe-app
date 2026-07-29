@@ -20,10 +20,6 @@ const flexWrapOptions = ['nowrap', 'wrap', 'wrap-reverse']
 const justifyContentOptions = ['flex-start', 'flex-end', 'center', 'space-between', 'space-around', 'space-evenly']
 const alignItemsOptions = ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
 const overflowOptions = ['visible', 'hidden', 'scroll', 'auto']
-const textAlignOptions = ['left', 'center', 'right', 'justify']
-const textTransformOptions = ['none', 'uppercase', 'lowercase', 'capitalize']
-const textDecorationOptions = ['none', 'underline', 'line-through']
-const fontStyleOptions = ['normal', 'italic']
 
 export function useStylePanelModel(
   styles: Ref<BaseBlockStyles>,
@@ -69,9 +65,5 @@ export function useStylePanelModel(
     justifyContentOptions,
     alignItemsOptions,
     overflowOptions,
-    textAlignOptions,
-    textTransformOptions,
-    textDecorationOptions,
-    fontStyleOptions,
   }
 }

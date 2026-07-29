@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { SegmentOption } from '@/components/ui'
 import type { BaseBlockStyles } from '@/core'
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, CaseLower, CaseSensitive, CaseUpper, Italic, Strikethrough, Type, Underline } from '@lucide/vue'
 import { computed } from 'vue'
-import { AdvancedSizeInput, ColorInput, NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput } from '@/components/ui'
+import { AdvancedSizeInput, ColorInput, NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, SegmentControl, SizeInput } from '@/components/ui'
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
 import { useUframeI18n } from '@/vue/i18n'
 import BindableField from './BindableField.vue'
@@ -24,11 +26,39 @@ const {
   sectionModified,
   update,
   inheritedPh,
-  textAlignOptions,
-  textTransformOptions,
-  textDecorationOptions,
-  fontStyleOptions,
 } = useStylePanelModel(styles, value => emit('update:modelValue', value))
+
+type FontStyle = NonNullable<BaseBlockStyles['fontStyle']>
+type TextAlign = NonNullable<BaseBlockStyles['textAlign']>
+type TextTransform = NonNullable<BaseBlockStyles['textTransform']>
+type TextDecoration = NonNullable<BaseBlockStyles['textDecoration']>
+
+const fontStyleOptions = computed<Array<SegmentOption<FontStyle>>>(() => [
+  { value: 'normal', label: t('style.fontStyleNormal'), icon: Type },
+  { value: 'italic', label: t('style.fontStyleItalic'), icon: Italic },
+])
+const textAlignOptions = computed<Array<SegmentOption<TextAlign>>>(() => [
+  { value: 'left', label: t('style.alignLeft'), icon: AlignLeft },
+  { value: 'center', label: t('style.alignCenter'), icon: AlignCenter },
+  { value: 'right', label: t('style.alignRight'), icon: AlignRight },
+  { value: 'justify', label: t('style.alignJustify'), icon: AlignJustify },
+])
+const textTransformOptions = computed<Array<SegmentOption<TextTransform>>>(() => [
+  { value: 'none', label: t('style.transformNone'), icon: CaseSensitive },
+  { value: 'uppercase', label: t('style.transformUppercase'), icon: CaseUpper },
+  { value: 'lowercase', label: t('style.transformLowercase'), icon: CaseLower },
+  { value: 'capitalize', label: t('style.transformCapitalize'), icon: CaseSensitive },
+])
+const textDecorationOptions = computed<Array<SegmentOption<TextDecoration>>>(() => [
+  { value: 'none', label: t('style.decorationNone'), icon: CaseSensitive },
+  { value: 'underline', label: t('style.decorationUnderline'), icon: Underline },
+  { value: 'line-through', label: t('style.decorationLineThrough'), icon: Strikethrough },
+])
+
+const fontStyle = computed<FontStyle>(() => styles.value.fontStyle ?? inheritedPh('fontStyle', 'normal') as FontStyle)
+const textAlign = computed<TextAlign>(() => styles.value.textAlign ?? inheritedPh('textAlign', 'left') as TextAlign)
+const textTransform = computed<TextTransform>(() => styles.value.textTransform ?? inheritedPh('textTransform', 'none') as TextTransform)
+const textDecoration = computed<TextDecoration>(() => styles.value.textDecoration ?? inheritedPh('textDecoration', 'none') as TextDecoration)
 
 function updateFontWeight(value: number | undefined) {
   if (!Number.isFinite(value)) {
@@ -93,57 +123,19 @@ function updateFontWeight(value: number | undefined) {
           </template>
         </BindableField>
       </StyleField>
+    </div>
+    <div class="grid gap-x-1.5 gap-y-2.5 grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]">
       <StyleField :label="t('style.fontStyle')" field="fontStyle">
-        <Select
-          :model-value="styles.fontStyle"
-          @update:model-value="value => update({ fontStyle: value as BaseBlockStyles['fontStyle'] })"
-        >
-          <SelectTrigger><SelectValue :placeholder="inheritedPh('fontStyle', 'normal')" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in fontStyleOptions" :key="option" :value="option">
-              {{ option }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <SegmentControl :model-value="fontStyle" :options="fontStyleOptions" :aria-label="t('style.fontStyle')" @update:model-value="value => update({ fontStyle: value })" />
       </StyleField>
       <StyleField :label="t('style.align')" field="textAlign">
-        <Select
-          :model-value="styles.textAlign"
-          @update:model-value="value => update({ textAlign: value as BaseBlockStyles['textAlign'] })"
-        >
-          <SelectTrigger><SelectValue :placeholder="inheritedPh('textAlign', 'left')" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in textAlignOptions" :key="option" :value="option">
-              {{ option }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <SegmentControl :model-value="textAlign" :options="textAlignOptions" :aria-label="t('style.align')" @update:model-value="value => update({ textAlign: value })" />
       </StyleField>
       <StyleField :label="t('style.transform')" field="textTransform">
-        <Select
-          :model-value="styles.textTransform"
-          @update:model-value="value => update({ textTransform: value as BaseBlockStyles['textTransform'] })"
-        >
-          <SelectTrigger><SelectValue :placeholder="inheritedPh('textTransform', 'none')" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in textTransformOptions" :key="option" :value="option">
-              {{ option }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <SegmentControl :model-value="textTransform" :options="textTransformOptions" :aria-label="t('style.transform')" @update:model-value="value => update({ textTransform: value })" />
       </StyleField>
       <StyleField :label="t('style.decoration')" field="textDecoration">
-        <Select
-          :model-value="styles.textDecoration"
-          @update:model-value="value => update({ textDecoration: value as BaseBlockStyles['textDecoration'] })"
-        >
-          <SelectTrigger><SelectValue :placeholder="inheritedPh('textDecoration', 'none')" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in textDecorationOptions" :key="option" :value="option">
-              {{ option }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <SegmentControl :model-value="textDecoration" :options="textDecorationOptions" :aria-label="t('style.decoration')" @update:model-value="value => update({ textDecoration: value })" />
       </StyleField>
     </div>
     <StyleField :label="t('style.color')" field="color">
