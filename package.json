@@ -7,7 +7,7 @@
   "homepage": "https://uframe-app.netlify.app/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dremchee/uframe-app"
+    "url": "git+https://github.com/dremchee/uframe-app.git"
   },
   "bugs": {
     "url": "https://github.com/dremchee/uframe-app/issues"
@@ -19,7 +19,8 @@
     "visual-editor"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "exports": {
     ".": {
@@ -119,7 +120,7 @@
     "build:playground": "vite build",
     "build:embed": "vite build --config vite.config.embed.ts",
     "prepack": "pnpm build:lib",
-    "release:npm": "npm publish --access public",
+    "release:npm": "npm publish",
     "typecheck": "vue-tsc -b",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -162,6 +163,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
+    "@semantic-release/git": "11.0.1",
     "@tailwindcss/cli": "^4.3.0",
     "@tsdown/css": "^0.22.1",
     "@types/culori": "^4.0.1",
@@ -174,6 +176,7 @@
     "jiti": "^2.7.0",
     "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
+    "semantic-release": "25.0.8",
     "tsdown": "^0.22.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.12.0",
