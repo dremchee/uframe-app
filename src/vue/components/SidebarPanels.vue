@@ -168,8 +168,8 @@ const btn = 'inline-flex items-center justify-center w-6 h-6 rounded-md bg-trans
         :editor="editor"
       />
       <SettingsPanel
-        ref="settingsPanel"
         v-else-if="s.mode.value === 'settings'"
+        ref="settingsPanel"
         :editor="editor"
         :sections="pluginSlots.settingsSections"
       />

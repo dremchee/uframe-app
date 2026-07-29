@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { uframeIntegration, UFRAME_VITE_STYLES_ID } from './index'
+import { UFRAME_VITE_STYLES_ID, uframeIntegration } from './index'
 
 describe('uframeIntegration', () => {
   it('serves the published-page stylesheet through the documented virtual import', () => {

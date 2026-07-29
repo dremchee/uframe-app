@@ -12,9 +12,9 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@dremchee/uframe": "workspace:*",
     "@lucide/vue": "^1.16.0",
     "nuxt": "^3.14.0",
-    "@dremchee/uframe": "workspace:*",
     "vue": "^3.5.34"
   }
 }

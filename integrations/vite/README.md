@@ -5,8 +5,8 @@ virtual, side-effect module.
 
 ```ts
 // vite.config.ts
-import { defineConfig } from 'vite'
 import { uframeIntegration } from '@dremchee/uframe/integrations/vite'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [uframeIntegration()],

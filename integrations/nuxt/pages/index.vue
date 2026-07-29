@@ -14,7 +14,9 @@ const { data } = await useFetch('/api/uframe-pages')
     </p>
     <ul>
       <li v-for="p in data?.pages" :key="p.id">
-        <NuxtLink :to="`/${p.id}`">{{ p.title }}</NuxtLink>
+        <NuxtLink :to="`/${p.id}`">
+          {{ p.title }}
+        </NuxtLink>
       </li>
     </ul>
   </main>

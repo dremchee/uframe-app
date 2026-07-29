@@ -367,8 +367,8 @@ const {
   <section ref="canvasPaneRef" class="relative flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
     <div
       ref="canvasFrameRef"
+      class="relative flex-1 min-h-0 mx-auto bg-uf-panel"
       :class="[
-        'relative flex-1 min-h-0 mx-auto bg-uf-panel',
         editor.isCanvasResizeMode.value && (isResizeHandleHovered
           ? 'ring-2 ring-uf-accent ring-offset-2 ring-offset-uf-bg'
           : 'ring-1 ring-uf-border-strong ring-offset-2 ring-offset-uf-bg'),

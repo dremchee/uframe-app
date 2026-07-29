@@ -58,7 +58,7 @@ or override any catalog with your own messages; host-provided values take
 precedence over built-in and plugin translations.
 
 ```ts
-messages: {
+const messages = {
   ru: {
     ...ru,
     'toolbar.save': 'Опубликовать',
