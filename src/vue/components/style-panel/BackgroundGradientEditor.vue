@@ -159,7 +159,7 @@ const {
           <div class="min-w-0 flex-1">
             <BindableField type="color" icon-trigger :model-value="stop.color" @update:model-value="value => setStopColor(index, value)">
               <template #default="{ value, setValue }">
-                <ColorInput end-action :model-value="value" placeholder="#000000" @update:model-value="value => setValue(String(value))" />
+                <ColorInput end-action popover-side="left" :model-value="value" placeholder="#000000" @update:model-value="value => setValue(String(value))" />
               </template>
             </BindableField>
           </div>

@@ -174,7 +174,7 @@ function resetWidth() {
       <StyleField :label="t('style.color')" field="borderColor">
         <BindableField type="color" icon-trigger :model-value="styles.borderColor ?? ''" @update:model-value="setColor">
           <template #default="{ value, setValue }">
-            <ColorInput end-action :model-value="value" placeholder="#000000" @update:model-value="v => setValue(String(v))" />
+            <ColorInput end-action popover-side="left" :model-value="value" placeholder="#000000" @update:model-value="v => setValue(String(v))" />
           </template>
         </BindableField>
       </StyleField>

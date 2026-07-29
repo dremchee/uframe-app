@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { ColorFormat } from '@/components/ui/color-picker'
 import { useEventListener } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, shallowRef, useTemplateRef } from 'vue'
 import { CHECKERBOARD_STYLE, ColorPicker, parseColor, toCssColor } from '@/components/ui/color-picker'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { usePanelEdgePopover } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 
 const props = withDefaults(defineProps<{
@@ -16,14 +17,20 @@ const props = withDefaults(defineProps<{
   showEyeDropper?: boolean
   /** Reserve space for an action button overlaid at the field's right edge. */
   endAction?: boolean
+  /** Preferred picker direction. Collision handling may flip it when space is limited. */
+  popoverSide?: 'top' | 'right' | 'bottom' | 'left'
 }>(), {
   format: 'hex',
   showAlpha: true,
   showEyeDropper: true,
+  popoverSide: 'bottom',
 })
 
 const model = defineModel<string>({ default: '' })
 const { t } = useUframeI18n()
+const field = useTemplateRef<HTMLElement>('field')
+const { anchor, reference: popoverReference } = usePanelEdgePopover(field)
+const resolvedPopoverSide = computed(() => anchor?.side ?? props.popoverSide)
 
 // Resolve the text value to a CSS colour for the swatch; `null` → bare
 // checkerboard (empty / unparseable value).
@@ -39,7 +46,7 @@ function onInput(event: Event) {
 // The picker edits the model live (so the user sees the colour applied while
 // they tweak). Save just closes; Cancel restores the value captured when the
 // popover opened.
-const open = ref(false)
+const open = shallowRef(false)
 let valueOnOpen = ''
 
 // reka only dismisses on a same-document outside click, so focusing the canvas
@@ -68,6 +75,7 @@ function cancel() {
 <template>
   <Popover :open="open" @update:open="onOpenChange">
     <div
+      ref="field"
       :class="cn(
         'uf-ui-color-input flex h-9 w-full items-center gap-2 rounded-md border border-input bg-transparent py-1 pl-1.5 text-sm shadow-xs transition-colors',
         'focus-within:outline-none focus-within:ring-1 focus-within:ring-uf-accent focus-within:border-uf-accent',
@@ -94,9 +102,14 @@ function cancel() {
       >
     </div>
 
-    <!-- No floating close: there is no title row, and the ✕ would sit on top
-         of the gradient area — the picker's own Save/Cancel dismiss it. -->
-    <PopoverContent align="start" class="w-auto" hide-close>
+    <PopoverContent
+      align="start"
+      class="w-auto"
+      :collision-padding="6"
+      :reference="popoverReference"
+      :side="resolvedPopoverSide"
+      :title="t('common.pickColor')"
+    >
       <ColorPicker
         v-model="model"
         :format="format"

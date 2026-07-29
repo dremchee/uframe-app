@@ -188,7 +188,7 @@ function localizedFilterSummary(entry: FilterEntry): string {
             <EffectSliderRow label="Blur" :model-value="entry.blur ?? 0" :min="0" :max="100" unit="px" @update:model-value="v => patch({ blur: v })" />
             <div class="flex flex-col gap-1.5">
               <span class="text-[11px] font-semibold uppercase tracking-wider text-uf-muted">{{ t('style.color') }}</span>
-              <ColorInput class="h-8 w-full" :model-value="entry.color ?? ''" placeholder="rgba(0, 0, 0, 0.7)" @update:model-value="v => patch({ color: v })" />
+              <ColorInput class="h-8 w-full" popover-side="left" :model-value="entry.color ?? ''" placeholder="rgba(0, 0, 0, 0.7)" @update:model-value="v => patch({ color: v })" />
             </div>
           </template>
 

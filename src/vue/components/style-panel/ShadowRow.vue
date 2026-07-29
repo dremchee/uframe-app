@@ -111,7 +111,7 @@ function patch(p: Partial<ShadowEntry>) {
           <EffectSliderRow label="Size" :model-value="entry.spread ?? 0" :min="-100" :max="100" unit="px" @update:model-value="v => patch({ spread: v })" />
           <div class="flex flex-col gap-1.5">
             <span class="text-[11px] font-semibold uppercase tracking-wider text-uf-muted">{{ t('style.color') }}</span>
-            <ColorInput class="h-8 w-full" :model-value="entry.color ?? ''" placeholder="rgba(0, 0, 0, 0.2)" @update:model-value="v => patch({ color: v })" />
+            <ColorInput class="h-8 w-full" popover-side="left" :model-value="entry.color ?? ''" placeholder="rgba(0, 0, 0, 0.2)" @update:model-value="v => patch({ color: v })" />
           </div>
         </PopoverContent>
       </Popover>

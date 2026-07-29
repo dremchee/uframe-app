@@ -152,7 +152,7 @@ function updateGradient(next: GradientValue) {
         @update:model-value="setColor"
       >
         <template #default="{ value, setValue }">
-          <ColorInput end-action :model-value="value" placeholder="transparent" @update:model-value="v => setValue(String(v))" />
+          <ColorInput end-action popover-side="left" :model-value="value" placeholder="transparent" @update:model-value="v => setValue(String(v))" />
         </template>
       </BindableField>
     </StyleField>

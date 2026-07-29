@@ -141,7 +141,7 @@ function updateFontWeight(value: number | undefined) {
     <StyleField :label="t('style.color')" field="color">
       <BindableField type="color" icon-trigger :model-value="styles.color ?? ''" @update:model-value="value => update({ color: value })">
         <template #default="{ value, setValue }">
-          <ColorInput end-action :model-value="value" :placeholder="inheritedPh('color', '#000000')" @update:model-value="nextValue => setValue(String(nextValue))" />
+          <ColorInput end-action popover-side="left" :model-value="value" :placeholder="inheritedPh('color', '#000000')" @update:model-value="nextValue => setValue(String(nextValue))" />
         </template>
       </BindableField>
     </StyleField>
