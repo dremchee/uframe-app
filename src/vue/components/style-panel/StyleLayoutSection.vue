@@ -5,7 +5,6 @@ import { NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncre
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
 import { useUframeI18n } from '@/vue/i18n'
 import FlexItemControl from './FlexItemControl.vue'
-import GapControl from './GapControl.vue'
 import GridControl from './GridControl.vue'
 import GridItemControl from './GridItemControl.vue'
 import PositionControl from './PositionControl.vue'
@@ -108,7 +107,6 @@ const isGrid = computed(() => styles.value.display === 'grid')
           </SelectContent>
         </Select>
       </StyleField>
-      <GapControl :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
     </template>
 
     <GridControl v-if="isGrid" :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />

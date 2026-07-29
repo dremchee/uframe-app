@@ -4,7 +4,6 @@ import { computed } from 'vue'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui'
 import { mergeStyles } from '@/core'
 import { useUframeI18n } from '@/vue/i18n'
-import GapControl from './GapControl.vue'
 import GridTrackEditor from './GridTrackEditor.vue'
 import StyleField from './StyleField.vue'
 
@@ -32,8 +31,6 @@ function update(patch: Partial<BaseBlockStyles>) {
 <template>
   <div class="grid gap-2">
     <GridTrackEditor :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
-
-    <GapControl :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
 
     <StyleField :label="t('style.autoFlow')" field="gridAutoFlow">
       <Select

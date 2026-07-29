@@ -6,6 +6,7 @@ import { useEventListener } from '@vueuse/core'
 import { computed, shallowRef, useTemplateRef, watch } from 'vue'
 import { toVarRef } from '@/core'
 import { cn } from '@/lib/utils'
+import { usePanelEdgePopover } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 import Button from '../button/Button.vue'
 import Input from '../input/Input.vue'
@@ -18,6 +19,7 @@ import SelectContent from '../select/SelectContent.vue'
 import SelectItem from '../select/SelectItem.vue'
 import SelectTrigger from '../select/SelectTrigger.vue'
 import SelectValue from '../select/SelectValue.vue'
+import Switch from '../switch/Switch.vue'
 import Tooltip from '../tooltip/Tooltip.vue'
 import FormulaValueField from './FormulaValueField.vue'
 import {
@@ -90,10 +92,13 @@ const unit = shallowRef(props.defaultUnit)
 const expressionMode = shallowRef(false)
 const popoverOpen = shallowRef(false)
 const popoverMode = shallowRef<PopoverMode>('menu')
+const showFormulaLine = shallowRef(false)
 const unitTooltipOpen = shallowRef(false)
 const advancedTooltipOpen = shallowRef(false)
 const unitAction = useTemplateRef<HTMLElement>('unitAction')
 const advancedAction = useTemplateRef<HTMLElement>('advancedAction')
+const { anchor, reference: popoverReference } = usePanelEdgePopover(advancedAction)
+const popoverSide = computed(() => anchor?.side ?? 'left')
 const selectedPreset = shallowRef<string | null>(null)
 const activeFormula = shallowRef<FormulaKind>('clamp')
 const calcFirstValue = shallowRef('100%')
@@ -103,6 +108,7 @@ const minValue = shallowRef('0px')
 const preferredValue = shallowRef('2vw')
 const maxValue = shallowRef('1fr')
 const variableName = shallowRef('')
+const formulaInput = shallowRef('')
 
 const unitOptions = computed(() => props.units ?? CSS_SIZING_UNITS)
 const supportedUnits = computed(() => new Set(unitOptions.value.map(option => option.value)))
@@ -126,6 +132,11 @@ const functionOptions = computed<FormulaKind[]>(() => {
     options.push('minmax')
   return options
 })
+const selectedFunction = computed<FormulaKind | undefined>(() => {
+  const functionName = rawValue.value.match(/^([a-z-]+)\s*\(/i)?.[1]?.toLowerCase() as FormulaKind | undefined
+  return functionName != null && functionOptions.value.includes(functionName) ? functionName : undefined
+})
+const hasSelectedFunction = computed(() => selectedFunction.value != null)
 const selectedOption = computed(() => selectedPreset.value ?? activeFormula.value)
 const formulaResult = computed(() => {
   if (selectedPreset.value)
@@ -151,13 +162,21 @@ const formulaResult = computed(() => {
   }
   return ''
 })
-const canApplyFormula = computed(() => isValidCssSize(formulaResult.value))
+const canApplyFormula = computed(() => isValidCssSize(formulaInput.value))
 
 watch(() => props.modelValue, syncFromModel, { immediate: true })
 
 watch(popoverOpen, (isOpen) => {
   if (!isOpen)
     popoverMode.value = 'menu'
+})
+
+// The raw expression is a compact companion to the structured builder: edits
+// in either surface are immediately reflected in the other whenever we can
+// recognise the function and its arguments.
+watch(formulaResult, (value) => {
+  if (popoverMode.value === 'formula')
+    formulaInput.value = value
 })
 
 useEventListener(window, 'blur', () => {
@@ -241,6 +260,16 @@ function openAdvancedMenu() {
   popoverMode.value = 'menu'
 }
 
+function openSelectedFunction() {
+  const kind = selectedFunction.value
+  if (!kind)
+    return
+
+  closeActionTooltips()
+  selectFunction(kind)
+  popoverOpen.value = true
+}
+
 function showUnitTooltip() {
   advancedTooltipOpen.value = false
   unitTooltipOpen.value = true
@@ -288,6 +317,7 @@ function selectFunction(kind: FormulaKind) {
   activeFormula.value = kind
   hydrateSelectedFunction(kind)
   popoverMode.value = 'formula'
+  formulaInput.value = formulaResult.value
 }
 
 function onCalcOperator(value: unknown) {
@@ -328,14 +358,23 @@ function selectPreset(preset: string) {
     return
   }
   selectedPreset.value = preset
+  formulaInput.value = formulaResult.value
 }
 
 function applyFormula() {
   if (!canApplyFormula.value)
     return
-  emit('update:modelValue', formulaResult.value)
-  syncFromModel(formulaResult.value)
+  emit('update:modelValue', formulaInput.value)
+  syncFromModel(formulaInput.value)
   popoverOpen.value = false
+}
+
+function onFormulaInput(value: string | number) {
+  const next = String(value ?? '')
+  formulaInput.value = next
+
+  if (isValidCssSize(next))
+    hydrateFormula(next)
 }
 
 function hydrateFormula(raw: string) {
@@ -431,6 +470,7 @@ function uiText(key: string, fallback: string): string {
       :model-value="isKeyword ? '' : number"
       :disabled="isKeyword"
       :aria-invalid="invalid || undefined"
+      @click="openSelectedFunction"
       @update:model-value="onNumber"
     />
 
@@ -485,7 +525,13 @@ function uiText(key: string, fallback: string): string {
             :aria-label="uiText('style.advancedValue', 'Variables and functions')"
             @click="openAdvancedMenu"
           >
-            <ChevronDown class="size-4 shrink-0 opacity-50" aria-hidden="true" />
+            <SquareFunction
+              v-if="hasSelectedFunction"
+              class="size-4 shrink-0"
+              :stroke-width="1.8"
+              aria-hidden="true"
+            />
+            <ChevronDown v-else class="size-4 shrink-0 opacity-50" aria-hidden="true" />
           </button>
         </PopoverTrigger>
       </span>
@@ -493,145 +539,169 @@ function uiText(key: string, fallback: string): string {
       <PopoverContent
         v-if="popoverMode === 'menu'"
         align="end"
+        :side="popoverSide"
         :side-offset="5"
+        :collision-padding="5"
+        :reference="popoverReference"
         :title="uiText('style.advancedValue', 'Variables and functions')"
         body-class="p-0"
         class="w-72 overflow-hidden p-0"
         @focus-outside="closeMenuOnFocusOutside"
       >
-        <section v-if="valueOptions.length">
-          <div class="px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-uf-muted">
-            {{ uiText('style.values', 'Values') }}
-          </div>
-          <div class="px-1.5 pb-1.5">
-            <button
-              v-for="valueOption in valueOptions"
-              :key="valueOption"
-              type="button"
-              class="flex h-8 w-full appearance-none items-center rounded border-0 bg-transparent px-2 text-left text-xs text-uf-text transition-colors hover:bg-uf-panel-muted"
-              @click="selectValue(valueOption)"
-            >
-              {{ valueOption }}
-            </button>
-          </div>
-        </section>
+        <div class="max-h-[min(32rem,calc(100dvh-6rem))] overflow-y-auto overscroll-contain">
+          <section v-if="valueOptions.length">
+            <div class="px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-uf-muted">
+              {{ uiText('style.values', 'Values') }}
+            </div>
+            <div class="px-1.5 pb-1.5">
+              <button
+                v-for="valueOption in valueOptions"
+                :key="valueOption"
+                type="button"
+                class="flex h-8 w-full appearance-none items-center rounded border-0 bg-transparent px-2 text-left text-xs text-uf-text transition-colors hover:bg-uf-panel-muted"
+                @click="selectValue(valueOption)"
+              >
+                {{ valueOption }}
+              </button>
+            </div>
+          </section>
 
-        <section v-if="bindable" :class="valueOptions.length > 0 && 'border-t border-border'">
-          <div class="px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-uf-muted">
-            {{ t('style.variablesOfType', { type: 'size' }) }}
-          </div>
-          <div class="px-1.5 pb-1.5">
-            <ul class="m-0 flex list-none flex-col gap-px p-0">
-              <li v-for="variable in variables" :key="variable.key" class="contents">
-                <button
-                  type="button"
-                  class="flex h-8 w-full appearance-none items-center gap-2 rounded border-0 bg-transparent px-2 text-left text-xs transition-colors hover:bg-uf-panel-muted"
-                  @click="selectVariable(variable.key)"
-                >
-                  <span class="min-w-0 flex-1 truncate text-uf-text">{{ variable.name }}</span>
-                  <span class="max-w-[45%] shrink-0 truncate font-mono text-[11px] text-uf-muted">{{ variable.value || '—' }}</span>
-                </button>
-              </li>
-            </ul>
-            <p v-if="!variables.length" class="px-2 py-1 text-xs text-uf-muted">
-              {{ uiText('style.noVariables', 'No matching variables yet.') }}
-            </p>
-          </div>
-        </section>
+          <section v-if="bindable" :class="valueOptions.length > 0 && 'border-t border-border'">
+            <div class="px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-uf-muted">
+              {{ t('style.variablesOfType', { type: 'size' }) }}
+            </div>
+            <div class="px-1.5 pb-1.5">
+              <ul class="m-0 flex list-none flex-col gap-px p-0">
+                <li v-for="variable in variables" :key="variable.key" class="contents">
+                  <button
+                    type="button"
+                    class="flex h-8 w-full appearance-none items-center gap-2 rounded border-0 bg-transparent px-2 text-left text-xs transition-colors hover:bg-uf-panel-muted"
+                    @click="selectVariable(variable.key)"
+                  >
+                    <span class="min-w-0 flex-1 truncate text-uf-text">{{ variable.name }}</span>
+                    <span class="max-w-[45%] shrink-0 truncate font-mono text-[11px] text-uf-muted">{{ variable.value || '—' }}</span>
+                  </button>
+                </li>
+              </ul>
+              <p v-if="!variables.length" class="px-2 py-1 text-xs text-uf-muted">
+                {{ uiText('style.noVariables', 'No matching variables yet.') }}
+              </p>
+            </div>
+          </section>
 
-        <section :class="(valueOptions.length > 0 || bindable) && 'border-t border-border'">
-          <div class="px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-uf-muted">
-            {{ uiText('style.functions', 'Functions') }}
-          </div>
-          <div class="px-1.5 pb-1.5">
-            <button
-              v-if="expressionMode"
-              type="button"
-              class="flex h-8 w-full appearance-none items-center gap-2 rounded border-0 bg-transparent px-2 text-left text-xs transition-colors hover:bg-uf-panel-muted"
-              @click="switchToUnitInput"
-            >
-              <Ruler class="shrink-0 text-uf-muted" :size="14" :stroke-width="1.8" aria-hidden="true" />
-              <span class="text-uf-text">{{ uiText('style.unitValue', 'Unit value') }}</span>
-            </button>
-            <button
-              v-for="kind in functionOptions"
-              :key="kind"
-              type="button"
-              class="flex h-8 w-full appearance-none items-center gap-2 rounded border-0 bg-transparent px-2 text-left text-xs transition-colors hover:bg-uf-panel-muted"
-              @click="selectFunction(kind)"
-            >
-              <SquareFunction class="shrink-0 text-uf-muted" :size="14" :stroke-width="1.8" aria-hidden="true" />
-              <span class="text-uf-text">{{ kind }}()</span>
-            </button>
-          </div>
-        </section>
+          <section :class="(valueOptions.length > 0 || bindable) && 'border-t border-border'">
+            <div class="px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-wider text-uf-muted">
+              {{ uiText('style.functions', 'Functions') }}
+            </div>
+            <div class="px-1.5 pb-1.5">
+              <button
+                v-if="expressionMode"
+                type="button"
+                class="flex h-8 w-full appearance-none items-center gap-2 rounded border-0 bg-transparent px-2 text-left text-xs transition-colors hover:bg-uf-panel-muted"
+                @click="switchToUnitInput"
+              >
+                <Ruler class="shrink-0 text-uf-muted" :size="14" :stroke-width="1.8" aria-hidden="true" />
+                <span class="text-uf-text">{{ uiText('style.unitValue', 'Unit value') }}</span>
+              </button>
+              <button
+                v-for="kind in functionOptions"
+                :key="kind"
+                type="button"
+                class="flex h-8 w-full appearance-none items-center gap-2 rounded border-0 bg-transparent px-2 text-left text-xs transition-colors hover:bg-uf-panel-muted"
+                @click="selectFunction(kind)"
+              >
+                <SquareFunction class="shrink-0 text-uf-muted" :size="14" :stroke-width="1.8" aria-hidden="true" />
+                <span class="text-uf-text">{{ kind }}()</span>
+              </button>
+            </div>
+          </section>
+        </div>
       </PopoverContent>
 
       <PopoverContent
         v-else
         align="end"
+        :side="popoverSide"
         :side-offset="5"
+        :collision-padding="5"
+        :reference="popoverReference"
         :title="uiText('style.editSizingFormula', 'Edit sizing formula')"
         body-class="p-0"
         class="w-64 overflow-hidden"
       >
         <div class="p-3">
-          <Label>
-            <span>{{ uiText('style.preset', 'Preset') }}</span>
-            <Select :model-value="selectedOption" @update:model-value="value => selectPreset(String(value))">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="preset in presetOptions" :key="preset" :value="preset">
-                  {{ presetLabel(preset) }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </Label>
+          <Input
+            v-if="showFormulaLine"
+            type="text"
+            class="font-mono text-sm"
+            :model-value="formulaInput"
+            :aria-label="uiText('style.editSizingFormula', 'Edit sizing formula')"
+            @update:model-value="onFormulaInput"
+          />
 
-          <div v-if="!selectedPreset" class="mt-3 min-w-0">
-            <div v-if="activeFormula === 'minmax' || activeFormula === 'min' || activeFormula === 'max'" class="grid gap-2">
-              <FormulaValueField v-model="minValue" :label="uiText('style.firstValue', 'First value')" placeholder="0" :units="FORMULA_UNITS" />
-              <FormulaValueField v-model="maxValue" :label="uiText('style.secondValue', 'Second value')" placeholder="1" :units="FORMULA_UNITS" />
-            </div>
+          <template v-else>
+            <Label>
+              <span>{{ uiText('style.preset', 'Preset') }}</span>
+              <Select :model-value="selectedOption" @update:model-value="value => selectPreset(String(value))">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="preset in presetOptions" :key="preset" :value="preset">
+                    {{ presetLabel(preset) }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </Label>
 
-            <div v-else-if="activeFormula === 'clamp'" class="grid gap-2">
-              <FormulaValueField v-model="minValue" :label="uiText('style.minimum', 'Minimum')" placeholder="1" :units="FORMULA_UNITS" />
-              <FormulaValueField v-model="preferredValue" :label="uiText('style.preferred', 'Preferred')" placeholder="2" :units="FORMULA_UNITS" />
-              <FormulaValueField v-model="maxValue" :label="uiText('style.maximum', 'Maximum')" placeholder="3" :units="FORMULA_UNITS" />
-            </div>
+            <div v-if="!selectedPreset" class="mt-3 min-w-0">
+              <div v-if="activeFormula === 'minmax' || activeFormula === 'min' || activeFormula === 'max'" class="grid gap-2">
+                <FormulaValueField v-model="minValue" :label="uiText('style.firstValue', 'First value')" placeholder="0" :units="FORMULA_UNITS" />
+                <FormulaValueField v-model="maxValue" :label="uiText('style.secondValue', 'Second value')" placeholder="1" :units="FORMULA_UNITS" />
+              </div>
 
-            <div v-else-if="activeFormula === 'calc'" class="grid gap-2">
-              <FormulaValueField
-                v-model="calcFirstValue"
-                :label="uiText('style.firstValue', 'First value')"
-                placeholder="100"
-                :units="FORMULA_UNITS"
-              />
-              <Label>
-                <span>{{ uiText('style.operator', 'Operator') }}</span>
-                <Select :model-value="calcOperator" @update:model-value="onCalcOperator">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem v-for="operator in CALC_OPERATORS" :key="operator" :value="operator">
-                      {{ operator }}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </Label>
-              <FormulaValueField
-                v-model="calcSecondValue"
-                :label="uiText('style.secondValue', 'Second value')"
-                placeholder="2"
-                :units="FORMULA_UNITS"
-              />
+              <div v-else-if="activeFormula === 'clamp'" class="grid gap-2">
+                <FormulaValueField v-model="minValue" :label="uiText('style.minimum', 'Minimum')" placeholder="1" :units="FORMULA_UNITS" />
+                <FormulaValueField v-model="preferredValue" :label="uiText('style.preferred', 'Preferred')" placeholder="2" :units="FORMULA_UNITS" />
+                <FormulaValueField v-model="maxValue" :label="uiText('style.maximum', 'Maximum')" placeholder="3" :units="FORMULA_UNITS" />
+              </div>
+
+              <div v-else-if="activeFormula === 'calc'" class="grid gap-2">
+                <FormulaValueField
+                  v-model="calcFirstValue"
+                  :label="uiText('style.firstValue', 'First value')"
+                  placeholder="100"
+                  :units="FORMULA_UNITS"
+                />
+                <Label>
+                  <span>{{ uiText('style.operator', 'Operator') }}</span>
+                  <Select :model-value="calcOperator" @update:model-value="onCalcOperator">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem v-for="operator in CALC_OPERATORS" :key="operator" :value="operator">
+                        {{ operator }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Label>
+                <FormulaValueField
+                  v-model="calcSecondValue"
+                  :label="uiText('style.secondValue', 'Second value')"
+                  placeholder="2"
+                  :units="FORMULA_UNITS"
+                />
+              </div>
             </div>
-          </div>
+          </template>
         </div>
 
+        <div class="px-3 py-2">
+          <Switch v-model="showFormulaLine">
+            {{ uiText('style.formulaLine', 'Single line') }}
+          </Switch>
+        </div>
         <div class="flex items-center justify-end gap-2 px-3 py-2">
           <Button variant="outline" size="sm" @click="popoverOpen = false">
             {{ t('common.cancel') }}

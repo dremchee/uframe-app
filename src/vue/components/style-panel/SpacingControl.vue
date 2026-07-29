@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { BaseBlockStyles, CssLength } from '@/core'
-import { onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
+import GapControl from './GapControl.vue'
 import SpacingField from './SpacingField.vue'
 
 const props = defineProps<{
@@ -15,6 +16,11 @@ const emit = defineEmits<{
 
 const { editor } = useEditorContext()
 const { t } = useUframeI18n()
+const supportsGap = computed(() =>
+  props.modelValue.display === 'flex'
+  || props.modelValue.display === 'inline-flex'
+  || props.modelValue.display === 'grid',
+)
 
 type Group = 'margin' | 'padding'
 type Side = 'Top' | 'Right' | 'Bottom' | 'Left'
@@ -109,54 +115,58 @@ const labelText = 'absolute top-1 left-2 text-[10px] font-semibold uppercase tra
 </script>
 
 <template>
-  <div class="border border-uf-border bg-uf-panel-muted px-10 py-7" :class="[frame]">
-    <span :class="labelText">{{ t('style.margin') }}</span>
-    <div
-      v-for="edge in edges"
-      :key="`m-${edge.side}`"
-      class="absolute"
-      :class="[edge.pos, open === `m-${edge.side}` && 'z-20']"
-      @mouseenter="setHovering(`m-${edge.side}`, true)"
-      @mouseleave="setHovering(`m-${edge.side}`, false)"
-    >
-      <SpacingField
-        :model-value="get('margin', edge.side)"
-        :dir="edge.dir"
-        :label="`Margin ${edge.side}`"
-        @change="value => set('margin', edge.side, value)"
-        @update:open="value => setOpen(`m-${edge.side}`, value)"
-        @update:dragging="value => setDragging(`m-${edge.side}`, value)"
+  <div class="grid gap-4">
+    <div class="border border-uf-border bg-uf-panel-muted px-10 py-7" :class="[frame]">
+      <span :class="labelText">{{ t('style.margin') }}</span>
+      <div
+        v-for="edge in edges"
+        :key="`m-${edge.side}`"
+        class="absolute"
+        :class="[edge.pos, open === `m-${edge.side}` && 'z-20']"
+        @mouseenter="setHovering(`m-${edge.side}`, true)"
+        @mouseleave="setHovering(`m-${edge.side}`, false)"
+      >
+        <SpacingField
+          :model-value="get('margin', edge.side)"
+          :dir="edge.dir"
+          :label="`Margin ${edge.side}`"
+          @change="value => set('margin', edge.side, value)"
+          @update:open="value => setOpen(`m-${edge.side}`, value)"
+          @update:dragging="value => setDragging(`m-${edge.side}`, value)"
+        />
+      </div>
+
+      <div class="border border-uf-border bg-uf-panel px-10 py-7" :class="[frame]">
+        <span :class="labelText">{{ t('style.padding') }}</span>
+        <div
+          v-for="edge in edges"
+          :key="`p-${edge.side}`"
+          class="absolute"
+          :class="[edge.pos, open === `p-${edge.side}` && 'z-20']"
+          @mouseenter="setHovering(`p-${edge.side}`, true)"
+          @mouseleave="setHovering(`p-${edge.side}`, false)"
+        >
+          <SpacingField
+            :model-value="get('padding', edge.side)"
+            :dir="edge.dir"
+            :label="`Padding ${edge.side}`"
+            @change="value => set('padding', edge.side, value)"
+            @update:open="value => setOpen(`p-${edge.side}`, value)"
+            @update:dragging="value => setDragging(`p-${edge.side}`, value)"
+          />
+        </div>
+        <div class="h-7 rounded bg-uf-border/40" aria-hidden="true" />
+      </div>
+
+      <!-- Spotlight: shade the whole control while a popover is open; the active
+           trigger is lifted above this overlay (z-20) so it stays crisp. -->
+      <div
+        v-if="open"
+        class="absolute inset-0 z-10 rounded-md bg-black/10 pointer-events-none transition-opacity"
+        aria-hidden="true"
       />
     </div>
 
-    <div class="border border-uf-border bg-uf-panel px-10 py-7" :class="[frame]">
-      <span :class="labelText">{{ t('style.padding') }}</span>
-      <div
-        v-for="edge in edges"
-        :key="`p-${edge.side}`"
-        class="absolute"
-        :class="[edge.pos, open === `p-${edge.side}` && 'z-20']"
-        @mouseenter="setHovering(`p-${edge.side}`, true)"
-        @mouseleave="setHovering(`p-${edge.side}`, false)"
-      >
-        <SpacingField
-          :model-value="get('padding', edge.side)"
-          :dir="edge.dir"
-          :label="`Padding ${edge.side}`"
-          @change="value => set('padding', edge.side, value)"
-          @update:open="value => setOpen(`p-${edge.side}`, value)"
-          @update:dragging="value => setDragging(`p-${edge.side}`, value)"
-        />
-      </div>
-      <div class="h-7 rounded bg-uf-border/40" aria-hidden="true" />
-    </div>
-
-    <!-- Spotlight: shade the whole control while a popover is open; the active
-         trigger is lifted above this overlay (z-20) so it stays crisp. -->
-    <div
-      v-if="open"
-      class="absolute inset-0 z-10 rounded-md bg-black/10 pointer-events-none transition-opacity"
-      aria-hidden="true"
-    />
+    <GapControl v-if="supportsGap" :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" />
   </div>
 </template>

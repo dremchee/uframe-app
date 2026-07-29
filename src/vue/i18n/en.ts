@@ -164,6 +164,7 @@ export const en = {
     advancedValue: 'Variables and functions',
     unitValue: 'Unit value',
     editSizingFormula: 'Edit sizing formula',
+    formulaLine: 'Single line',
     preset: 'Preset',
     firstValue: 'First value',
     secondValue: 'Second value',

@@ -6,6 +6,7 @@ import { IconButton, Popover, PopoverContent, PopoverTrigger, SizeInput } from '
 import { formatLength, isKeywordUnit, parseLength } from '@/components/ui/size-input/units'
 import { parseVarRef } from '@/core'
 import { cn } from '@/lib/utils'
+import { usePanelEdgePopover } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 import BindableField from './BindableField.vue'
 
@@ -26,6 +27,9 @@ const emit = defineEmits<{
   'update:dragging': [value: boolean]
 }>()
 const { t } = useUframeI18n()
+const field = useTemplateRef<HTMLElement>('field')
+const { anchor, reference: popoverReference } = usePanelEdgePopover(field)
+const popoverSide = computed(() => anchor?.side ?? 'left')
 
 const horizontal = computed(() => props.dir === 'left' || props.dir === 'right')
 
@@ -141,45 +145,54 @@ function onClickCapture(event: MouseEvent) {
 </script>
 
 <template>
-  <Popover :open="open" @update:open="onOpenChange">
-    <PopoverTrigger
-      :class="cn(
-        'inline-flex items-center justify-center w-9 h-6 rounded text-[12px] tabular-nums transition-colors hover:bg-black/5 data-[state=open]:bg-uf-panel data-[state=open]:ring-1 data-[state=open]:ring-uf-accent',
-        isVar ? 'cursor-pointer' : horizontal ? 'cursor-ew-resize' : 'cursor-ns-resize',
-        isVar ? 'font-mono text-[10px] text-uf-accent' : isZero ? 'text-uf-muted' : 'text-uf-text font-medium',
-      )"
-      @pointerdown="onPointerdown"
-      @click.capture="onClickCapture"
-    >
-      {{ display }}
-    </PopoverTrigger>
-    <PopoverContent class="w-56" :title="label" @open-auto-focus="onOpenAutoFocus">
-      <!-- Submitting on Enter closes the popover; the value is already applied
+  <div ref="field">
+    <Popover :open="open" @update:open="onOpenChange">
+      <PopoverTrigger
+        :class="cn(
+          'inline-flex items-center justify-center w-9 h-6 rounded text-[12px] tabular-nums transition-colors hover:bg-black/5 data-[state=open]:bg-uf-panel data-[state=open]:ring-1 data-[state=open]:ring-uf-accent',
+          isVar ? 'cursor-pointer' : horizontal ? 'cursor-ew-resize' : 'cursor-ns-resize',
+          isVar ? 'font-mono text-[10px] text-uf-accent' : isZero ? 'text-uf-muted' : 'text-uf-text font-medium',
+        )"
+        @pointerdown="onPointerdown"
+        @click.capture="onClickCapture"
+      >
+        {{ display }}
+      </PopoverTrigger>
+      <PopoverContent
+        class="w-56"
+        :side="popoverSide"
+        :collision-padding="5"
+        :reference="popoverReference"
+        :title="label"
+        @open-auto-focus="onOpenAutoFocus"
+      >
+        <!-- Submitting on Enter closes the popover; the value is already applied
            on every keystroke via @update:model-value, so submit is purely the
            "I'm done" signal. -->
-      <form class="flex items-center gap-2" @submit.prevent="onOpenChange(false)">
-        <IconButton size="lg" :aria-label="t('style.clearAuto')" @click="emit('change', '')">
-          <Eraser :size="15" :stroke-width="1.75" />
-        </IconButton>
-        <div class="flex-1 min-w-0">
-          <BindableField
-            type="size"
-            :model-value="modelValue"
-            @update:model-value="value => emit('change', value)"
-          >
-            <template #default="{ value, setValue, requestBind }">
-              <SizeInput
-                ref="sizeInput"
-                bindable
-                :model-value="value"
-                placeholder="0"
-                @request-bind="requestBind"
-                @update:model-value="setValue"
-              />
-            </template>
-          </BindableField>
-        </div>
-      </form>
-    </PopoverContent>
-  </Popover>
+        <form class="flex items-center gap-2" @submit.prevent="onOpenChange(false)">
+          <IconButton size="lg" :aria-label="t('style.clearAuto')" @click="emit('change', '')">
+            <Eraser :size="15" :stroke-width="1.75" />
+          </IconButton>
+          <div class="flex-1 min-w-0">
+            <BindableField
+              type="size"
+              :model-value="modelValue"
+              @update:model-value="value => emit('change', value)"
+            >
+              <template #default="{ value, setValue, requestBind }">
+                <SizeInput
+                  ref="sizeInput"
+                  bindable
+                  :model-value="value"
+                  placeholder="0"
+                  @request-bind="requestBind"
+                  @update:model-value="setValue"
+                />
+              </template>
+            </BindableField>
+          </div>
+        </form>
+      </PopoverContent>
+    </Popover>
+  </div>
 </template>

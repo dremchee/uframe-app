@@ -38,10 +38,6 @@ const unitOptions = computed(() => props.units ?? CSS_UNITS)
 
 const number = shallowRef('')
 const unit = shallowRef(props.defaultUnit)
-const hasSelectedUnit = computed(() => unit.value !== '—')
-const unitTriggerClass = computed(() => [
-  !hasSelectedUnit.value && 'w-6 px-0 [&>span]:hidden',
-].filter(Boolean).join(' '))
 
 // Controlled from the outside: re-derive number/unit whenever the model changes.
 // An empty value keeps the last chosen unit so the field still remembers it, and
@@ -106,8 +102,7 @@ function onUnit(value: unknown) {
     />
     <Select v-if="unitOptions.length > 1 || bindable" :model-value="unit" @update:model-value="onUnit">
       <SelectTrigger
-        class="h-6 min-w-6 w-auto shrink-0 gap-0 rounded-sm border-0 bg-transparent px-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted shadow-none transition-colors hover:bg-uf-panel-muted hover:text-uf-text focus:outline-none focus:ring-0 focus-visible:ring-0 data-[state=open]:bg-uf-panel-muted data-[state=open]:text-uf-text [&>svg]:hidden"
-        :class="unitTriggerClass"
+        class="h-6 min-w-6 w-auto shrink-0 justify-center gap-0 rounded-sm border-0 bg-transparent px-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted shadow-none transition-colors hover:bg-uf-panel-muted focus:outline-none focus:ring-0 focus-visible:ring-0 data-[state=open]:bg-uf-panel-muted [&>svg]:hidden"
         aria-label="Select unit"
       >
         <SelectValue />
@@ -121,10 +116,7 @@ function onUnit(value: unknown) {
         </SelectItem>
       </SelectContent>
     </Select>
-    <span
-      v-else-if="hasSelectedUnit"
-      class="grid h-6 min-w-6 shrink-0 select-none place-items-center px-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted"
-    >
+    <span v-else class="grid h-6 min-w-6 shrink-0 select-none place-items-center px-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted">
       {{ unit }}
     </span>
   </div>
