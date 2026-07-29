@@ -1,3 +1,4 @@
+import type { MaybeRefOrGetter } from 'vue'
 import type { BlockRegistry, GlobalSettings, PageBlock, PageDocument, StyleViewport, SymbolDefinition, UframePlugin } from '@/core'
 import { computed, shallowRef, watch } from 'vue'
 import {
@@ -53,7 +54,7 @@ export interface UsePageEditorOptions {
    * the same live set.
    */
   plugins?: UframePlugin[]
-  readonly?: boolean
+  readonly?: MaybeRefOrGetter<boolean | undefined>
   /**
    * localStorage key under which the editor's UI preferences (sidebar pin,
    * active mode, panel width) are persisted. Defaults to a shared key —

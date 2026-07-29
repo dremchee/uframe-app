@@ -142,7 +142,7 @@ const editor = usePageEditor({
   globals: globalsModel.value ?? undefined,
   blocks: props.blocks,
   plugins: props.plugins,
-  readonly: props.readonly,
+  readonly: computed(() => props.readonly),
   storageKey: props.prefsKey,
 })
 

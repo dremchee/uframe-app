@@ -1,11 +1,12 @@
-import type { ShallowRef } from 'vue'
+import type { MaybeRefOrGetter, ShallowRef } from 'vue'
 import type { BlockRegistry, PageBlock, PageDocument } from '@/core'
+import { toValue } from 'vue'
 import { findBlock, updateBlockInTree } from '@/core'
 
 export interface UseEditorDocumentMutationsOptions {
   document: ShallowRef<PageDocument>
   registry: ShallowRef<BlockRegistry>
-  readonly?: boolean
+  readonly?: MaybeRefOrGetter<boolean | undefined>
   commit: (document: PageDocument, label?: string, coalesce?: boolean) => void
   selectedBlockId: ShallowRef<string | null>
 }
@@ -19,12 +20,15 @@ export function useEditorDocumentMutations(options: UseEditorDocumentMutationsOp
   const {
     document,
     registry,
-    readonly,
     commit,
     selectedBlockId,
   } = options
+  const isReadonly = () => Boolean(toValue(options.readonly))
 
   function updateBlock(id: string, updater: (block: PageBlock) => PageBlock) {
+    if (isReadonly())
+      return
+
     // Field-level edit — typing / scrubbing floods this; coalesce the burst.
     commit({
       ...document.value,
@@ -37,7 +41,7 @@ export function useEditorDocumentMutations(options: UseEditorDocumentMutationsOp
   // children; a leaf keeps its identity/type and adopts the first block's
   // editable values.
   function applyAiBlocks(scopeId: string | null, blocks: PageBlock[], label = 'history.aiEdit') {
-    if (readonly || !blocks.length)
+    if (isReadonly() || !blocks.length)
       return
 
     const root = scopeId ? findBlock(document.value.blocks, scopeId) : null

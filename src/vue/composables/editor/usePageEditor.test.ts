@@ -1,6 +1,6 @@
 import type { BlockRegistry } from '@/core'
 import { describe, expect, it } from 'vitest'
-import { effectScope } from 'vue'
+import { effectScope, shallowRef } from 'vue'
 import { z } from 'zod'
 import { createBlockRegistry, createGlobalSettings, createPageDocument, findBlock } from '@/core'
 import { usePageEditor } from '@/vue/composables/editor/usePageEditor'
@@ -95,6 +95,35 @@ describe('usePageEditor', () => {
       expect(editor.document.value.blocks[0]?.type).toBe('heading')
       expect(editor.selectedBlockId.value).toBe(editor.document.value.blocks[0]?.id)
     })
+  })
+
+  it('blocks and restores document mutations when readonly changes at runtime', () => {
+    const scope = effectScope()
+    try {
+      scope.run(() => {
+        const readonly = shallowRef(false)
+        const editor = usePageEditor({
+          document: createPageDocument({ title: 'T' }),
+          blocks: makeRegistry(),
+          readonly,
+        })
+
+        editor.addBlock('heading')
+        expect(editor.document.value.blocks).toHaveLength(1)
+
+        readonly.value = true
+        editor.addBlock('heading')
+        editor.undo()
+        expect(editor.document.value.blocks).toHaveLength(1)
+
+        readonly.value = false
+        editor.addBlock('heading')
+        expect(editor.document.value.blocks).toHaveLength(2)
+      })
+    }
+    finally {
+      scope.stop()
+    }
   })
 
   it('addBlock nests inside selected container when it acceptsChildren', () => {

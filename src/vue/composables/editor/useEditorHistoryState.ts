@@ -1,12 +1,13 @@
-import type { ShallowRef } from 'vue'
+import type { MaybeRefOrGetter, ShallowRef } from 'vue'
 import type { HistoryEntry } from './useEditorHistory'
 import type { GlobalSettings, PageDocument } from '@/core'
+import { toValue } from 'vue'
 import { useEditorHistory } from './useEditorHistory'
 
 export interface UseEditorHistoryStateOptions {
   document: ShallowRef<PageDocument>
   globals: ShallowRef<GlobalSettings | null>
-  readonly?: boolean
+  readonly?: MaybeRefOrGetter<boolean | undefined>
 }
 
 /** Owns history snapshots, commit routing and transient gesture coalescing. */
@@ -14,9 +15,10 @@ export function useEditorHistoryState(options: UseEditorHistoryStateOptions) {
   const { document, globals } = options
   const history = useEditorHistory(document.value, globals.value)
   let transient = false
+  const isReadonly = () => Boolean(toValue(options.readonly))
 
   function beginTransient(label = 'history.edit') {
-    if (transient || options.readonly)
+    if (transient || isReadonly())
       return
     history.push(document.value, globals.value, label)
     transient = true
@@ -27,7 +29,7 @@ export function useEditorHistoryState(options: UseEditorHistoryStateOptions) {
   }
 
   function commit(nextDocument: PageDocument, label = 'history.edit', coalesce = false) {
-    if (options.readonly)
+    if (isReadonly())
       return
 
     const stamped = { ...nextDocument, updatedAt: new Date().toISOString() }
@@ -39,7 +41,7 @@ export function useEditorHistoryState(options: UseEditorHistoryStateOptions) {
   }
 
   function commitGlobals(nextGlobals: GlobalSettings, label = 'history.edit', coalesce = false) {
-    if (options.readonly)
+    if (isReadonly())
       return
 
     const stamped = { ...nextGlobals, updatedAt: new Date().toISOString() }
@@ -51,7 +53,7 @@ export function useEditorHistoryState(options: UseEditorHistoryStateOptions) {
   }
 
   function commitBoth(nextDocument: PageDocument, nextGlobals: GlobalSettings, label = 'history.edit') {
-    if (options.readonly)
+    if (isReadonly())
       return
 
     const now = new Date().toISOString()
@@ -76,14 +78,20 @@ export function useEditorHistoryState(options: UseEditorHistoryStateOptions) {
   }
 
   function undo() {
+    if (isReadonly())
+      return
     applyHistoryEntry(history.undo())
   }
 
   function redo() {
+    if (isReadonly())
+      return
     applyHistoryEntry(history.redo())
   }
 
   function goToHistory(index: number) {
+    if (isReadonly())
+      return
     applyHistoryEntry(history.goto(index))
   }
 
