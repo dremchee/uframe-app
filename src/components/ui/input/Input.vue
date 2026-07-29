@@ -50,6 +50,7 @@ function updateValue(event: Event) {
     :class="classes"
     :type="type"
     :value="modelValue"
+    spellcheck="false"
     @input="updateValue"
   >
 </template>

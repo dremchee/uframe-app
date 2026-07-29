@@ -28,6 +28,7 @@ const classes = computed(() =>
   <textarea
     :class="classes"
     :value="modelValue"
+    spellcheck="false"
     @input="
       emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)
     "
