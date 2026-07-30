@@ -62,17 +62,17 @@ function createSubgridDemo(): PageBlock<EmptyProps> {
   }, [
     div(cardStyle, [
       heading('Первая колонка'),
-      paragraph('Эта карточка находится во вложенной сетке и совпадает с первой колонкой родителя.'),
+      paragraph('Узкая карточка во вложенной сетке. Её границы совпадают с первой колонкой родителя.'),
     ]),
     div(cardStyle, [
       heading('Вторая колонка'),
-      paragraph('Измените ширину колонок на родительском Grid — карточки останутся выровненными по тем же линиям.'),
+      paragraph('Широкая карточка наследует вторую колонку. Измените треки у родительского Grid — границы обеих карточек перестроятся вместе.'),
     ]),
   ])
 
   return div({
     display: 'grid',
-    gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+    gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 2fr)',
     gap: '16px',
     paddingTop: '24px',
     paddingRight: '24px',
@@ -92,7 +92,7 @@ function createSubgridDemo(): PageBlock<EmptyProps> {
   }, [
     div({ gridColumn: '1 / -1' }, [
       heading('Демонстрация CSS Subgrid'),
-      paragraph('Выберите вложенный Div Block в Layers: у него включены Grid, Subgrid и растяжение на все колонки родителя.'),
+      paragraph('Родитель задаёт колонки 1fr / 2fr. Выберите вложенный Div Block в Layers: у него включены Grid, Subgrid и растяжение на все колонки родителя.'),
     ]),
     inheritedGrid,
   ]) as PageBlock<EmptyProps>
