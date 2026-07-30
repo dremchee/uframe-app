@@ -271,6 +271,10 @@ function applyPreset(axis: Axis, count: number) {
         </div>
       </template>
 
+      <p v-else-if="modeOf(axis).value === 'subgrid'" class="text-[11px] leading-4 text-uf-muted">
+        {{ t('style.subgridHint', { axis: axis === 'columns' ? t('style.columns').toLowerCase() : t('style.rows').toLowerCase() }) }}
+      </p>
+
       <template v-else>
         <StyleField :label="t('style.repeat')">
           <Select :model-value="autoOf(axis).value.repeat" @update:model-value="value => setAuto(axis, { repeat: value as AutoState['repeat'] })">
