@@ -146,7 +146,7 @@ function updateFontWeight(value: number | undefined) {
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem v-for="option in textWrapOptions" :key="option" :value="option">
-              {{ t(`style.textWrap${option[0]!.toUpperCase()}${option.slice(1)}`) }}
+              {{ option }}
             </SelectItem>
           </SelectContent>
         </Select>
