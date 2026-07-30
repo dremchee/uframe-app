@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { CssUnitOption } from '@/components/ui/size-input/units'
 import type { BaseBlockStyles, GridTrack } from '@/core'
-import { GitFork, List, Maximize2, Plus, Repeat2, X } from '@lucide/vue'
+import { GitFork, Info, List, Maximize2, Plus, Repeat2, X } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
-import { AdvancedSizeInput, Input, NumberField, NumberFieldContent, NumberFieldInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput, Tabs, TabsList, TabsTrigger, Tooltip } from '@/components/ui'
+import { AdvancedSizeInput, Alert, AlertDescription, Input, NumberField, NumberFieldContent, NumberFieldInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput, Tabs, TabsList, TabsTrigger, Tooltip } from '@/components/ui'
 import { appendListItem, makeEqualTracks, mergeStyles, parseGridTemplate, removeListItem, replaceListItem, serializeGridTemplate, serializeTrackList } from '@/core'
 import { useUframeI18n } from '@/vue/i18n'
 import BindableField from './BindableField.vue'
@@ -281,18 +281,18 @@ function spanAllColumns() {
         </div>
       </template>
 
-      <p v-else-if="modeOf(axis).value === 'subgrid'" class="text-[11px] leading-4 text-uf-muted">
-        {{ t('style.subgridHint', { axis: axis === 'columns' ? t('style.columns').toLowerCase() : t('style.rows').toLowerCase() }) }}
-      </p>
+      <Alert v-else-if="modeOf(axis).value === 'subgrid'" class="border-sky-200 bg-sky-50 px-2.5 py-2 text-[11px] text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
+        <Info :size="14" :stroke-width="2" />
+        <AlertDescription class="gap-1 text-[11px] leading-4 text-sky-900 dark:text-sky-100">
+          <span>{{ t('style.subgridHint', { axis: axis === 'columns' ? t('style.columns').toLowerCase() : t('style.rows').toLowerCase() }) }}</span>
+          <button v-if="axis === 'columns' && parentIsGrid && !styles.gridColumn" type="button" :class="addBtn" @click="spanAllColumns">
+            {{ t('style.subgridSpanAll') }}
+          </button>
+        </AlertDescription>
+      </Alert>
       <p v-if="modeOf(axis).value === 'subgrid' && !parentIsGrid" class="text-[11px] leading-4 text-amber-600">
         {{ t('style.subgridParentRequired') }}
       </p>
-      <div v-if="axis === 'columns' && modeOf(axis).value === 'subgrid' && parentIsGrid" class="grid gap-1 text-[11px] text-uf-muted">
-        <p>{{ t('style.subgridSpanHint') }}</p>
-        <button v-if="!styles.gridColumn" type="button" :class="addBtn" @click="spanAllColumns">
-          {{ t('style.subgridSpanAll') }}
-        </button>
-      </div>
 
       <template v-else-if="modeOf(axis).value === 'auto'">
         <StyleField :label="t('style.repeat')">
