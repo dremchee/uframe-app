@@ -109,7 +109,7 @@ const isGrid = computed(() => styles.value.display === 'grid')
       </StyleField>
     </template>
 
-    <GridControl v-if="isGrid" :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
+    <GridControl v-if="isGrid" :model-value="styles" :parent-is-grid="parentIsGrid" @update:model-value="emit('update:modelValue', $event)" />
 
     <template v-if="parentIsGrid">
       <div class="text-[10px] font-semibold uppercase tracking-wide text-uf-muted">

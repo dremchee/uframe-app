@@ -11,6 +11,7 @@ import StyleField from './StyleField.vue'
 
 const props = defineProps<{
   modelValue: BaseBlockStyles
+  parentIsGrid?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -274,8 +275,11 @@ function applyPreset(axis: Axis, count: number) {
       <p v-else-if="modeOf(axis).value === 'subgrid'" class="text-[11px] leading-4 text-uf-muted">
         {{ t('style.subgridHint', { axis: axis === 'columns' ? t('style.columns').toLowerCase() : t('style.rows').toLowerCase() }) }}
       </p>
+      <p v-if="modeOf(axis).value === 'subgrid' && !parentIsGrid" class="text-[11px] leading-4 text-amber-600">
+        {{ t('style.subgridParentRequired') }}
+      </p>
 
-      <template v-else>
+      <template v-else-if="modeOf(axis).value === 'auto'">
         <StyleField :label="t('style.repeat')">
           <Select :model-value="autoOf(axis).value.repeat" @update:model-value="value => setAuto(axis, { repeat: value as AutoState['repeat'] })">
             <SelectTrigger><SelectValue placeholder="auto-fit" /></SelectTrigger>

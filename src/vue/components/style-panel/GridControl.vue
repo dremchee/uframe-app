@@ -9,6 +9,8 @@ import StyleField from './StyleField.vue'
 
 const props = defineProps<{
   modelValue: BaseBlockStyles
+  /** A subgrid must be a direct child of an explicit parent grid. */
+  parentIsGrid?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -30,7 +32,7 @@ function update(patch: Partial<BaseBlockStyles>) {
 
 <template>
   <div class="grid gap-2">
-    <GridTrackEditor :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
+    <GridTrackEditor :model-value="styles" :parent-is-grid="parentIsGrid" @update:model-value="emit('update:modelValue', $event)" />
 
     <StyleField :label="t('style.autoFlow')" field="gridAutoFlow">
       <Select

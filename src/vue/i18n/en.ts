@@ -306,6 +306,7 @@ export const en = {
     repeat: 'Repeat',
     subgrid: 'Subgrid',
     subgridHint: 'Inherits parent grid {axis}. Use this on a nested grid item, not the parent grid itself.',
+    subgridParentRequired: 'No direct grid parent detected — this setting has no visual effect until the parent is set to Grid.',
     count: 'Count',
     track: 'Track',
     min: 'Min',
