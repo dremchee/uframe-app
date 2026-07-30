@@ -40,6 +40,11 @@ export function createBlock<TProps>(
   definition: BlockDefinition<TProps>,
   props?: Partial<TProps>,
 ): PageBlock<TProps> {
+  // A library entry may describe a reusable composition, not only one
+  // element. Its factory owns the complete initial tree and fresh IDs.
+  if (definition.createBlock && !props)
+    return definition.createBlock()
+
   return {
     id: createShortId(definition.type),
     type: definition.type,

@@ -635,6 +635,7 @@ export const en = {
       selectOption: { label: 'Select Option', description: 'Dropdown entry' },
       slot: { label: 'Slot', description: 'Named component content region' },
       spacer: { label: 'Spacer', description: 'Vertical rhythm' },
+      subgridDemo: { label: 'Subgrid demo', description: 'Ready-made nested grid example' },
       text: { label: 'Text', description: 'Plain text copy' },
       textArea: { label: 'Text Area', description: 'Multi-line input' },
     },
