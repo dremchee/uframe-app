@@ -120,6 +120,13 @@ export function createUframeEditor(options: CreateUframeEditorOptions): UframeEd
 
   const created = options.target.tagName !== 'IFRAME'
   const iframe = created ? globalThis.document.createElement('iframe') : (options.target as HTMLIFrameElement)
+  const allowedFeatures = (iframe.getAttribute('allow') ?? '')
+    .split(';')
+    .map(feature => feature.trim())
+    .filter(Boolean)
+  if (!allowedFeatures.some(feature => feature.split(/\s+/)[0] === 'local-fonts'))
+    iframe.setAttribute('allow', [...allowedFeatures, 'local-fonts'].join('; '))
+
   if (created) {
     iframe.style.border = '0'
     iframe.style.width = '100%'
