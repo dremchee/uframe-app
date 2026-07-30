@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CssUnitOption } from '@/components/ui/size-input/units'
 import type { BaseBlockStyles, GridTrack } from '@/core'
-import { List, Maximize2, Plus, Repeat2, X } from '@lucide/vue'
+import { GitFork, List, Maximize2, Plus, Repeat2, X } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 import { AdvancedSizeInput, Input, NumberField, NumberFieldContent, NumberFieldInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput, Tabs, TabsList, TabsTrigger, Tooltip } from '@/components/ui'
 import { appendListItem, makeEqualTracks, mergeStyles, parseGridTemplate, removeListItem, replaceListItem, serializeGridTemplate, serializeTrackList } from '@/core'
@@ -18,7 +18,7 @@ const emit = defineEmits<{
 }>()
 
 type Axis = 'columns' | 'rows'
-type Mode = 'tracks' | 'repeat' | 'auto'
+type Mode = 'tracks' | 'repeat' | 'auto' | 'subgrid'
 interface AutoState { repeat: 'auto-fit' | 'auto-fill', min: string, max: string }
 interface RepeatState { count: number, pattern: string }
 
@@ -81,6 +81,8 @@ function repeatOf(axis: Axis) {
 }
 
 function serializeAxis(axis: Axis): string {
+  if (modeOf(axis).value === 'subgrid')
+    return serializeGridTemplate({ mode: 'subgrid' })
   if (modeOf(axis).value === 'auto')
     return serializeGridTemplate({ mode: 'auto', ...autoOf(axis).value })
   if (modeOf(axis).value === 'repeat')
@@ -99,6 +101,9 @@ function syncAxis(axis: Axis, value: string | undefined) {
   else if (template.mode === 'repeat') {
     modeOf(axis).value = 'repeat'
     repeatOf(axis).value = { count: template.count, pattern: template.pattern }
+  }
+  else if (template.mode === 'subgrid') {
+    modeOf(axis).value = 'subgrid'
   }
   else {
     modeOf(axis).value = 'tracks'
@@ -165,7 +170,7 @@ function applyPreset(axis: Axis, count: number) {
   >
     <div class="grid gap-1.5">
       <Tabs :model-value="modeOf(axis).value" @update:model-value="(value: string | number) => setMode(axis, value as Mode)">
-        <TabsList class="grid-cols-3">
+        <TabsList class="grid-cols-4">
           <Tooltip :text="t('style.tracks')">
             <TabsTrigger value="tracks" class="min-h-7" :aria-label="t('style.tracks')">
               <List :size="14" :stroke-width="1.8" />
@@ -179,6 +184,11 @@ function applyPreset(axis: Axis, count: number) {
           <Tooltip :text="t('style.auto')">
             <TabsTrigger value="auto" class="min-h-7" :aria-label="t('style.auto')">
               <Maximize2 :size="14" :stroke-width="1.8" />
+            </TabsTrigger>
+          </Tooltip>
+          <Tooltip :text="t('style.subgrid')">
+            <TabsTrigger value="subgrid" class="min-h-7" :aria-label="t('style.subgrid')">
+              <GitFork :size="14" :stroke-width="1.8" />
             </TabsTrigger>
           </Tooltip>
         </TabsList>

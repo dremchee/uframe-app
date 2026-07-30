@@ -304,6 +304,7 @@ export const en = {
     tracks: 'Tracks',
     auto: 'Auto',
     repeat: 'Repeat',
+    subgrid: 'Subgrid',
     count: 'Count',
     track: 'Track',
     min: 'Min',

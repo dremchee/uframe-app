@@ -150,7 +150,12 @@ export interface TracksTemplate {
   tracks: GridTrack[]
 }
 
-export type GridTemplate = AutoRepeatTemplate | FixedRepeatTemplate | TracksTemplate
+/** Inherit the corresponding track axis from the parent grid. */
+export interface SubgridTemplate {
+  mode: 'subgrid'
+}
+
+export type GridTemplate = AutoRepeatTemplate | FixedRepeatTemplate | TracksTemplate | SubgridTemplate
 
 // `repeat( auto-fit | auto-fill , minmax( <min> , <max> ) )` — whitespace-tolerant.
 // Capture groups use distinct terminators (`,` / `)`) and no lazy quantifiers,
@@ -166,6 +171,8 @@ const FIXED_REPEAT_PREFIX_RE = /^repeat\(\s*([1-9]\d*)\s*,/i
  */
 export function parseGridTemplate(value: string | undefined | null): GridTemplate {
   const trimmed = value?.trim() ?? ''
+  if (trimmed === 'subgrid')
+    return { mode: 'subgrid' }
   const match = AUTO_REPEAT_RE.exec(trimmed)
   if (match) {
     return {
@@ -191,6 +198,8 @@ export function parseGridTemplate(value: string | undefined | null): GridTemplat
 
 /** Serialize a GridTemplate back to a CSS string. `''` when empty (tracks mode). */
 export function serializeGridTemplate(template: GridTemplate): string {
+  if (template.mode === 'subgrid')
+    return 'subgrid'
   if (template.mode === 'auto') {
     const min = template.min.trim() || '240px'
     const max = template.max.trim() || '1fr'

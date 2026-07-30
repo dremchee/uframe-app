@@ -147,6 +147,12 @@ describe('parseGridTemplate / serializeGridTemplate', () => {
     })
   })
 
+  it('parses and serializes a subgrid axis', () => {
+    const template = parseGridTemplate(' subgrid ')
+    expect(template).toEqual({ mode: 'subgrid' })
+    expect(serializeGridTemplate(template)).toBe('subgrid')
+  })
+
   it('falls back to explicit tracks for non-repeat values', () => {
     expect(parseGridTemplate('1fr 1fr 200px')).toEqual({
       mode: 'tracks',
@@ -164,6 +170,7 @@ describe('parseGridTemplate / serializeGridTemplate', () => {
     expect(serializeGridTemplate({ mode: 'repeat', count: 2, pattern: 'minmax(0, 1fr)' }))
       .toBe('repeat(2, minmax(0, 1fr))')
     expect(serializeGridTemplate({ mode: 'tracks', tracks: [{ size: '1fr' }, { size: 'auto' }] })).toBe('1fr auto')
+    expect(serializeGridTemplate({ mode: 'subgrid' })).toBe('subgrid')
   })
 
   it('fills in defaults for blank auto min/max', () => {

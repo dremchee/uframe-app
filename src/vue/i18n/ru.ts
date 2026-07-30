@@ -141,6 +141,7 @@ export const ru = {
     rows: 'Строки',
     auto: 'Авто',
     repeat: 'Повторить',
+    subgrid: 'Подсетка',
     count: 'Количество',
     min: 'Мин.',
     max: 'Макс.',
