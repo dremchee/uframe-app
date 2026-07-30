@@ -281,9 +281,9 @@ function spanAllColumns() {
         </div>
       </template>
 
-      <Alert v-else-if="modeOf(axis).value === 'subgrid'" class="border-sky-200 bg-sky-50 px-2.5 py-2 text-[11px] text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
+      <Alert v-else-if="modeOf(axis).value === 'subgrid'" class="px-3 py-2 text-[11px]">
         <Info :size="14" :stroke-width="2" />
-        <AlertDescription class="gap-1 text-[11px] leading-4 text-sky-900 dark:text-sky-100">
+        <AlertDescription class="gap-1 text-[11px] leading-4">
           <span>{{ t('style.subgridHint', { axis: axis === 'columns' ? t('style.columns').toLowerCase() : t('style.rows').toLowerCase() }) }}</span>
           <button v-if="axis === 'columns' && parentIsGrid && !styles.gridColumn" type="button" :class="addBtn" @click="spanAllColumns">
             {{ t('style.subgridSpanAll') }}
