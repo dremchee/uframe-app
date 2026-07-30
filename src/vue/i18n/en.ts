@@ -307,6 +307,8 @@ export const en = {
     subgrid: 'Subgrid',
     subgridHint: 'Inherits parent grid {axis}. Use this on a nested grid item, not the parent grid itself.',
     subgridParentRequired: 'No direct grid parent detected — this setting has no visual effect until the parent is set to Grid.',
+    subgridSpanHint: 'To inherit more than one parent column, span this block across the parent grid first.',
+    subgridSpanAll: 'Span all parent columns',
     count: 'Count',
     track: 'Track',
     min: 'Min',

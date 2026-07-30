@@ -160,6 +160,10 @@ function applyPreset(axis: Axis, count: number) {
   tracksOf(axis).value = makeEqualTracks(count)
   commitAxis(axis)
 }
+
+function spanAllColumns() {
+  update({ gridColumn: '1 / -1' })
+}
 </script>
 
 <template>
@@ -188,7 +192,12 @@ function applyPreset(axis: Axis, count: number) {
             </TabsTrigger>
           </Tooltip>
           <Tooltip :text="t('style.subgrid')">
-            <TabsTrigger value="subgrid" class="min-h-7" :aria-label="t('style.subgrid')">
+            <TabsTrigger
+              value="subgrid"
+              class="min-h-7"
+              :aria-label="t('style.subgrid')"
+              :disabled="!parentIsGrid && modeOf(axis).value !== 'subgrid'"
+            >
               <GitFork :size="14" :stroke-width="1.8" />
             </TabsTrigger>
           </Tooltip>
@@ -278,6 +287,12 @@ function applyPreset(axis: Axis, count: number) {
       <p v-if="modeOf(axis).value === 'subgrid' && !parentIsGrid" class="text-[11px] leading-4 text-amber-600">
         {{ t('style.subgridParentRequired') }}
       </p>
+      <div v-if="axis === 'columns' && modeOf(axis).value === 'subgrid' && parentIsGrid" class="grid gap-1 text-[11px] text-uf-muted">
+        <p>{{ t('style.subgridSpanHint') }}</p>
+        <button v-if="!styles.gridColumn" type="button" :class="addBtn" @click="spanAllColumns">
+          {{ t('style.subgridSpanAll') }}
+        </button>
+      </div>
 
       <template v-else-if="modeOf(axis).value === 'auto'">
         <StyleField :label="t('style.repeat')">
