@@ -9,12 +9,15 @@ export function useBlockParentLayout(editor: PageEditorInstance, block: Ref<Page
   const parentDisplay = computed(() => {
     if (!block.value)
       return undefined
-    const blocks = editor.document.value.blocks
+    // The inspector edits a resolved page (symbols, applied classes), so use
+    // the same tree and style catalog as the canvas when checking its parent.
+    const document = editor.effectiveDocument.value
+    const blocks = document.blocks
     const parentId = findBlockParentId(blocks, block.value.id)
     const parent = parentId ? findBlock(blocks, parentId) : undefined
     return parent
-      ? blockStyleValue(parent, editor.document.value.styles ?? {}, 'display')
-      : editor.document.value.settings.style?.display
+      ? blockStyleValue(parent, document.styles ?? {}, 'display')
+      : document.settings.style?.display
   })
   const parentIsGrid = computed(() => parentDisplay.value === 'grid')
   const parentIsFlex = computed(() => parentDisplay.value === 'flex' || parentDisplay.value === 'inline-flex')
