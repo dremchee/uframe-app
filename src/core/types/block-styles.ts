@@ -16,6 +16,8 @@ export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 export type FontStyle = 'normal' | 'italic'
 export type TextTransform = 'none' | 'uppercase' | 'lowercase' | 'capitalize'
 export type TextDecoration = 'none' | 'underline' | 'line-through'
+/** Controls line breaking; `balance` is best suited to short headings. */
+export type TextWrap = 'wrap' | 'nowrap' | 'balance' | 'pretty'
 /** Any CSS numeric weight (1–1000), including variable-font instances. */
 export type FontWeight = number
 // The full CSS <line-style> set (`hidden` behaves like `none` outside table
@@ -92,6 +94,7 @@ export interface TypographyStyles {
   textAlign?: TextAlign
   textTransform?: TextTransform
   textDecoration?: TextDecoration
+  textWrap?: TextWrap
 }
 
 export interface BackgroundStyles {

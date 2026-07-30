@@ -43,6 +43,10 @@ describe('serializeStyleDeclarations', () => {
     })).toBe('border-top-left-radius: 12px; corner-shape: squircle')
   })
 
+  it('serializes textWrap to the text-wrap property', () => {
+    expect(serializeStyleDeclarations({ textWrap: 'balance' })).toBe('text-wrap: balance')
+  })
+
   it('serializes side-specific border styles and colors', () => {
     expect(serializeStyleDeclarations({
       borderBottomWidth: '1px',

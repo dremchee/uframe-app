@@ -8,7 +8,7 @@ const SECTION_KEYS = {
   Layout: ['display', 'flexDirection', 'flexWrap', 'justifyContent', 'alignItems', 'gap', 'gridTemplateColumns', 'gridTemplateRows', 'gridAutoFlow', 'gridAutoColumns', 'gridAutoRows', 'justifyItems', 'alignContent', 'gridColumn', 'gridRow', 'justifySelf', 'alignSelf', 'flexGrow', 'flexShrink', 'flexBasis', 'position', 'top', 'right', 'bottom', 'left', 'zIndex', 'overflow'],
   Size: ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight'],
   Spacing: ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
-  Typography: ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing', 'color', 'textAlign', 'textTransform', 'textDecoration'],
+  Typography: ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing', 'color', 'textAlign', 'textTransform', 'textDecoration', 'textWrap'],
   Background: ['backgroundColor', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat'],
   Borders: ['borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth', 'borderStyle', 'borderColor', 'borderTopStyle', 'borderRightStyle', 'borderBottomStyle', 'borderLeftStyle', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius', 'cornerShape'],
   Effects: ['opacity', 'boxShadow', 'filter', 'backdropFilter', 'transform', 'cursor'],

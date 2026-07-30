@@ -3,7 +3,7 @@ import type { SegmentOption } from '@/components/ui'
 import type { BaseBlockStyles } from '@/core'
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight, CaseLower, CaseSensitive, CaseUpper, Italic, Strikethrough, Type, Underline } from '@lucide/vue'
 import { computed } from 'vue'
-import { AdvancedSizeInput, ColorInput, NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, SegmentControl, SizeInput } from '@/components/ui'
+import { AdvancedSizeInput, ColorInput, NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, SegmentControl, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SizeInput } from '@/components/ui'
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
 import { useUframeI18n } from '@/vue/i18n'
 import BindableField from './BindableField.vue'
@@ -32,6 +32,7 @@ type FontStyle = NonNullable<BaseBlockStyles['fontStyle']>
 type TextAlign = NonNullable<BaseBlockStyles['textAlign']>
 type TextTransform = NonNullable<BaseBlockStyles['textTransform']>
 type TextDecoration = NonNullable<BaseBlockStyles['textDecoration']>
+type TextWrap = NonNullable<BaseBlockStyles['textWrap']>
 
 const fontStyleOptions = computed<Array<SegmentOption<FontStyle>>>(() => [
   { value: 'normal', label: t('style.fontStyleNormal'), icon: Type },
@@ -59,6 +60,8 @@ const fontStyle = computed<FontStyle>(() => styles.value.fontStyle ?? inheritedP
 const textAlign = computed<TextAlign>(() => styles.value.textAlign ?? inheritedPh('textAlign', 'left') as TextAlign)
 const textTransform = computed<TextTransform>(() => styles.value.textTransform ?? inheritedPh('textTransform', 'none') as TextTransform)
 const textDecoration = computed<TextDecoration>(() => styles.value.textDecoration ?? inheritedPh('textDecoration', 'none') as TextDecoration)
+const textWrap = computed<TextWrap>(() => styles.value.textWrap ?? inheritedPh('textWrap', 'wrap') as TextWrap)
+const textWrapOptions: TextWrap[] = ['wrap', 'nowrap', 'balance', 'pretty']
 
 function updateFontWeight(value: number | undefined) {
   if (!Number.isFinite(value)) {
@@ -137,6 +140,16 @@ function updateFontWeight(value: number | undefined) {
       </StyleField>
       <StyleField :label="t('style.decoration')" field="textDecoration">
         <SegmentControl :model-value="textDecoration" :options="textDecorationOptions" :aria-label="t('style.decoration')" @update:model-value="value => update({ textDecoration: value })" />
+      </StyleField>
+      <StyleField :label="t('style.textWrap')" field="textWrap">
+        <Select :model-value="textWrap" @update:model-value="value => update({ textWrap: value as TextWrap })">
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="option in textWrapOptions" :key="option" :value="option">
+              {{ t(`style.textWrap${option[0]!.toUpperCase()}${option.slice(1)}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </StyleField>
     </div>
     <StyleField :label="t('style.color')" field="color">
