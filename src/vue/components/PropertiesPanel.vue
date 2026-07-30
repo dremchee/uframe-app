@@ -140,7 +140,7 @@ function submitClassRename() {
 // Editable mirror of the selected block's props (load + debounced commit).
 const { localProps } = useBlockPropsModel(editor, block)
 
-const { parentIsGrid, parentIsFlex } = useBlockParentLayout(editor, block, editingTarget)
+const { parentIsGrid, parentIsFlex } = useBlockParentLayout(editor, block)
 const definition = computed(() =>
   block.value ? editor.registry.value[block.value.type] : undefined,
 )
