@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColorFormat } from '@/components/ui/color-picker'
 import { useEventListener } from '@vueuse/core'
-import { computed, shallowRef, useTemplateRef } from 'vue'
+import { computed, shallowRef, useTemplateRef, watch } from 'vue'
 import { CHECKERBOARD_STYLE, ColorPicker, parseColor, toCssColor } from '@/components/ui/color-picker'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -15,6 +15,11 @@ const props = withDefaults(defineProps<{
   format?: ColorFormat
   showAlpha?: boolean
   showEyeDropper?: boolean
+  /** Concrete CSS colour used only to paint the swatch (e.g. a resolved variable). */
+  swatch?: string
+  /** Keep the model value for editing, but show the placeholder in the text
+   * field. Used when the value is a CSS variable and the placeholder names it. */
+  hideValue?: boolean
   /** Reserve space for an action button overlaid at the field's right edge. */
   endAction?: boolean
   /** Preferred picker direction. Collision handling may flip it when space is limited. */
@@ -31,22 +36,40 @@ const { t } = useUframeI18n()
 const field = useTemplateRef<HTMLElement>('field')
 const { anchor, reference: popoverReference } = usePanelEdgePopover(field)
 const resolvedPopoverSide = computed(() => anchor?.side ?? props.popoverSide)
+// A picker update is emitted upward and may take a render cycle to round-trip
+// through the style panel. Keep that draft visible in the input meanwhile.
+const editedValue = shallowRef<string | null>(null)
+const inputValue = computed(() => editedValue.value ?? (props.hideValue ? '' : model.value ?? ''))
 
 // Resolve the text value to a CSS colour for the swatch; `null` → bare
 // checkerboard (empty / unparseable value).
 const swatchCss = computed(() => {
-  const parsed = parseColor(model.value ?? '')
+  const parsed = parseColor(editedValue.value ?? props.swatch ?? model.value ?? '')
   return parsed ? toCssColor(parsed) : null
 })
 
 function onInput(event: Event) {
-  model.value = (event.target as HTMLInputElement).value
+  const value = (event.target as HTMLInputElement).value
+  editedValue.value = value
+  model.value = value
 }
+
+// Keep local preview only for our own edit. A new upstream value (including a
+// variable chosen from the binding menu) becomes the sole source of truth.
+watch(model, (value) => {
+  if (value !== editedValue.value)
+    editedValue.value = null
+})
+watch(() => props.hideValue, (hidden) => {
+  if (hidden)
+    editedValue.value = null
+})
 
 // The picker edits the model live (so the user sees the colour applied while
 // they tweak). Save just closes; Cancel restores the value captured when the
 // popover opened.
 const open = shallowRef(false)
+const pickerColor = shallowRef('')
 let valueOnOpen = ''
 
 // reka only dismisses on a same-document outside click, so focusing the canvas
@@ -57,9 +80,17 @@ useEventListener(window, 'blur', () => {
 })
 
 function onOpenChange(next: boolean) {
-  if (next)
+  if (next) {
     valueOnOpen = model.value ?? ''
+    pickerColor.value = props.swatch ?? model.value ?? ''
+  }
   open.value = next
+}
+
+function updatePickerColor(value: string) {
+  pickerColor.value = value
+  editedValue.value = value
+  model.value = value
 }
 
 function save() {
@@ -68,6 +99,8 @@ function save() {
 
 function cancel() {
   model.value = valueOnOpen
+  pickerColor.value = valueOnOpen
+  editedValue.value = null
   open.value = false
 }
 </script>
@@ -96,7 +129,7 @@ function cancel() {
         spellcheck="false"
         autocapitalize="off"
         autocomplete="off"
-        :value="model"
+        :value="inputValue"
         :placeholder="placeholder ?? '#000000'"
         @input="onInput"
       >
@@ -111,11 +144,12 @@ function cancel() {
       :title="t('common.pickColor')"
     >
       <ColorPicker
-        v-model="model"
+        :model-value="pickerColor"
         :format="format"
         :show-alpha="showAlpha"
         :show-eye-dropper="showEyeDropper"
         show-actions
+        @update:model-value="updatePickerColor"
         @save="save"
         @cancel="cancel"
       />

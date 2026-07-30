@@ -38,6 +38,7 @@ import {
 import { useBlockParentLayout } from '@/vue/composables/style/useBlockParentLayout'
 import { useBlockPropsModel } from '@/vue/composables/style/useBlockPropsModel'
 import { useBlockStyleModel } from '@/vue/composables/style/useBlockStyleModel'
+import { useStyleContrast } from '@/vue/composables/style/useStyleContrast'
 import { useStyleInheritance } from '@/vue/composables/style/useStyleInheritance'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
@@ -260,6 +261,7 @@ watch(
 const { blockSlice } = useBlockStyleModel({ editor, block, editingTarget, viewport, styleState })
 
 useStyleInheritance({ editor, block, t })
+useStyleContrast({ editor, block })
 
 function blockLabel(block: PageBlock): string {
   return displayBlockLabel(block, editor.registry.value[block.type], t)

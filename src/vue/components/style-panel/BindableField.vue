@@ -14,6 +14,11 @@ import { useUframeI18n } from '@/vue/i18n'
 
 const props = defineProps<{
   modelValue: string
+  /** Effective inherited value, used for a read-only inherited variable chip and preview. */
+  inheritedValue?: string
+  /** Keep the native control available when the value is a variable reference.
+   * The slot receives the variable metadata separately. */
+  preserveControl?: boolean
   /** Which variable type this field accepts — the picker is filtered to it. */
   type: CssVarType
   /**
@@ -37,16 +42,21 @@ const { ofType, get, resolve, add } = useVariableResolver()
 // `parseVarRef` yields the stable CSS key; we resolve it to the variable for
 // its display label + swatch.
 const boundKey = computed(() => parseVarRef(props.modelValue))
-const boundVar = computed(() => (boundKey.value ? get(boundKey.value) : undefined))
-const isMissing = computed(() => boundKey.value != null && !boundVar.value)
+// A local literal colour overrides an inherited variable just like a local
+// variable does. Only surface the inherited source while this field is empty.
+const inheritedKey = computed(() => props.modelValue ? null : parseVarRef(props.inheritedValue))
+const displayedKey = computed(() => boundKey.value ?? inheritedKey.value)
+const displayedVar = computed(() => (displayedKey.value ? get(displayedKey.value) : undefined))
+const isInherited = computed(() => !props.modelValue && !!inheritedKey.value)
+const isMissing = computed(() => displayedKey.value != null && !displayedVar.value)
 const isColor = computed(() => props.type === 'color')
 
 const options = computed(() => ofType(props.type))
 const fieldEl = useTemplateRef<HTMLElement>('fieldEl')
 const { side: popoverSide, reference: popoverReference } = usePanelEdgePopover(fieldEl)
 
-// Resolved concrete value, used to paint the colour swatch in the chip.
-const swatch = computed(() => resolve(props.modelValue))
+// Resolved concrete value, used to paint a local/inherited colour preview.
+const swatch = computed(() => resolve(props.modelValue || props.inheritedValue || ''))
 
 function setValue(value: string) {
   emit('update:modelValue', value)
@@ -87,10 +97,10 @@ function pick(key: string) {
   open.value = false
 }
 
-// Detach: drop the reference but keep the variable's current value so there's a
-// concrete value left to edit. A dangling ref simply clears the field.
+// Detach: drop a local reference but keep the variable's current value so
+// there's a concrete value left to edit. Inherited references are read-only.
 function detach() {
-  setValue(boundVar.value?.value ?? '')
+  setValue(displayedVar.value?.value ?? '')
 }
 
 // ── Inline creation ─────────────────────────────────────────────────────────
@@ -137,11 +147,12 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
       <!-- Anchors the picker under the whole field, regardless of trigger. -->
       <PopoverAnchor class="pointer-events-none absolute inset-0" />
 
-      <!-- Bound: a chip replaces the control. Click to rebind, ✕ to detach. -->
+      <!-- A local or inherited variable replaces the raw control. The inherited
+           form uses the same amber language as StyleField inheritance. -->
       <div
-        v-if="boundKey"
+        v-if="displayedKey && !preserveControl"
         class="flex h-9 w-full items-center gap-2 rounded-md border pl-1.5 pr-1 text-sm"
-        :class="isMissing ? 'border-amber-400/60 bg-amber-500/10' : 'border-uf-accent/50 bg-uf-accent/10'"
+        :class="isMissing || isInherited ? 'border-amber-400/60 bg-amber-500/10' : 'border-uf-accent/50 bg-uf-accent/10'"
       >
         <span
           v-if="isColor"
@@ -157,11 +168,12 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
         >
           <span
             class="min-w-0 flex-1 truncate text-xs"
-            :class="isMissing ? 'text-amber-600 dark:text-amber-400' : 'text-uf-accent'"
-          >{{ boundVar?.name ?? boundKey }}</span>
+            :class="isMissing || isInherited ? 'text-amber-600 dark:text-amber-400' : 'text-uf-accent'"
+          >{{ displayedVar?.name ?? displayedKey }}</span>
           <span v-if="isMissing" class="shrink-0 text-[10px] uppercase tracking-wide text-amber-500" :title="t('style.variableMissing')">{{ t('style.missing') }}</span>
         </button>
         <button
+          v-if="!isInherited"
           type="button"
           class="grid size-6 shrink-0 place-items-center rounded text-uf-muted transition-colors"
           :class="isMissing
@@ -179,6 +191,10 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
         <slot
           :value="modelValue"
           :set-value="setValue"
+          :resolved-value="swatch"
+          :source-key="displayedKey"
+          :source-variable="displayedVar"
+          :is-inherited-source="isInherited"
           :request-bind="requestBind"
           :request-create="requestCreate"
           :variables="options"

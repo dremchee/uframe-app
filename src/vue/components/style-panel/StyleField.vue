@@ -73,6 +73,7 @@ function reset() {
           <Info :size="12" :stroke-width="2" :aria-label="t('style.moreInfo')" />
         </span>
       </Tooltip>
+      <slot name="label-suffix" />
       <!-- Absolutely positioned so it never affects the label row height. -->
       <Tooltip v-if="canReset" :text="t('style.reset', { label })">
         <button
