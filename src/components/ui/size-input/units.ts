@@ -42,6 +42,11 @@ export function isCssExpression(value: string): boolean {
   return /^-?[a-z_][\w-]*\s*\(.+\)$/i.test(value.trim())
 }
 
+/** True once direct input has started a CSS function, even before it is complete. */
+export function startsCssExpression(value: string): boolean {
+  return /^-?[a-z_][\w-]*\s*\(/i.test(value.trim())
+}
+
 export interface ParsedLength {
   number: string
   /** A selector value from CSS_UNITS (px/%/.../UNITLESS/keyword), or '' when unknown. */

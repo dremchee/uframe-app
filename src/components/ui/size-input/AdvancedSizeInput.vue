@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CssUnitOption } from './units'
 import type { CssVariable } from '@/core'
-import { ChevronDown, Ruler, SquareFunction } from '@lucide/vue'
+import { ChevronDown, Plus, Ruler, SquareFunction } from '@lucide/vue'
 import { useEventListener } from '@vueuse/core'
 import { computed, shallowRef, useTemplateRef, watch } from 'vue'
 import { toVarRef } from '@/core'
@@ -30,6 +30,7 @@ import {
   isValidLengthInput,
   parseLength,
   sizeInputPlaceholder,
+  startsCssExpression,
   UNITLESS,
 } from './units'
 
@@ -51,6 +52,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'request-create-variable': []
 }>()
 
 type FormulaKind = 'calc' | 'clamp' | 'min' | 'max' | 'minmax' | 'var'
@@ -231,6 +233,9 @@ function onNumber(nextValue: string | number) {
   const next = String(nextValue ?? '')
   number.value = next
 
+  if (!expressionMode.value && startsCssExpression(next))
+    expressionMode.value = true
+
   if (expressionMode.value) {
     const parsed = parseLength(next)
     if (parsed?.unit && supportedUnits.value.has(parsed.unit)) {
@@ -295,6 +300,11 @@ function closeMenuOnFocusOutside() {
 function selectVariable(key: string) {
   emit('update:modelValue', toVarRef(key))
   popoverOpen.value = false
+}
+
+function requestCreateVariable() {
+  popoverOpen.value = false
+  emit('request-create-variable')
 }
 
 function selectValue(value: string) {
@@ -538,7 +548,7 @@ function uiText(key: string, fallback: string): string {
 
       <PopoverContent
         v-if="popoverMode === 'menu'"
-        align="end"
+        align="start"
         :side="popoverSide"
         :side-offset="5"
         :collision-padding="5"
@@ -586,6 +596,12 @@ function uiText(key: string, fallback: string): string {
               <p v-if="!variables.length" class="px-2 py-1 text-xs text-uf-muted">
                 {{ uiText('style.noVariables', 'No matching variables yet.') }}
               </p>
+              <div class="px-1 pt-1">
+                <Button variant="outline" size="sm" class="w-full" @click="requestCreateVariable">
+                  <Plus :size="14" :stroke-width="2" aria-hidden="true" />
+                  {{ uiText('style.newVariable', 'New variable') }}
+                </Button>
+              </div>
             </div>
           </section>
 
@@ -620,7 +636,7 @@ function uiText(key: string, fallback: string): string {
 
       <PopoverContent
         v-else
-        align="end"
+        align="start"
         :side="popoverSide"
         :side-offset="5"
         :collision-padding="5"

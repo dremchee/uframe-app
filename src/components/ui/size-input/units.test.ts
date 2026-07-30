@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CSS_SIZING_UNITS, formatLength, isCssExpression, isValidLengthInput, parseLength, sizeInputPlaceholder, UNITLESS } from './units'
+import { CSS_SIZING_UNITS, formatLength, isCssExpression, isValidLengthInput, parseLength, sizeInputPlaceholder, startsCssExpression, UNITLESS } from './units'
 
 describe('isValidLengthInput', () => {
   it('accepts a finite number with a measurement unit', () => {
@@ -72,6 +72,20 @@ describe('isCssExpression', () => {
     expect(isCssExpression('24px')).toBe(false)
     expect(isCssExpression('min-content')).toBe(false)
     expect(isCssExpression('calc(100% - 1rem')).toBe(false)
+  })
+})
+
+describe('startsCssExpression', () => {
+  it('switches direct input to expression mode as soon as a function starts', () => {
+    expect(startsCssExpression('clamp(')).toBe(true)
+    expect(startsCssExpression('clamp(4rem, 2vw, 6rem)')).toBe(true)
+    expect(startsCssExpression('var(--space)')).toBe(true)
+  })
+
+  it('keeps scalar values in unit mode', () => {
+    expect(startsCssExpression('24')).toBe(false)
+    expect(startsCssExpression('24px')).toBe(false)
+    expect(startsCssExpression('min-content')).toBe(false)
   })
 })
 

@@ -193,7 +193,7 @@ function applyPreset(axis: Axis, count: number) {
               :model-value="track.size"
               @update:model-value="(value: string) => setTrack(axis, index, value)"
             >
-              <template #default="{ value, setValue, variables }">
+              <template #default="{ value, setValue, requestCreate, variables }">
                 <AdvancedSizeInput
                   bindable
                   :units="TRACK_UNITS"
@@ -202,6 +202,7 @@ function applyPreset(axis: Axis, count: number) {
                   :min="0"
                   :model-value="value"
                   :variables="variables"
+                  @request-create-variable="requestCreate"
                   @update:model-value="setValue"
                 />
               </template>

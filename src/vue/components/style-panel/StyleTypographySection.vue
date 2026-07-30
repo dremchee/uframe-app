@@ -81,12 +81,13 @@ function updateFontWeight(value: number | undefined) {
     <div class="grid gap-x-1.5 gap-y-2.5 grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]">
       <StyleField :label="t('style.fontSize')" field="fontSize">
         <BindableField type="size" :model-value="styles.fontSize ?? ''" @update:model-value="value => update({ fontSize: value })">
-          <template #default="{ value, setValue, variables }">
+          <template #default="{ value, setValue, requestCreate, variables }">
             <AdvancedSizeInput
               bindable
               :model-value="value"
               :placeholder="inheritedPh('fontSize', '16px')"
               :variables="variables"
+              @request-create-variable="requestCreate"
               @update:model-value="setValue"
             />
           </template>

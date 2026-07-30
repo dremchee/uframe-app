@@ -3,12 +3,13 @@ import type { CssVarType } from '@/core'
 import type { VariableDraft } from '@/vue/components/VariableForm.vue'
 import { Link2, Plus, X } from '@lucide/vue'
 import { useEventListener } from '@vueuse/core'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import { Button, Popover, PopoverAnchor, PopoverContent, Tooltip } from '@/components/ui'
 import { parseVarRef, toVarRef } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import VariableForm from '@/vue/components/VariableForm.vue'
 import { useVariableResolver } from '@/vue/composables/style/useVariableResolver'
+import { usePanelEdgePopover } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 
 const props = defineProps<{
@@ -41,6 +42,8 @@ const isMissing = computed(() => boundKey.value != null && !boundVar.value)
 const isColor = computed(() => props.type === 'color')
 
 const options = computed(() => ofType(props.type))
+const fieldEl = useTemplateRef<HTMLElement>('fieldEl')
+const { side: popoverSide, reference: popoverReference } = usePanelEdgePopover(fieldEl)
 
 // Resolved concrete value, used to paint the colour swatch in the chip.
 const swatch = computed(() => resolve(props.modelValue))
@@ -100,6 +103,13 @@ function startCreate() {
   mode.value = 'create'
 }
 
+function requestCreate() {
+  startCreate()
+  requestAnimationFrame(() => {
+    open.value = true
+  })
+}
+
 async function submitCreate() {
   const name = add({
     name: createDraft.value.name,
@@ -123,7 +133,7 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
 
 <template>
   <Popover v-model:open="open">
-    <div class="relative">
+    <div ref="fieldEl" class="relative">
       <!-- Anchors the picker under the whole field, regardless of trigger. -->
       <PopoverAnchor class="pointer-events-none absolute inset-0" />
 
@@ -170,6 +180,7 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
           :value="modelValue"
           :set-value="setValue"
           :request-bind="requestBind"
+          :request-create="requestCreate"
           :variables="options"
         />
         <Tooltip v-if="iconTrigger" :text="t('style.variables')">
@@ -190,6 +201,10 @@ const menuItem = 'flex h-8 w-full appearance-none items-center gap-2 rounded bor
       :title="t('style.bindVariable')"
       body-class="p-0"
       align="start"
+      :side="popoverSide"
+      :side-offset="5"
+      :collision-padding="5"
+      :reference="popoverReference"
       @interact-outside="preventOverlayDismiss"
       @focus-outside="onFocusOutside"
     >

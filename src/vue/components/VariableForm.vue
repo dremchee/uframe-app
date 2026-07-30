@@ -2,6 +2,7 @@
 import type { CssVarType } from '@/core'
 import { computed } from 'vue'
 import {
+  AdvancedSizeInput,
   Button,
   ColorInput,
   Input,
@@ -10,7 +11,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SizeInput,
 } from '@/components/ui'
 import { parseShadowString, serializeShadows } from '@/core'
 import FontFamilySelect from '@/vue/components/style-panel/FontFamilySelect.vue'
@@ -78,7 +78,7 @@ function patch(part: Partial<VariableDraft>) {
       placeholder="#000000"
       @update:model-value="(val) => patch({ val })"
     />
-    <SizeInput
+    <AdvancedSizeInput
       v-else-if="modelValue.type === 'size'"
       :model-value="modelValue.val"
       placeholder="0"
