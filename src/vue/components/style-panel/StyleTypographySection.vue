@@ -7,6 +7,7 @@ import { AdvancedSizeInput, ColorInput, NumberField, NumberFieldContent, NumberF
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
 import { useUframeI18n } from '@/vue/i18n'
 import BindableField from './BindableField.vue'
+import ContrastIndicator from './ContrastIndicator.vue'
 import FontFamilySelect from './FontFamilySelect.vue'
 import StyleField from './StyleField.vue'
 import StyleSection from './StyleSection.vue'
@@ -153,9 +154,20 @@ function updateFontWeight(value: number | undefined) {
       </StyleField>
     </div>
     <StyleField :label="t('style.color')" field="color">
-      <BindableField type="color" icon-trigger :model-value="styles.color ?? ''" @update:model-value="value => update({ color: value })">
-        <template #default="{ value, setValue }">
-          <ColorInput end-action popover-side="left" :model-value="value" :placeholder="inheritedPh('color', '#000000')" @update:model-value="nextValue => setValue(String(nextValue))" />
+      <template #label-suffix>
+        <ContrastIndicator :styles="styles" />
+      </template>
+      <BindableField preserve-control type="color" icon-trigger :model-value="styles.color ?? ''" :inherited-value="inheritedPh('color', '')" @update:model-value="value => update({ color: value })">
+        <template #default="{ value, resolvedValue, setValue, sourceKey, sourceVariable }">
+          <ColorInput
+            end-action
+            popover-side="left"
+            :model-value="value"
+            :swatch="resolvedValue"
+            :hide-value="!!sourceKey"
+            :placeholder="sourceVariable?.name ?? sourceKey ?? inheritedPh('color', '#000000')"
+            @update:model-value="nextValue => setValue(String(nextValue))"
+          />
         </template>
       </BindableField>
     </StyleField>
