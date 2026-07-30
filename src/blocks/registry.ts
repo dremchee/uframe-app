@@ -26,7 +26,6 @@ import { selectDef } from '@/blocks/select'
 import { selectOptionDef } from '@/blocks/select-option'
 import { slotDef } from '@/blocks/slot'
 import { spacerDef } from '@/blocks/spacer'
-import { subgridDemoDef } from '@/blocks/subgrid-demo'
 import { textDef } from '@/blocks/text'
 import { textAreaDef } from '@/blocks/text-area'
 
@@ -43,7 +42,6 @@ export const defaultBlockDefinitions = [
   containerDef,
   dividerDef,
   spacerDef,
-  subgridDemoDef,
   slotDef,
   // Basic
   divDef,
