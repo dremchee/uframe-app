@@ -42,11 +42,6 @@ export const slotBlockPropsSchema = z.object({
   name: z.string().regex(/^[a-z_][\w-]*$/i, 'Invalid slot name'),
 })
 
-// Data blocks (data-list / data-item): config lives in `block.source`.
-export const dataListBlockPropsSchema = z.object({})
-
-export const dataItemBlockPropsSchema = z.object({})
-
 export const linkBlockPropsSchema = z.object({
   href: z.string(),
   target: z.enum(['_self', '_blank', '_parent', '_top']).optional(),

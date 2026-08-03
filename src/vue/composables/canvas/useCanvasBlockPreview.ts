@@ -1,6 +1,7 @@
 import type { PageBlock, ResolveContext } from '@/core'
 import { computed } from 'vue'
-import { assetKey, DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, resolveBindingPath } from '@/core'
+import { assetKey, resolveBindingPath } from '@/core'
+import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE } from '@/plugins/data'
 
 export interface UseCanvasBlockPreviewOptions {
   block: () => PageBlock

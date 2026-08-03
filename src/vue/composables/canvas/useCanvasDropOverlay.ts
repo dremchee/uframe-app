@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { baseBlockId } from '@/core'
+import { baseBlockId } from '@/plugins/data'
 import { LIBRARY_DRAG_TYPE, TREE_DRAG_TYPE } from '@/vue/composables/dnd/useTreeNodeDnd'
 import { renderedBoxElement } from '@/vue/utils/canvas-dom'
 

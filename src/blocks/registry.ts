@@ -6,8 +6,6 @@ import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 import { buttonDef } from '@/blocks/button'
 import { checkboxDef } from '@/blocks/checkbox'
 import { containerDef } from '@/blocks/container'
-import { dataItemDef } from '@/blocks/data-item'
-import { dataListDef } from '@/blocks/data-list'
 import { divDef } from '@/blocks/div'
 import { dividerDef } from '@/blocks/divider'
 import { embedDef } from '@/blocks/embed'
@@ -65,7 +63,4 @@ export const defaultBlockDefinitions = [
   radioDef,
   selectDef,
   selectOptionDef,
-  // Dynamic (CMS binding)
-  dataListDef,
-  dataItemDef,
 ] as unknown as VueBlockDefinition[]
