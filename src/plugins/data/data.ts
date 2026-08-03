@@ -1,6 +1,7 @@
+import type { BlockDataSource, DataRequirement } from './types'
 import type { PageBlock, PageDocument } from '@/core/types/page-document'
 import { getBlockPath, visitBlockTree } from '@/core/utils/block-tree'
-import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, type BlockDataSource, type DataRequirement } from './types'
+import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE } from './types'
 
 /** Returns the nearest collection scope introduced by a Data plugin block. */
 export function findDataScopeCollection(blocks: PageBlock[], blockId: string): string | null {
