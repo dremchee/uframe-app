@@ -127,13 +127,17 @@ defineExpose({ openAddBreakpoint, runPanelAction })
           auto-save-id="uf-editor-shell-v2"
           class="h-full"
         >
-          <ResizablePanel :min-size="40">
+          <!-- Stable ids/orders keep persisted sizes attached to the same panel
+               when Vue HMR temporarily unregisters and re-registers a child. -->
+          <ResizablePanel id="uf-canvas-panel" :order="1" :min-size="40">
             <main class="h-full min-w-0 min-h-0 overflow-hidden">
               <CanvasViewport />
             </main>
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel
+            id="uf-properties-panel"
+            :order="2"
             size-unit="px"
             :default-size="PROPERTIES_PANEL_DEFAULT_WIDTH"
             :min-size="PROPERTIES_PANEL_MIN_WIDTH"
@@ -144,11 +148,13 @@ defineExpose({ openAddBreakpoint, runPanelAction })
               auto-save-id="uf-properties-css-preview-v1"
               class="h-full"
             >
-              <ResizablePanel :min-size="20">
+              <ResizablePanel id="uf-properties-main-panel" :order="1" :min-size="20">
                 <PropertiesPanel />
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel
+                id="uf-css-preview-panel"
+                :order="2"
                 size-unit="px"
                 :default-size="cssPreviewCollapsedSize"
                 :min-size="cssPreviewCollapsedSize"
