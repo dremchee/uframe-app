@@ -2,6 +2,7 @@ import type { BlockRegistry, UframePlugin } from '@/core'
 import { computed, shallowRef } from 'vue'
 import { defaultBlockDefinitions } from '@/blocks'
 import { applyPlugins } from '@/core'
+import { dataPlugin } from '@/plugins/data'
 
 export interface UseEditorPluginsOptions {
   blocks?: BlockRegistry
@@ -10,7 +11,9 @@ export interface UseEditorPluginsOptions {
 
 /** Owns the live block registry and runtime plugin registration. */
 export function useEditorPlugins(options: UseEditorPluginsOptions = {}) {
-  const registeredPlugins = shallowRef<UframePlugin[]>(options.plugins ?? [])
+  // Dynamic data is an official plugin, but remains enabled by default to keep
+  // existing documents and the editor's out-of-the-box block library intact.
+  const registeredPlugins = shallowRef<UframePlugin[]>([dataPlugin, ...(options.plugins ?? [])])
   const registry = shallowRef<BlockRegistry>(
     applyPlugins(
       options.blocks ?? Object.fromEntries(defaultBlockDefinitions.map(definition => [definition.type, definition])),

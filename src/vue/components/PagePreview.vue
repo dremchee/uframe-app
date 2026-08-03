@@ -3,7 +3,8 @@ import type { VNode } from 'vue'
 import type { BlockRegistry, PageDocument } from '@/core'
 import { computed, h, nextTick, onBeforeUnmount, render, shallowRef, watch } from 'vue'
 import { defaultBlockDefinitions } from '@/blocks'
-import { createBlockRegistry, renderFontHead } from '@/core'
+import { applyPlugins, createBlockRegistry, renderFontHead } from '@/core'
+import { dataPlugin } from '@/plugins/data'
 import { pageFrameStyles } from '@/styles/page-frame'
 import CanvasFrameDocument from '@/vue/components/CanvasFrameDocument.vue'
 import { useUframeI18n } from '@/vue/i18n'
@@ -21,7 +22,9 @@ const props = withDefaults(defineProps<{
   /** Render embed blocks in a sandboxed iframe (untrusted document). */
   untrustedEmbeds?: boolean
 }>(), {
-  blocks: () => createBlockRegistry(defaultBlockDefinitions),
+  // PagePreview is a standalone renderer (it does not use useEditorPlugins),
+  // so include the official Data plugin explicitly for default parity.
+  blocks: () => applyPlugins(createBlockRegistry(defaultBlockDefinitions), [dataPlugin]),
   width: null,
   untrustedEmbeds: false,
 })

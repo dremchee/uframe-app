@@ -1,11 +1,7 @@
 import type { PageBlock, PageDocument } from '@/core/types/page-document'
 import { describe, expect, it } from 'vitest'
-import {
-  DATA_ITEM_BLOCK_TYPE,
-  DATA_LIST_BLOCK_TYPE,
-} from '@/core/types/page-document'
-import { baseBlockId, collectDataRequirements, findDataScopeCollection } from '@/core/utils/data-blocks'
-import { resolveBindingPath, resolveDocument } from '@/core/utils/resolve'
+import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, baseBlockId, collectDataRequirements, findDataScopeCollection, resolveDataDocument } from '@/plugins/data'
+import { resolveBindingPath } from '@/core/utils/resolve'
 
 function doc(blocks: PageBlock[]): PageDocument {
   return {
@@ -56,7 +52,7 @@ describe('resolveBindingPath', () => {
 
 describe('resolveDocument — bindings', () => {
   it('overrides bound props from the item scope, strips bindings', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{ id: 'h', type: 'heading', props: { content: 'fallback' }, bindings: { content: 'item.title' } }]),
       { item: { title: 'Real Title' } },
     )
@@ -65,7 +61,7 @@ describe('resolveDocument — bindings', () => {
   })
 
   it('keeps the authored fallback when the path does not resolve', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{ id: 'h', type: 'heading', props: { content: 'fallback' }, bindings: { content: 'item.title' } }]),
       { item: {} },
     )
@@ -73,7 +69,7 @@ describe('resolveDocument — bindings', () => {
   })
 
   it('writes symbol bindings into propertyValues and preserves authored overrides', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{
         id: 'instance',
         type: '__symbol',
@@ -96,7 +92,7 @@ describe('resolveDocument — bindings', () => {
 
   it('does not mutate the source document', () => {
     const input = doc([{ id: 'h', type: 'heading', props: { content: 'fallback' }, bindings: { content: 'item.title' } }])
-    resolveDocument(input, { item: { title: 'X' } })
+    resolveDataDocument(input, { item: { title: 'X' } })
     expect(input.blocks[0]!.props).toEqual({ content: 'fallback' })
     expect(input.blocks[0]!.bindings).toEqual({ content: 'item.title' })
   })
@@ -104,7 +100,7 @@ describe('resolveDocument — bindings', () => {
 
 describe('resolveDocument — assets', () => {
   it('resolves a block asset into props.src and strips the descriptor', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{ id: 'img', type: 'image', props: { src: '', alt: '' }, asset: { source: 'directus', id: 'file-1' } }]),
       { resolveAsset: ref => `https://cdn/${ref.id}.jpg` },
     )
@@ -114,14 +110,14 @@ describe('resolveDocument — assets', () => {
 
   it('keeps the authored src when no resolver is supplied or it returns undefined', () => {
     const block = { id: 'img', type: 'image', props: { src: 'https://ext/a.jpg' }, asset: { source: 'directus', id: 'x' } }
-    expect(resolveDocument(doc([{ ...block }])).blocks[0]!.props).toEqual({ src: 'https://ext/a.jpg' })
+    expect(resolveDataDocument(doc([{ ...block }])).blocks[0]!.props).toEqual({ src: 'https://ext/a.jpg' })
     expect(
-      resolveDocument(doc([{ ...block }]), { resolveAsset: () => undefined }).blocks[0]!.props,
+      resolveDataDocument(doc([{ ...block }]), { resolveAsset: () => undefined }).blocks[0]!.props,
     ).toEqual({ src: 'https://ext/a.jpg' })
   })
 
   it('an asset wins over a bound src', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{ id: 'img', type: 'image', props: { src: '' }, bindings: { src: 'item.cover' }, asset: { source: 'd', id: '9' } }]),
       { item: { cover: 'bound.jpg' }, resolveAsset: ref => `asset-${ref.id}.jpg` },
     )
@@ -129,7 +125,7 @@ describe('resolveDocument — assets', () => {
   })
 
   it('resolves assets inside data-list per-row copies', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{
         id: 'list',
         type: DATA_LIST_BLOCK_TYPE,
@@ -149,7 +145,7 @@ describe('resolveDocument — assets', () => {
 
 describe('resolveDocument — data-item', () => {
   it('binds children against the single fetched record', () => {
-    const out = resolveDocument(
+    const out = resolveDataDocument(
       doc([{
         id: 's1',
         type: DATA_ITEM_BLOCK_TYPE,
@@ -174,7 +170,7 @@ describe('resolveDocument — data-list', () => {
   }
 
   it('expands the template once per row with unique ids', () => {
-    const out = resolveDocument(doc([template]), {
+    const out = resolveDataDocument(doc([template]), {
       data: { r1: [{ title: 'A' }, { title: 'B' }, { title: 'C' }] },
     })
     const cards = out.blocks[0]!.children!
@@ -184,7 +180,7 @@ describe('resolveDocument — data-list', () => {
   })
 
   it('produces an empty list when no rows are provided', () => {
-    const out = resolveDocument(doc([template]), {})
+    const out = resolveDataDocument(doc([template]), {})
     expect(out.blocks[0]!.children).toEqual([])
   })
 
@@ -193,7 +189,7 @@ describe('resolveDocument — data-list', () => {
       ...template,
       children: [{ id: 'card', type: 'heading', props: { content: '' }, bindings: { content: 'page.siteName' } }],
     }
-    const out = resolveDocument(doc([listWithPage]), {
+    const out = resolveDataDocument(doc([listWithPage]), {
       page: { siteName: 'uframe' },
       data: { r1: [{ title: 'A' }, { title: 'B' }] },
     })

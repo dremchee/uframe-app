@@ -21,7 +21,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui'
-import { COMPONENT_SLOT_BLOCK_TYPE, DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
+import { COMPONENT_SLOT_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { cn } from '@/lib/utils'
 import AttributesSection from '@/vue/components/AttributesSection.vue'
@@ -152,10 +152,6 @@ const settingsFields = computed(() => resolveSettingsFields(definition.value))
 // Props this block can bind to CMS data — rendered as a Bindings section in the
 // Content tab, independent of how the settings form is rendered.
 const bindableProps = computed(() => definition.value?.bindableProps ?? [])
-// Data blocks (data-list / data-item) show a Data source section.
-const isDataBlock = computed(() =>
-  block.value?.type === DATA_LIST_BLOCK_TYPE || block.value?.type === DATA_ITEM_BLOCK_TYPE,
-)
 // Whether to show the Content tab at all. Blocks without props that warrant
 // editing (Section, Container, ...) have neither — hide the tab rather than
 // rendering an empty pane, and snap a stale Content selection back to Style.
@@ -163,7 +159,6 @@ const hasContentTab = computed(() =>
   !!settingsComponent.value
   || !!settingsFields.value
   || bindableProps.value.length > 0
-  || isDataBlock.value
   || isAuthoringSymbolProperties.value,
 )
 watch(hasContentTab, (next) => {
@@ -349,12 +344,11 @@ const targetLabel = computed(() => {
             @rename="renameSymbolProperty"
           />
           <ContentTab
-            v-if="settingsComponent || settingsFields || bindableProps.length || isDataBlock"
+            v-if="settingsComponent || settingsFields || bindableProps.length"
             v-model="localProps"
             :settings-component="settingsComponent"
             :settings-fields="settingsFields"
             :bindable-props="bindableProps"
-            :is-data-block="isDataBlock"
           />
         </TabsContent>
 

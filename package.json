@@ -88,6 +88,11 @@
       "import": "./dist/plugins/ai.js",
       "require": "./dist/plugins/ai.cjs"
     },
+    "./plugins/data": {
+      "types": "./dist/plugins/data.d.ts",
+      "import": "./dist/plugins/data.js",
+      "require": "./dist/plugins/data.cjs"
+    },
     "./embed": {
       "types": "./dist/embed.d.ts",
       "import": "./dist/embed.js",

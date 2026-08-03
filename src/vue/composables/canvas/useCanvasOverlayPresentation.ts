@@ -3,7 +3,8 @@ import type { FlexBox, GridBox, Rect, SpacingBox } from './canvas-overlay-types'
 import type { CanvasDropIndicator } from './useCanvasDropOverlay'
 import type { PageEditorInstance } from '@/vue/context/editor-context'
 import { computed } from 'vue'
-import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, findBlock, SYMBOL_INSTANCE_BLOCK_TYPE } from '@/core'
+import { findBlock, SYMBOL_INSTANCE_BLOCK_TYPE } from '@/core'
+import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE } from '@/plugins/data'
 
 interface SpacingBand {
   key: string

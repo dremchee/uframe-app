@@ -139,11 +139,6 @@ export interface BlockDataSource {
   filter?: Record<string, unknown>
 }
 
-/** A repeating region bound to a collection; `children` is the per-row template. */
-export const DATA_LIST_BLOCK_TYPE = 'data-list'
-/** A single-record region (singleton or relation); `children` render once. */
-export const DATA_ITEM_BLOCK_TYPE = 'data-item'
-
 /** String-valued attributes emitted on a block's rendered root element. */
 export type HtmlAttributes = Record<string, string>
 
@@ -178,7 +173,7 @@ export interface PageBlock<TProps = Record<string, unknown>> {
   children?: PageBlock[]
   /** prop → context-path; resolved on the frontend by `resolveDocument`. */
   bindings?: BlockBindings
-  /** Data query for `data-list` / `data-item` blocks. */
+  /** Optional plugin-owned query metadata. The Data plugin uses this field. */
   source?: BlockDataSource
   /**
    * CMS media-library reference for `image`/`embed`/`link`; `resolveDocument`
