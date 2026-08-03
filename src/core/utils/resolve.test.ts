@@ -1,7 +1,7 @@
 import type { PageBlock, PageDocument } from '@/core/types/page-document'
 import { describe, expect, it } from 'vitest'
-import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, baseBlockId, collectDataRequirements, findDataScopeCollection, resolveDataDocument } from '@/plugins/data'
 import { resolveBindingPath } from '@/core/utils/resolve'
+import { baseBlockId, collectDataRequirements, DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, findDataScopeCollection, resolveDataDocument } from '@/plugins/data'
 
 function doc(blocks: PageBlock[]): PageDocument {
   return {

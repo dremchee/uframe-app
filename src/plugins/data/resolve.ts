@@ -1,7 +1,7 @@
 import type { PageBlock, PageDocument } from '@/core/types/page-document'
 import type { DataScope, ResolveContext } from '@/core/utils/resolve'
-import { assetKey, resolveBindingPath } from '@/core/utils/resolve'
 import { cloneJsonValue } from '@/core/utils/clone'
+import { assetKey, resolveBindingPath } from '@/core/utils/resolve'
 import { setInstancePropertyValue } from '@/core/utils/symbol-properties'
 import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE } from './types'
 
@@ -18,8 +18,9 @@ function resolveProps(block: PageBlock, scope: DataScope, env: ResolveEnv): Reco
     const value = resolveBindingPath(path, scope)
     if (value === undefined)
       continue
-    if (block.type === '__symbol')
+    if (block.type === '__symbol') {
       next = setInstancePropertyValue(next ?? props, prop, value)
+    }
     else {
       next ??= { ...props }
       next[prop] = value
