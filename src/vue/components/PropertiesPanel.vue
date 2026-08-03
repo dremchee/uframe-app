@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PageBlock } from '@/core'
 import type { BreakpointDraft } from '@/vue/components/BreakpointForm.vue'
+import type { StyleContextMode } from '@/vue/components/style-panel/StyleContextSelector.vue'
 import type { StateKey, ViewportKey } from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import type { EditingTarget } from '@/vue/composables/style/useBlockClasses'
 import {
@@ -8,7 +9,7 @@ import {
   Plus,
   X,
 } from '@lucide/vue'
-import { computed, nextTick, provide, ref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, provide, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import {
   Button,
   Input,
@@ -21,13 +22,14 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui'
-import { COMPONENT_SLOT_BLOCK_TYPE, DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
+import { COMPONENT_SLOT_BLOCK_TYPE, findBlock, getInstanceSymbolId, isComboKey, nextContainerName, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { cn } from '@/lib/utils'
 import AttributesSection from '@/vue/components/AttributesSection.vue'
 import BlockActionsMenu from '@/vue/components/BlockActionsMenu.vue'
 import ClassNameInput from '@/vue/components/ClassNameInput.vue'
 import ContentTab from '@/vue/components/ContentTab.vue'
+import StyleContextSelector from '@/vue/components/style-panel/StyleContextSelector.vue'
 import StylePanel from '@/vue/components/style-panel/StylePanel.vue'
 import StyleVariantSelector from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import SymbolInstancePanel from '@/vue/components/SymbolInstancePanel.vue'
@@ -38,6 +40,7 @@ import {
 import { useBlockParentLayout } from '@/vue/composables/style/useBlockParentLayout'
 import { useBlockPropsModel } from '@/vue/composables/style/useBlockPropsModel'
 import { useBlockStyleModel } from '@/vue/composables/style/useBlockStyleModel'
+import { useContainerAncestors } from '@/vue/composables/style/useContainerAncestors'
 import { useStyleContrast } from '@/vue/composables/style/useStyleContrast'
 import { useStyleInheritance } from '@/vue/composables/style/useStyleInheritance'
 import { useEditorContext } from '@/vue/context/editor-context'
@@ -45,7 +48,7 @@ import { PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 import { displayBlockLabel } from '@/vue/utils/block-label'
 
-const { editor } = useEditorContext()
+const { editor, canvas } = useEditorContext()
 const { t } = useUframeI18n()
 
 // This panel is docked right; let popovers opened from it (filter/shadow editors)
@@ -75,6 +78,11 @@ const viewport = computed<ViewportKey>({
   set: value => editor.setEditBreakpoint(value),
 })
 const styleState = ref<StateKey>('default')
+const styleMode = computed<StyleContextMode>({
+  get: () => canvas.containerPreview.active.value ? 'container' : 'viewport',
+  set: mode => canvas.containerPreview.setActive(mode === 'container'),
+})
+const containerVariantId = shallowRef<string | null>(null)
 const editingTarget = ref<EditingTarget>({ kind: 'block' })
 const newClassName = ref('')
 
@@ -142,6 +150,7 @@ function submitClassRename() {
 const { localProps } = useBlockPropsModel(editor, block)
 
 const { parentIsGrid, parentIsFlex } = useBlockParentLayout(editor, block)
+const { containers, nearestParent } = useContainerAncestors(editor, block, t)
 const definition = computed(() =>
   block.value ? editor.registry.value[block.value.type] : undefined,
 )
@@ -152,10 +161,6 @@ const settingsFields = computed(() => resolveSettingsFields(definition.value))
 // Props this block can bind to CMS data — rendered as a Bindings section in the
 // Content tab, independent of how the settings form is rendered.
 const bindableProps = computed(() => definition.value?.bindableProps ?? [])
-// Data blocks (data-list / data-item) show a Data source section.
-const isDataBlock = computed(() =>
-  block.value?.type === DATA_LIST_BLOCK_TYPE || block.value?.type === DATA_ITEM_BLOCK_TYPE,
-)
 // Whether to show the Content tab at all. Blocks without props that warrant
 // editing (Section, Container, ...) have neither — hide the tab rather than
 // rendering an empty pane, and snap a stale Content selection back to Style.
@@ -163,7 +168,6 @@ const hasContentTab = computed(() =>
   !!settingsComponent.value
   || !!settingsFields.value
   || bindableProps.value.length > 0
-  || isDataBlock.value
   || isAuthoringSymbolProperties.value,
 )
 watch(hasContentTab, (next) => {
@@ -258,7 +262,99 @@ watch(
 
 // Style editing model: active-style sync + the per-breakpoint/state slice the
 // StylePanel binds to.
-const { blockSlice } = useBlockStyleModel({ editor, block, editingTarget, viewport, styleState })
+const {
+  blockSlice,
+  containerVariants,
+  addContainerVariant,
+  updateContainerVariant,
+  removeContainerVariant,
+} = useBlockStyleModel({
+  editor,
+  block,
+  editingTarget,
+  viewport,
+  styleState,
+  styleMode,
+  containerVariantId,
+})
+
+const previewContainerBlockId = computed(() => {
+  if (styleMode.value !== 'container')
+    return null
+
+  // Width mode belongs to the block selected in the editor. The query
+  // provider (e.g. the surrounding Section) remains a style dependency, but
+  // it must not become the canvas preview target: controls and dimming need
+  // to move with the block whose width the author is adjusting.
+  return block.value?.id ?? null
+})
+const previewContainerName = computed(() => {
+  const selectedVariant = containerVariantId.value
+    ? containerVariants.value[containerVariantId.value]
+    : undefined
+  return selectedVariant?.container ?? containers.value[0]?.name ?? null
+})
+
+watch(
+  [previewContainerBlockId, previewContainerName],
+  ([blockId, containerName], [previousBlockId]) => {
+    if (
+      previousBlockId
+      && editor.hoverSource.value === 'tree'
+      && editor.hoveredBlockId.value === previousBlockId
+    ) {
+      editor.setHoveredBlock(null, 'tree')
+    }
+    if (blockId)
+      canvas.containerPreview.show(blockId, containerName)
+    else
+      canvas.containerPreview.hide()
+  },
+  { immediate: true },
+)
+
+function setContainerHighlight(highlighted: boolean) {
+  const blockId = previewContainerBlockId.value
+  canvas.containerPreview.setHighlighted(highlighted)
+  editor.setHoveredBlock(highlighted && blockId ? blockId : null, 'tree')
+}
+
+onBeforeUnmount(() => {
+  const blockId = previewContainerBlockId.value
+  canvas.containerPreview.setActive(false)
+  if (editor.hoverSource.value === 'tree' && editor.hoveredBlockId.value === blockId)
+    editor.setHoveredBlock(null, 'tree')
+})
+
+function enableParentContainer(blockId: string) {
+  const parent = findBlock(editor.document.value.blocks, blockId)
+  if (!parent)
+    return
+
+  const containerName = parent.style?.containerName || nextContainerName(editor.effectiveDocument.value)
+  const updated = editor.updateBlockStyle(blockId, {
+    ...(parent.style ?? {}),
+    containerType: 'inline-size',
+    containerName,
+  })
+  if (updated) {
+    void nextTick(() => addContainerVariant({
+      container: containerName,
+      direction: 'max',
+      width: Math.max(1, Math.round(canvas.containerPreview.width.value ?? 480)),
+    }))
+  }
+}
+
+watch(styleMode, (mode) => {
+  if (mode === 'container')
+    styleState.value = 'default'
+})
+
+watch(() => block.value?.id, () => {
+  styleMode.value = 'viewport'
+  containerVariantId.value = null
+})
 
 useStyleInheritance({ editor, block, t })
 useStyleContrast({ editor, block })
@@ -349,12 +445,11 @@ const targetLabel = computed(() => {
             @rename="renameSymbolProperty"
           />
           <ContentTab
-            v-if="settingsComponent || settingsFields || bindableProps.length || isDataBlock"
+            v-if="settingsComponent || settingsFields || bindableProps.length"
             v-model="localProps"
             :settings-component="settingsComponent"
             :settings-fields="settingsFields"
             :bindable-props="bindableProps"
-            :is-data-block="isDataBlock"
           />
         </TabsContent>
 
@@ -503,17 +598,33 @@ const targetLabel = computed(() => {
             />
           </section>
 
-          <StyleVariantSelector
+          <StyleContextSelector
+            v-model:mode="styleMode"
             v-model:viewport="viewport"
             v-model:state="styleState"
+            v-model:container-variant-id="containerVariantId"
             :breakpoints="editor.breakpoints.value"
+            :nearest-parent="nearestParent"
+            :containers="containers"
+            :variants="containerVariants"
+            :container-width="canvas.containerPreview.width.value"
             @add-breakpoint="addBreakpoint"
+            @add-container-variant="addContainerVariant"
+            @update-container-variant="updateContainerVariant"
+            @remove-container-variant="removeContainerVariant"
+            @enable-container="enableParentContainer"
+            @highlight-container="setContainerHighlight"
           />
           <!-- A class-less element (fresh from the library, or after removing
                its last class) shows the full editor too: the first edit
                extracts into an auto-named class and the panel retargets to it,
                so styles still always land in a named class. -->
-          <StylePanel v-model="blockSlice" :parent-is-grid="parentIsGrid" :parent-is-flex="parentIsFlex" />
+          <StylePanel
+            v-if="styleMode === 'viewport' || containerVariantId"
+            v-model="blockSlice"
+            :parent-is-grid="parentIsGrid"
+            :parent-is-flex="parentIsFlex"
+          />
 
           <div
             v-if="block"

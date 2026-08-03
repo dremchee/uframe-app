@@ -19,6 +19,7 @@ import {
   serializeBlockTreeStyles,
   serializeClassStyles,
   serializeDocumentStyles,
+  serializeStyleRules,
   styleClassName,
 } from '@/core/utils/styles'
 
@@ -284,6 +285,21 @@ describe('serializeBlockTreeStyles', () => {
     ])
     expect(css).toContain('@media (width <= 1024px) { .uf-block-h { font-size: 24px } }')
     expect(css).toContain('@media (width <= 768px) { .uf-block-h { font-size: 18px } }')
+  })
+
+  it('serializes container variants separately from viewport breakpoints', () => {
+    const css = serializeStyleRules('.card-title', {
+      containerResponsive: {
+        cardCompact: {
+          container: 'card',
+          direction: 'max',
+          width: 480,
+          style: { fontSize: '18px' },
+        },
+      },
+    })
+    expect(css).toContain('@container card (width <= 480px) { .card-title { font-size: 18px } }')
+    expect(css).not.toContain('@media')
   })
 })
 

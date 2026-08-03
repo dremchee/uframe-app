@@ -3,7 +3,7 @@ import type { FieldSchema } from '@/core'
 import { ChevronDown, Eraser } from '@lucide/vue'
 import { computed } from 'vue'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Tooltip } from '@/components/ui'
-import { findDataScopeCollection } from '@/core'
+import { findDataScopeCollection } from '@/plugins/data'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 

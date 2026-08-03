@@ -1,10 +1,5 @@
 import type { AssetRef, PageBlock, PageDocument } from '@/core/types/page-document'
-import {
-  DATA_ITEM_BLOCK_TYPE,
-  DATA_LIST_BLOCK_TYPE,
-  SYMBOL_INSTANCE_BLOCK_TYPE,
-} from '@/core/types/page-document'
-import { cloneJsonValue } from '@/core/utils/clone'
+import { SYMBOL_INSTANCE_BLOCK_TYPE } from '@/core/types/page-document'
 import { setInstancePropertyValue } from '@/core/utils/symbol-properties'
 
 // Frontend-side resolution of a binding-carrying PageDocument into a static
@@ -24,9 +19,8 @@ export interface DataScope {
 /**
  * Everything the consumer supplies to `resolveDocument`:
  * - `page` / `item` — the root scope (e.g. a detail-route record).
- * - `data` — per-block fetched data keyed by block id: an array for a
- *   `data-list`, a single record for a `data-item`. Obtain the keys
- *   to fetch via `collectDataRequirements`.
+ * - `data` — plugin-owned fetched data keyed by block id. The optional Data
+ *   plugin consumes it via `resolveDataDocument`.
  */
 export interface ResolveContext extends DataScope {
   data?: Record<string, unknown>
@@ -128,30 +122,6 @@ function resolveProps(block: PageBlock, scope: DataScope, env: ResolveEnv): Reco
   return applyAsset(applyBindings(block, scope), block, env)
 }
 
-/**
- * Deep-clone a subtree, suffixing every id so the per-row copies of a
- * `data-list` template stay unique (block styles key off `id`). Keeps
- * `bindings`/`source` so the clone can still be resolved.
- *
- * Caveat: author-facing `id` attributes (`htmlId` or `attributes.id`) are
- * intentionally NOT suffixed; avoid setting one inside a `data-list` item
- * because it would repeat.
- */
-function cloneSubtreeWithSuffix(block: PageBlock, suffix: string): PageBlock {
-  return {
-    ...block,
-    id: `${block.id}${suffix}`,
-    props: cloneJsonValue(block.props),
-    style: block.style ? cloneJsonValue(block.style) : undefined,
-    classes: block.classes ? [...block.classes] : undefined,
-    attributes: block.attributes ? { ...block.attributes } : undefined,
-    bindings: block.bindings ? { ...block.bindings } : undefined,
-    source: block.source ? { ...block.source } : undefined,
-    asset: block.asset ? { ...block.asset } : undefined,
-    children: block.children?.map(child => cloneSubtreeWithSuffix(child, suffix)),
-  }
-}
-
 /** Strip resolution metadata from a resolved block — the output tree is static. */
 function strip(block: PageBlock, props: Record<string, unknown>, children?: PageBlock[]): PageBlock {
   const next: PageBlock = { ...block, props }
@@ -170,30 +140,8 @@ function resolveBlocks(blocks: PageBlock[], scope: DataScope, env: ResolveEnv): 
 }
 
 function resolveBlock(block: PageBlock, scope: DataScope, env: ResolveEnv): PageBlock {
-  // data-list: expand the inline template once per fetched row, each in a
-  // child scope where `item` is that row.
-  if (block.type === DATA_LIST_BLOCK_TYPE) {
-    const rows = env.data[block.id]
-    const template = block.children ?? []
-    const expanded = Array.isArray(rows)
-      ? rows.flatMap((row, i) => {
-          const rowScope: DataScope = { page: scope.page, item: row }
-          const clones = template.map(child => cloneSubtreeWithSuffix(child, `~${i}`))
-          return resolveBlocks(clones, rowScope, env)
-        })
-      : []
-    return strip(block, resolveProps(block, scope, env), expanded)
-  }
-
-  // data-item: render children once against the single fetched record.
-  if (block.type === DATA_ITEM_BLOCK_TYPE) {
-    const record = env.data[block.id]
-    const itemScope: DataScope = { page: scope.page, item: record }
-    const children = block.children ? resolveBlocks(block.children, itemScope, env) : undefined
-    return strip(block, resolveProps(block, scope, env), children)
-  }
-
-  // plain block: bind props + asset, recurse children in the same scope.
+  // Generic binding / asset resolver. Data scope expansion is implemented by
+  // the optional `plugins/data` package rather than core.
   const children = block.children ? resolveBlocks(block.children, scope, env) : undefined
   return strip(block, resolveProps(block, scope, env), children)
 }

@@ -5,7 +5,7 @@ import { mergeStyles } from '@/core'
 import { STYLE_INHERITANCE_KEY } from '@/vue/composables/style/useStyleInheritance'
 
 const SECTION_KEYS = {
-  Layout: ['display', 'flexDirection', 'flexWrap', 'justifyContent', 'alignItems', 'gap', 'gridTemplateColumns', 'gridTemplateRows', 'gridAutoFlow', 'gridAutoColumns', 'gridAutoRows', 'justifyItems', 'alignContent', 'gridColumn', 'gridRow', 'justifySelf', 'alignSelf', 'flexGrow', 'flexShrink', 'flexBasis', 'position', 'top', 'right', 'bottom', 'left', 'zIndex', 'overflow'],
+  Layout: ['display', 'flexDirection', 'flexWrap', 'justifyContent', 'alignItems', 'gap', 'gridTemplateColumns', 'gridTemplateRows', 'gridAutoFlow', 'gridAutoColumns', 'gridAutoRows', 'justifyItems', 'alignContent', 'gridColumn', 'gridRow', 'justifySelf', 'alignSelf', 'flexGrow', 'flexShrink', 'flexBasis', 'position', 'top', 'right', 'bottom', 'left', 'zIndex', 'overflow', 'containerType', 'containerName'],
   Size: ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight'],
   Spacing: ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
   Typography: ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing', 'color', 'textAlign', 'textTransform', 'textDecoration', 'textWrap'],

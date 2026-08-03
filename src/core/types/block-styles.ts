@@ -61,6 +61,10 @@ export interface LayoutStyles {
   left?: CssLength
   zIndex?: number
   overflow?: OverflowValue
+  /** Makes this element an inline-size query container for its descendants. */
+  containerType?: 'inline-size'
+  /** Stable CSS identifier used by descendant container variants. */
+  containerName?: string
 }
 
 export interface SizeStyles {
@@ -202,6 +206,15 @@ export const STYLE_STATES = ['hover', 'focus', 'active'] as const
 export type StyleState = typeof STYLE_STATES[number]
 
 export type BreakpointDirection = 'min' | 'max' | 'between'
+export type ContainerQueryDirection = 'min' | 'max'
+
+/** A style override evaluated against a named ancestor container. */
+export interface ContainerVariant {
+  container: string
+  direction: ContainerQueryDirection
+  width: number
+  style: BaseBlockStyles
+}
 
 // A breakpoint is fully user-defined and stored in the document
 // (`settings.breakpoints`). `id` is a stable key used in `BlockStyles.responsive`.
@@ -241,6 +254,8 @@ export type StyleViewport = string
 export interface BlockStyles extends BaseBlockStyles {
   states?: Partial<Record<StyleState, BaseBlockStyles>>
   responsive?: Record<string, BaseBlockStyles>
+  /** Container-query variants. Kept separate from viewport breakpoints. */
+  containerResponsive?: Record<string, ContainerVariant>
 }
 
 export const STYLE_SECTIONS = ['layout', 'size', 'spacing', 'typography', 'background', 'border', 'effects'] as const

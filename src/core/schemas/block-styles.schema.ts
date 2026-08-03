@@ -15,6 +15,9 @@ export const justifySelfSchema = z.enum(['auto', 'start', 'end', 'center', 'stre
 export const alignSelfSchema = z.enum(['auto', 'start', 'end', 'center', 'stretch'])
 export const positionSchema = z.enum(['static', 'relative', 'absolute', 'fixed', 'sticky'])
 export const overflowSchema = z.enum(['visible', 'hidden', 'scroll', 'auto'])
+export const containerTypeSchema = z.literal('inline-size')
+export const containerNameSchema = z.string().regex(/^[a-z_][\w-]*$/i, 'Invalid container name')
+export const containerQueryDirectionSchema = z.enum(['min', 'max'])
 export const textAlignSchema = z.enum(['left', 'center', 'right', 'justify'])
 export const fontStyleSchema = z.enum(['normal', 'italic'])
 export const textTransformSchema = z.enum(['none', 'uppercase', 'lowercase', 'capitalize'])
@@ -91,6 +94,8 @@ export const baseBlockStylesSchema = z.object({
   left: optionalLength,
   zIndex: z.number().int().optional(),
   overflow: overflowSchema.optional(),
+  containerType: containerTypeSchema.optional(),
+  containerName: containerNameSchema.optional(),
 
   width: optionalLength,
   height: optionalLength,
@@ -161,4 +166,10 @@ export const blockStylesSchema = baseBlockStylesSchema.extend({
     active: baseBlockStylesSchema.optional(),
   }).optional(),
   responsive: z.record(z.string().min(1), baseBlockStylesSchema).optional(),
+  containerResponsive: z.record(z.string().min(1), z.object({
+    container: containerNameSchema,
+    direction: containerQueryDirectionSchema,
+    width: z.number().positive(),
+    style: baseBlockStylesSchema,
+  })).optional(),
 })

@@ -1,6 +1,6 @@
 import { useThrottleFn } from '@vueuse/core'
 import { shallowRef } from 'vue'
-import { baseBlockId } from '@/core'
+import { baseBlockId } from '@/plugins/data'
 
 type HoverSource = 'canvas' | 'tree'
 

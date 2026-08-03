@@ -21,6 +21,26 @@ export interface PluginSlots {
 /** A border-box in canvas-overlay coordinates (relative to the frame). */
 export interface CanvasAnchorRect { top: number, left: number, width: number, height: number }
 
+/** Runtime-only container-query preview shared by the properties panel and canvas. */
+export interface ContainerPreviewChannel {
+  /** Whether the editor is styling against container width instead of viewport width. */
+  active: Ref<boolean>
+  blockId: Ref<string | null>
+  /** Name of the query context to proxy onto the preview target. */
+  containerName: Ref<string | null>
+  /** Current queryable inline size (the container's content box), in CSS pixels. */
+  width: Ref<number | null>
+  /** Temporary border-box width applied inside the editor canvas only. */
+  overrideWidth: Ref<number | null>
+  highlighted: Ref<boolean>
+  setActive: (active: boolean) => void
+  show: (blockId: string, containerName: string | null) => void
+  hide: () => void
+  reportWidth: (width: number | null) => void
+  setOverrideWidth: (width: number | null) => void
+  setHighlighted: (highlighted: boolean) => void
+}
+
 /**
  * Canvas geometry and state published by the canvas for plugin overlays and
  * in-canvas layers. `paneEl` is the scrollable canvas pane (clamp bounds for
@@ -36,6 +56,7 @@ export interface CanvasChannel {
   selectionRect: Ref<CanvasAnchorRect | null>
   selectionRadius: Ref<string | null>
   busy: Ref<boolean>
+  containerPreview: ContainerPreviewChannel
 }
 
 export interface PageEditorContext {

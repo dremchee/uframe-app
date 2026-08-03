@@ -120,6 +120,16 @@ function emitRulesForStyle(
     }
   }
 
+  if (styles.containerResponsive) {
+    for (const variant of Object.values(styles.containerResponsive)) {
+      const decl = serializeStyleDeclarations(variant.style)
+      if (!decl)
+        continue
+      const query = `(width ${variant.direction === 'min' ? '>=' : '<='} ${variant.width}px)`
+      rules.push(`@container ${variant.container} ${query} { ${selector} { ${decl} } }`)
+    }
+  }
+
   return rules
 }
 

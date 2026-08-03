@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { PageEditorInstance } from '@/vue/context/editor-context'
 import { useEventListener } from '@vueuse/core'
-import { baseBlockId } from '@/core'
+import { baseBlockId } from '@/plugins/data'
 import { applyEditorHotkey, matchEditorHotkey } from '@/vue/composables/editor/useEditorHotkeys'
 import { useCanvasHitTest } from './useCanvasHitTest'
 

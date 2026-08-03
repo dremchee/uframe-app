@@ -7,7 +7,7 @@ function toKebabCase(camel: string): string {
   return camel.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
 }
 
-const NESTED_KEYS = new Set(['states', 'responsive'])
+const NESTED_KEYS = new Set(['states', 'responsive', 'containerResponsive'])
 
 /** Serializes only the declarations owned by one style layer. */
 export function serializeStyleDeclarations(styles: BaseBlockStyles | undefined): string {

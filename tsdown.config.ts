@@ -37,6 +37,9 @@ export default defineConfig({
     // separate entry so it only lands in a consumer's bundle when imported;
     // `plugins/ai` mirrors the source folder and namespaces official plugins.
     'plugins/ai': 'src/plugins/ai/index.ts',
+    // CMS-backed dynamic content blocks are an independently importable
+    // official plugin. The editor registers it by default for compatibility.
+    'plugins/data': 'src/plugins/data/index.ts',
     // Framework-agnostic host client for the iframe embed (no Vue).
     'embed': 'src/embed/client.ts',
     // Published baseline for framework integrations that need the CSS string

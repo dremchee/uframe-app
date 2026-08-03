@@ -135,6 +135,58 @@ const canvas: CanvasChannel = {
   selectionRect: ref(null),
   selectionRadius: ref(null),
   busy: ref(false),
+  containerPreview: (() => {
+    const active = shallowRef(false)
+    const blockId = shallowRef<string | null>(null)
+    const containerName = shallowRef<string | null>(null)
+    const width = shallowRef<number | null>(null)
+    const overrideWidth = shallowRef<number | null>(null)
+    const highlighted = shallowRef(false)
+
+    return {
+      active,
+      blockId,
+      containerName,
+      width,
+      overrideWidth,
+      highlighted,
+      setActive(nextActive: boolean) {
+        active.value = nextActive
+        if (!nextActive) {
+          blockId.value = null
+          containerName.value = null
+          width.value = null
+          overrideWidth.value = null
+          highlighted.value = false
+        }
+      },
+      show(nextBlockId: string, nextContainerName: string | null) {
+        if (blockId.value === nextBlockId && containerName.value === nextContainerName)
+          return
+        blockId.value = nextBlockId
+        containerName.value = nextContainerName
+        width.value = null
+        overrideWidth.value = null
+        highlighted.value = false
+      },
+      hide() {
+        blockId.value = null
+        containerName.value = null
+        width.value = null
+        overrideWidth.value = null
+        highlighted.value = false
+      },
+      reportWidth(nextWidth: number | null) {
+        width.value = nextWidth
+      },
+      setOverrideWidth(nextWidth: number | null) {
+        overrideWidth.value = nextWidth
+      },
+      setHighlighted(nextHighlighted: boolean) {
+        highlighted.value = nextHighlighted
+      },
+    }
+  })(),
 }
 
 const editor = usePageEditor({

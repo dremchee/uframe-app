@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { CanvasDropIndicator } from '@/vue/composables/canvas/useCanvasDropOverlay'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { Component as ComponentIcon, GripVertical, Plus } from '@lucide/vue'
+import { Component as ComponentIcon, GripVertical, MoveHorizontal, Plus } from '@lucide/vue'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { computed, h, nextTick, render, shallowRef, useTemplateRef, watch } from 'vue'
-import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigger } from '@/components/ui'
-import { findBlock, findBlockParentId, isDescendantOf } from '@/core'
+import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@/components/ui'
+import { blockStyleValue, findBlock, findBlockParentId, isDescendantOf } from '@/core'
 import CanvasBreadcrumbs from '@/vue/components/CanvasBreadcrumbs.vue'
+import CanvasContainerPreview from '@/vue/components/CanvasContainerPreview.vue'
 import CanvasFrameDocument from '@/vue/components/CanvasFrameDocument.vue'
+import CanvasWidthResizeControls from '@/vue/components/CanvasWidthResizeControls.vue'
 import { useCanvasBlockLabels } from '@/vue/composables/canvas/useCanvasBlockLabels'
 import { useCanvasContextBridge } from '@/vue/composables/canvas/useCanvasContextBridge'
 import { useCanvasDropOverlay } from '@/vue/composables/canvas/useCanvasDropOverlay'
@@ -21,6 +23,7 @@ import { useIframeFonts } from '@/vue/composables/fonts/useIframeFonts'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 import { localizedBlockCategory, localizedBlockLabel } from '@/vue/utils/block-label'
+import { CANVAS_RESIZE_HANDLE_OUTSET } from '@/vue/utils/canvas-width-resize'
 
 const { editor, features, dataContext, pluginSlots, canvas, untrustedEmbeds } = useEditorContext()
 const i18n = useUframeI18n()
@@ -139,6 +142,19 @@ useCanvasInteractions({
 const hoveredBlockId = computed(() =>
   editor.hoverSource.value === 'canvas' ? editor.hoveredBlockId.value : editor.syncedHoverId.value,
 )
+const isContainerWidthPreviewActive = computed(() => canvas.containerPreview.blockId.value != null)
+const canActivateContainerWidthMode = computed(() => {
+  const selectedBlockId = editor.selectedBlockId.value
+  if (selectedBlockId == null)
+    return false
+  const selected = findBlock(editor.effectiveDocument.value.blocks, selectedBlockId)
+  // A root-level block may legitimately be a query container; it does not
+  // need a parent to expose its own width-resize control.
+  return (
+    selected != null
+    && blockStyleValue(selected, editor.effectiveDocument.value.styles ?? {}, 'containerType') === 'inline-size'
+  ) || findBlockParentId(editor.effectiveDocument.value.blocks, selectedBlockId) != null
+})
 
 const overlays = useCanvasOverlays({
   editor,
@@ -221,17 +237,10 @@ function closeInsertMenu() {
 
 // ── Manual canvas-width resize ─────────────────────────────────────────────
 
-type CanvasResizeSide = 'left' | 'right'
-
-const canvasResize = shallowRef<{ pointerId: number, side: CanvasResizeSide, startX: number, startWidth: number } | null>(null)
 const isResizeHandleHovered = shallowRef(false)
 const actualCanvasWidth = shallowRef<number | null>(null)
-const MIN_CANVAS_WIDTH = 320
+const maxCanvasResizeWidth = shallowRef(0)
 const resizeHandlePlacement = shallowRef({ leftInside: false, rightInside: false })
-const RESIZE_HANDLE_INSIDE_OFFSET = 4
-const RESIZE_HANDLE_OUTSIDE_OFFSET = 8
-const RESIZE_HANDLE_HIT_WIDTH = 12
-const RESIZE_HANDLE_OUTSET = RESIZE_HANDLE_HIT_WIDTH
 
 function updateResizeHandlePlacement() {
   const pane = canvasPaneRef.value
@@ -241,26 +250,11 @@ function updateResizeHandlePlacement() {
   const paneRect = pane.getBoundingClientRect()
   const frameRect = frame.getBoundingClientRect()
   actualCanvasWidth.value = Math.round(frameRect.width)
+  maxCanvasResizeWidth.value = pane.clientWidth
   resizeHandlePlacement.value = {
-    leftInside: frameRect.left - paneRect.left < RESIZE_HANDLE_OUTSET,
-    rightInside: paneRect.right - frameRect.right < RESIZE_HANDLE_OUTSET,
+    leftInside: frameRect.left - paneRect.left < CANVAS_RESIZE_HANDLE_OUTSET,
+    rightInside: paneRect.right - frameRect.right < CANVAS_RESIZE_HANDLE_OUTSET,
   }
-}
-
-const resizeHandleClass = 'group absolute top-1/2 z-30 h-7 w-[12px] -translate-y-1/2 cursor-col-resize touch-none outline-none focus-visible:ring-1 focus-visible:ring-uf-accent'
-
-function resizeHandleStyle(side: CanvasResizeSide) {
-  const isInside = side === 'left' ? resizeHandlePlacement.value.leftInside : resizeHandlePlacement.value.rightInside
-  const position = isInside ? 0 : -RESIZE_HANDLE_HIT_WIDTH
-  return side === 'left' ? { left: `${position}px` } : { right: `${position}px` }
-}
-
-function resizeHandleStripStyle(side: CanvasResizeSide) {
-  const isInside = side === 'left' ? resizeHandlePlacement.value.leftInside : resizeHandlePlacement.value.rightInside
-  const offset = isInside ? RESIZE_HANDLE_INSIDE_OFFSET : RESIZE_HANDLE_OUTSIDE_OFFSET
-  if (side === 'left')
-    return isInside ? { left: `${offset}px` } : { right: `${offset}px` }
-  return isInside ? { right: `${offset}px` } : { left: `${offset}px` }
 }
 
 useResizeObserver(canvasPaneRef, updateResizeHandlePlacement)
@@ -268,35 +262,6 @@ useResizeObserver(canvasFrameRef, updateResizeHandlePlacement)
 watch([canvasPaneRef, canvasFrameRef, () => editor.canvasWidth.value, () => editor.isCanvasResizeMode.value], () => {
   void nextTick(updateResizeHandlePlacement)
 }, { immediate: true, flush: 'post' })
-
-function onCanvasResizeStart(event: PointerEvent, side: CanvasResizeSide) {
-  const frame = canvasFrameRef.value
-  if (!frame)
-    return
-  canvasResize.value = {
-    pointerId: event.pointerId,
-    side,
-    startX: event.clientX,
-    startWidth: frame.getBoundingClientRect().width,
-  }
-  const handle = event.currentTarget as HTMLElement
-  handle.setPointerCapture(event.pointerId)
-}
-
-function onCanvasResizeMove(event: PointerEvent) {
-  const resize = canvasResize.value
-  const pane = canvasPaneRef.value
-  if (!resize || resize.pointerId !== event.pointerId || !pane)
-    return
-  const delta = event.clientX - resize.startX
-  const nextWidth = resize.startWidth + (resize.side === 'right' ? delta : -delta)
-  editor.setCustomWidth(Math.min(pane.clientWidth, Math.max(MIN_CANVAS_WIDTH, nextWidth)))
-}
-
-function onCanvasResizeEnd(event: PointerEvent) {
-  if (canvasResize.value?.pointerId === event.pointerId)
-    canvasResize.value = null
-}
 
 // ── Selection badge as a drag-handle ────────────────────────────────────────
 
@@ -361,6 +326,19 @@ const {
   flexBox,
   editScopeRect,
 })
+
+const containerWidthBadgeStyle = computed<Record<string, string> | undefined>(() => {
+  const rect = selectionRect.value
+  const labelStyle = selectionLabelStyle.value
+  if (!rect || !labelStyle)
+    return undefined
+
+  return {
+    top: labelStyle.top,
+    left: `${rect.left + rect.width}px`,
+    transform: 'translateX(-100%)',
+  }
+})
 </script>
 
 <template>
@@ -381,36 +359,16 @@ const {
         :style="{ pointerEvents: isDragging ? 'none' : undefined }"
         :title="t('canvas.pageCanvas')"
       />
-      <template v-if="editor.isCanvasResizeMode.value">
-        <button
-          type="button"
-          :class="resizeHandleClass"
-          :style="resizeHandleStyle('left')"
-          :aria-label="t('toolbar.resizeCanvas')"
-          @pointerdown.prevent.stop="onCanvasResizeStart($event, 'left')"
-          @pointermove="onCanvasResizeMove"
-          @pointerup="onCanvasResizeEnd"
-          @lostpointercapture="onCanvasResizeEnd"
-          @mouseenter="isResizeHandleHovered = true"
-          @mouseleave="isResizeHandleHovered = false"
-        >
-          <span :style="resizeHandleStripStyle('left')" class="absolute top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-uf-muted opacity-60 transition-[background-color,opacity] group-hover:bg-uf-accent group-hover:opacity-100" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          :class="resizeHandleClass"
-          :style="resizeHandleStyle('right')"
-          :aria-label="t('toolbar.resizeCanvas')"
-          @pointerdown.prevent.stop="onCanvasResizeStart($event, 'right')"
-          @pointermove="onCanvasResizeMove"
-          @pointerup="onCanvasResizeEnd"
-          @lostpointercapture="onCanvasResizeEnd"
-          @mouseenter="isResizeHandleHovered = true"
-          @mouseleave="isResizeHandleHovered = false"
-        >
-          <span :style="resizeHandleStripStyle('right')" class="absolute top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-full bg-uf-muted opacity-60 transition-[background-color,opacity] group-hover:bg-uf-accent group-hover:opacity-100" aria-hidden="true" />
-        </button>
-      </template>
+      <CanvasWidthResizeControls
+        v-if="editor.isCanvasResizeMode.value && actualCanvasWidth != null && !canvas.containerPreview.blockId.value"
+        :width="actualCanvasWidth"
+        :max-width="maxCanvasResizeWidth"
+        :left-inside="resizeHandlePlacement.leftInside"
+        :right-inside="resizeHandlePlacement.rightInside"
+        :label="t('toolbar.resizeCanvas')"
+        @update:width="editor.setCustomWidth"
+        @hover-change="isResizeHandleHovered = $event"
+      />
       <!-- In-place component editing: a dark island banner stuck over the canvas
            (absolute), bottom-centered, above the dim scrim. -->
       <Alert
@@ -439,105 +397,112 @@ const {
           :style="{ ...editScrimStyle, boxShadow: '0 0 0 100vmax rgba(2,6,23,0.55)' }"
         />
 
-        <!-- Grid track guides (lines + content outline) for a grid container -->
-        <template v-if="gridGuides">
+        <template v-if="!isContainerWidthPreviewActive">
+          <!-- Grid track guides (lines + content outline) for a grid container -->
+          <template v-if="gridGuides">
+            <div
+              class="absolute pointer-events-none border border-dashed border-uf-gap/40 rounded-[1px]"
+              :style="gridGuides.outline"
+            />
+            <div
+              v-for="line in gridGuides.lines"
+              :key="line.key"
+              class="absolute pointer-events-none border-uf-gap/50"
+              :class="line.vertical ? 'border-l border-dashed' : 'border-t border-dashed'"
+              :style="line.style"
+            />
+          </template>
+
+          <!-- Gap highlight bands — only while a gap is being dragged -->
           <div
-            class="absolute pointer-events-none border border-dashed border-uf-gap/40 rounded-[1px]"
-            :style="gridGuides.outline"
-          />
-          <div
-            v-for="line in gridGuides.lines"
-            :key="line.key"
-            class="absolute pointer-events-none border-uf-gap/50"
-            :class="line.vertical ? 'border-l border-dashed' : 'border-t border-dashed'"
-            :style="line.style"
-          />
-        </template>
-
-        <!-- Gap highlight bands — only while a gap is being dragged -->
-        <div
-          v-for="band in gapBands"
-          :key="band.key"
-          class="absolute pointer-events-none bg-uf-gap/20"
-          :style="band.style"
-        />
-
-        <!-- Drag handles to resize tracks (base layer only): the whole gap area
-             between two column/row boundaries, no highlight — just the cursor.
-             It also doubles as the gap hint sensor (hovering anywhere in the gap
-             reveals the gap grip), without changing the resize gesture. -->
-        <div
-          v-for="hd in gridHandles"
-          :key="hd.key"
-          class="absolute z-20 pointer-events-auto"
-          :class="hd.axis === 'col' ? 'cursor-col-resize' : 'cursor-row-resize'"
-          :style="hd.style"
-          @pointerdown.stop="onGridHandleDown($event, hd.axis, hd.index)"
-          @pointermove="onGridHandleMove"
-          @pointerup="onGridHandleUp"
-          @lostpointercapture="onGridHandleUp"
-          @mouseenter="onGapHandleEnter(hd.axis)"
-          @mouseleave="onGapHandleLeave"
-        />
-
-        <!-- Flex gap hint sensors: transparent full-gap rects that reveal the
-             grip on hover (flex has no track handles to double as the sensor).
-             Hover-only — the grip still owns the drag. -->
-        <div
-          v-for="s in flexGapSensors"
-          :key="s.id"
-          class="absolute z-20 pointer-events-auto"
-          :style="s.style"
-          @mouseenter="onGapHandleEnter(s.axis)"
-          @mouseleave="onGapHandleLeave"
-        />
-
-        <!-- Gap grips: drag the band between tracks to resize the gap. The drag
-             zone stays small; the pill is the gap hint and shows whenever the
-             cursor is anywhere over this axis's gap (set from here or the track
-             handle), or while dragging. -->
-        <div
-          v-for="gp in gapHandles"
-          :key="gp.id"
-          class="absolute z-30 flex items-center justify-center pointer-events-auto -translate-x-1/2 -translate-y-1/2"
-          :class="gp.axis === 'col' ? 'w-4 h-7 cursor-col-resize' : 'h-4 w-7 cursor-row-resize'"
-          :style="gp.style"
-          @pointerdown.stop="onGapHandleDown($event, gp)"
-          @pointermove="onGapHandleMove"
-          @pointerup="onGapHandleUp"
-          @lostpointercapture="onGapHandleUp"
-          @mouseenter="onGapHandleEnter(gp.axis)"
-          @mouseleave="onGapHandleLeave"
-        >
-          <div
-            class="rounded-full bg-uf-gap opacity-60 transition-opacity"
-            :class="[
-              gp.axis === 'col' ? 'w-0.5 h-6' : 'h-0.5 w-6',
-              (gapHover === gp.axis || (gapDrag && gapDrag.axis === gp.axis)) && 'opacity-100!',
-            ]"
-          />
-        </div>
-
-        <template v-if="!isDragging">
-          <div
-            v-for="band in spacingBands"
+            v-for="band in gapBands"
             :key="band.key"
-            class="absolute pointer-events-none flex items-center justify-center"
-            :style="{ ...band.style, backgroundColor: bandColor(band) }"
+            class="absolute pointer-events-none bg-uf-gap/20"
+            :style="band.style"
+          />
+
+          <!-- Drag handles to resize tracks (base layer only): the whole gap area
+               between two column/row boundaries, no highlight — just the cursor.
+               It also doubles as the gap hint sensor (hovering anywhere in the gap
+               reveals the gap grip), without changing the resize gesture. -->
+          <div
+            v-for="hd in gridHandles"
+            :key="hd.key"
+            class="absolute z-20 pointer-events-auto"
+            :class="hd.axis === 'col' ? 'cursor-col-resize' : 'cursor-row-resize'"
+            :style="hd.style"
+            @pointerdown.stop="onGridHandleDown($event, hd.axis, hd.index)"
+            @pointermove="onGridHandleMove"
+            @pointerup="onGridHandleUp"
+            @lostpointercapture="onGridHandleUp"
+            @mouseenter="onGapHandleEnter(hd.axis)"
+            @mouseleave="onGapHandleLeave"
+          />
+
+          <!-- Flex gap hint sensors: transparent full-gap rects that reveal the
+               grip on hover (flex has no track handles to double as the sensor).
+               Hover-only — the grip still owns the drag. -->
+          <div
+            v-for="s in flexGapSensors"
+            :key="s.id"
+            class="absolute z-20 pointer-events-auto"
+            :style="s.style"
+            @mouseenter="onGapHandleEnter(s.axis)"
+            @mouseleave="onGapHandleLeave"
+          />
+
+          <!-- Gap grips: drag the band between tracks to resize the gap. The drag
+               zone stays small; the pill is the gap hint and shows whenever the
+               cursor is anywhere over this axis's gap (set from here or the track
+               handle), or while dragging. -->
+          <div
+            v-for="gp in gapHandles"
+            :key="gp.id"
+            class="absolute z-30 flex items-center justify-center pointer-events-auto -translate-x-1/2 -translate-y-1/2"
+            :class="gp.axis === 'col' ? 'w-4 h-7 cursor-col-resize' : 'h-4 w-7 cursor-row-resize'"
+            :style="gp.style"
+            @pointerdown.stop="onGapHandleDown($event, gp)"
+            @pointermove="onGapHandleMove"
+            @pointerup="onGapHandleUp"
+            @lostpointercapture="onGapHandleUp"
+            @mouseenter="onGapHandleEnter(gp.axis)"
+            @mouseleave="onGapHandleLeave"
           >
-            <span
-              v-if="band.value >= 1 && editor.spacingOverlay.value?.group === band.group"
-              class="px-1 rounded-[3px] bg-primary/90 text-primary-foreground text-[10px] leading-tight tabular-nums backdrop-blur-[2px]"
-            >{{ Math.round(band.value) }}</span>
+            <div
+              class="rounded-full bg-uf-gap opacity-60 transition-opacity"
+              :class="[
+                gp.axis === 'col' ? 'w-0.5 h-6' : 'h-0.5 w-6',
+                (gapHover === gp.axis || (gapDrag && gapDrag.axis === gp.axis)) && 'opacity-100!',
+              ]"
+            />
           </div>
+
+          <template v-if="!isDragging">
+            <div
+              v-for="band in spacingBands"
+              :key="band.key"
+              class="absolute pointer-events-none flex items-center justify-center"
+              :style="{ ...band.style, backgroundColor: bandColor(band) }"
+            >
+              <span
+                v-if="band.value >= 1 && editor.spacingOverlay.value?.group === band.group"
+                class="px-1 rounded-[3px] bg-primary/90 text-primary-foreground text-[10px] leading-tight tabular-nums backdrop-blur-[2px]"
+              >{{ Math.round(band.value) }}</span>
+            </div>
+          </template>
         </template>
+        <CanvasContainerPreview
+          v-if="!isDragging && !editor.isPreviewMode.value"
+          :iframe-doc="iframeDoc"
+          :iframe-win="iframeWin"
+        />
         <div
-          v-if="hoverRect && !isDragging"
+          v-if="hoverRect && !isDragging && !isContainerWidthPreviewActive"
           class="absolute z-20 pointer-events-none"
           :style="hoverStyle ?? undefined"
         />
         <div
-          v-if="hoverRect && hovered.label.value && !isDragging"
+          v-if="hoverRect && hovered.label.value && !isDragging && !isContainerWidthPreviewActive"
           class="absolute z-20 pointer-events-none inline-flex items-center gap-1 h-5 px-1.5 rounded-[2px] bg-uf-muted text-white text-[11px] font-semibold leading-none whitespace-nowrap"
           :style="hoverLabelStyle ?? undefined"
         >
@@ -545,7 +510,7 @@ const {
           {{ hovered.label.value }}
         </div>
         <div
-          v-if="selectionRect && !isDragging && !canvas.busy.value"
+          v-if="selectionRect && !isDragging && !canvas.busy.value && !isContainerWidthPreviewActive"
           class="absolute pointer-events-none"
           :style="selectionStyle ?? undefined"
         />
@@ -553,7 +518,7 @@ const {
              (e.g. the AI "generating" ring over the target block). -->
         <component :is="c" v-for="(c, i) in pluginSlots.canvasLayers" :key="i" />
         <div
-          v-if="selectionRect && selected.label.value"
+          v-if="selectionRect && selected.label.value && !isContainerWidthPreviewActive"
           class="absolute pointer-events-auto inline-flex items-center gap-1"
           :style="selectionLabelStyle ?? undefined"
         >
@@ -642,6 +607,21 @@ const {
             </PopoverContent>
           </Popover>
         </div>
+        <Tooltip
+          v-if="selectionRect && canActivateContainerWidthMode && !isContainerWidthPreviewActive"
+          :text="t('style.containerWidth')"
+        >
+          <button
+            type="button"
+            class="absolute z-30 inline-flex size-5 pointer-events-auto items-center justify-center rounded-[2px] bg-uf-accent text-uf-accent-foreground transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+            :style="containerWidthBadgeStyle"
+            :aria-label="t('style.containerWidth')"
+            @pointerdown.stop
+            @click.stop="canvas.containerPreview.setActive(true)"
+          >
+            <MoveHorizontal :size="13" :stroke-width="2.25" aria-hidden="true" />
+          </button>
+        </Tooltip>
         <div
           v-if="indicator"
           class="absolute pointer-events-none transition-all duration-75"

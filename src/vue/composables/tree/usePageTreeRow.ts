@@ -6,8 +6,6 @@ import { useResizeObserver } from '@vueuse/core'
 import { computed, nextTick, ref, shallowRef, toRef, watch } from 'vue'
 import {
   COMPONENT_SLOT_BLOCK_TYPE,
-  DATA_ITEM_BLOCK_TYPE,
-  DATA_LIST_BLOCK_TYPE,
   findBlock,
   findBlockParentId,
   getInstanceSymbolId,
@@ -15,6 +13,7 @@ import {
   SYMBOL_INSTANCE_BLOCK_TYPE,
   SYMBOL_SLOT_FILL_BLOCK_TYPE,
 } from '@/core'
+import { DATA_ITEM_BLOCK_TYPE, DATA_LIST_BLOCK_TYPE } from '@/plugins/data'
 import { cn } from '@/lib/utils'
 import { useTreeNodeDnd } from '@/vue/composables/dnd/useTreeNodeDnd'
 import { useUframeI18n } from '@/vue/i18n'

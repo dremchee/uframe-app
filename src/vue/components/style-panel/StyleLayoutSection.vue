@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldStepper, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui'
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
 import { useUframeI18n } from '@/vue/i18n'
+import ContainerControl from './ContainerControl.vue'
 import FlexItemControl from './FlexItemControl.vue'
 import GridControl from './GridControl.vue'
 import GridItemControl from './GridItemControl.vue'
@@ -162,5 +163,10 @@ const isGrid = computed(() => styles.value.display === 'grid')
         </Select>
       </StyleField>
     </div>
+
+    <ContainerControl
+      :model-value="styles"
+      @update:model-value="emit('update:modelValue', $event)"
+    />
   </StyleSection>
 </template>

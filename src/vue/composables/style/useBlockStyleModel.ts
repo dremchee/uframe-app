@@ -1,5 +1,6 @@
 import type { Ref } from 'vue'
-import type { BaseBlockStyles, BlockStyles, PageBlock, StyleBreakpoint } from '@/core'
+import type { BaseBlockStyles, BlockStyles, ContainerVariant, PageBlock, StyleBreakpoint } from '@/core'
+import type { StyleContextMode } from '@/vue/components/style-panel/StyleContextSelector.vue'
 import type { StateKey, ViewportKey } from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import type { EditingTarget } from '@/vue/composables/style/useBlockClasses'
 import type { PageEditorInstance } from '@/vue/context/editor-context'
@@ -21,8 +22,10 @@ export function useBlockStyleModel(params: {
   editingTarget: Ref<EditingTarget>
   viewport: Ref<ViewportKey>
   styleState: Ref<StateKey>
+  styleMode: Ref<StyleContextMode>
+  containerVariantId: Ref<string | null>
 }) {
-  const { editor, block, editingTarget, viewport, styleState } = params
+  const { editor, block, editingTarget, viewport, styleState, styleMode, containerVariantId } = params
 
   const activeStyle = ref<BlockStyles>({})
   let skipStyleEmit = false
@@ -121,7 +124,7 @@ export function useBlockStyleModel(params: {
     value: BlockStyles,
     breakpoint: StyleBreakpoint,
   ): BaseBlockStyles {
-    const { states: _states, responsive: _responsive, ...base } = value
+    const { states: _states, responsive: _responsive, containerResponsive: _containerResponsive, ...base } = value
     let merged: Record<string, unknown> = { ...base }
     for (const ancestorId of inheritedBreakpointIds(
       editor.breakpoints.value,
@@ -134,6 +137,13 @@ export function useBlockStyleModel(params: {
   const blockSlice = computed<BaseBlockStyles>({
     get() {
       const value = activeStyle.value
+      if (styleMode.value === 'container' && containerVariantId.value) {
+        const variant = value.containerResponsive?.[containerVariantId.value]
+        if (!variant)
+          return {}
+        const { states: _states, responsive: _responsive, containerResponsive: _containerResponsive, ...base } = value
+        return { ...base, ...variant.style } as BaseBlockStyles
+      }
       if (styleState.value !== 'default')
         return (value.states?.[styleState.value] ?? {}) as BaseBlockStyles
       if (viewport.value !== 'base') {
@@ -145,11 +155,31 @@ export function useBlockStyleModel(params: {
         } as BaseBlockStyles
       }
 
-      const { states: _states, responsive: _responsive, ...flat } = value
+      const { states: _states, responsive: _responsive, containerResponsive: _containerResponsive, ...flat } = value
       return flat as BaseBlockStyles
     },
     set(next) {
       const current = activeStyle.value
+      if (styleMode.value === 'container' && containerVariantId.value) {
+        const id = containerVariantId.value
+        const currentVariant = current.containerResponsive?.[id]
+        if (!currentVariant)
+          return
+        const { states: _states, responsive: _responsive, containerResponsive: _containerResponsive, ...base } = current
+        const override: Record<string, unknown> = {}
+        for (const [key, value] of Object.entries(next)) {
+          if (value !== undefined && value !== (base as Record<string, unknown>)[key])
+            override[key] = value
+        }
+        activeStyle.value = {
+          ...current,
+          containerResponsive: {
+            ...(current.containerResponsive ?? {}),
+            [id]: { ...currentVariant, style: override as BaseBlockStyles },
+          },
+        }
+        return
+      }
       if (styleState.value !== 'default') {
         const states = { ...(current.states ?? {}) }
         if (Object.keys(next).length)
@@ -189,9 +219,66 @@ export function useBlockStyleModel(params: {
         ...next,
         states: current.states,
         responsive: current.responsive,
+        containerResponsive: current.containerResponsive,
       } as BlockStyles
     },
   })
 
-  return { blockSlice }
+  const containerVariants = computed(() => activeStyle.value.containerResponsive ?? {})
+
+  function addContainerVariant(draft: Omit<ContainerVariant, 'style'>): string {
+    const idBase = `${draft.container}-${draft.direction}-${draft.width}`
+    let id = idBase
+    let suffix = 2
+    while (activeStyle.value.containerResponsive?.[id])
+      id = `${idBase}-${suffix++}`
+    activeStyle.value = {
+      ...activeStyle.value,
+      containerResponsive: {
+        ...(activeStyle.value.containerResponsive ?? {}),
+        [id]: { ...draft, style: {} },
+      },
+    }
+    containerVariantId.value = id
+    return id
+  }
+
+  function updateContainerVariant(
+    id: string,
+    patch: Partial<Omit<ContainerVariant, 'style'>>,
+  ) {
+    const current = activeStyle.value.containerResponsive?.[id]
+    if (!current)
+      return
+    activeStyle.value = {
+      ...activeStyle.value,
+      containerResponsive: {
+        ...(activeStyle.value.containerResponsive ?? {}),
+        [id]: { ...current, ...patch },
+      },
+    }
+  }
+
+  function removeContainerVariant(id: string) {
+    const variants = { ...(activeStyle.value.containerResponsive ?? {}) }
+    delete variants[id]
+    activeStyle.value = {
+      ...activeStyle.value,
+      containerResponsive: Object.keys(variants).length ? variants : undefined,
+    }
+    containerVariantId.value = Object.keys(variants)[0] ?? null
+  }
+
+  watch(containerVariants, (variants) => {
+    if (containerVariantId.value && !variants[containerVariantId.value])
+      containerVariantId.value = Object.keys(variants)[0] ?? null
+  })
+
+  return {
+    blockSlice,
+    containerVariants,
+    addContainerVariant,
+    updateContainerVariant,
+    removeContainerVariant,
+  }
 }
