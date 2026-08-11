@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PageBlock } from '@/core'
+import type { ContainerVariant, PageBlock } from '@/core'
 import type { BreakpointDraft } from '@/vue/components/BreakpointForm.vue'
 import type { StyleContextMode } from '@/vue/components/style-panel/StyleContextSelector.vue'
 import type { StateKey, ViewportKey } from '@/vue/components/style-panel/StyleVariantSelector.vue'
@@ -294,10 +294,15 @@ const previewContainerName = computed(() => {
     : undefined
   return selectedVariant?.container ?? containers.value[0]?.name ?? null
 })
+const previewConditionWidth = computed(() => {
+  if (styleMode.value !== 'container' || !containerVariantId.value)
+    return null
+  return containerVariants.value[containerVariantId.value]?.width ?? null
+})
 
 watch(
-  [previewContainerBlockId, previewContainerName],
-  ([blockId, containerName], [previousBlockId]) => {
+  [previewContainerBlockId, previewContainerName, previewConditionWidth],
+  ([blockId, containerName, conditionWidth], [previousBlockId]) => {
     if (
       previousBlockId
       && editor.hoverSource.value === 'tree'
@@ -305,10 +310,14 @@ watch(
     ) {
       editor.setHoveredBlock(null, 'tree')
     }
-    if (blockId)
+    if (blockId) {
       canvas.containerPreview.show(blockId, containerName)
-    else
+      if (conditionWidth != null)
+        canvas.containerPreview.setOverrideWidth(conditionWidth)
+    }
+    else {
       canvas.containerPreview.hide()
+    }
   },
   { immediate: true },
 )
@@ -344,6 +353,13 @@ function enableParentContainer(blockId: string) {
       width: Math.max(1, Math.round(canvas.containerPreview.width.value ?? 480)),
     }))
   }
+}
+
+function addContainerCondition(draft: Omit<ContainerVariant, 'style'>) {
+  addContainerVariant(draft)
+  // Creating a condition temporarily enters container-width preview so its
+  // draft follows the canvas. Return to the normal style controls afterwards.
+  styleMode.value = 'viewport'
 }
 
 watch(styleMode, (mode) => {
@@ -609,7 +625,7 @@ const targetLabel = computed(() => {
             :variants="containerVariants"
             :container-width="canvas.containerPreview.width.value"
             @add-breakpoint="addBreakpoint"
-            @add-container-variant="addContainerVariant"
+            @add-container-variant="addContainerCondition"
             @update-container-variant="updateContainerVariant"
             @remove-container-variant="removeContainerVariant"
             @enable-container="enableParentContainer"
