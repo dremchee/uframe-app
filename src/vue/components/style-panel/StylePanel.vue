@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import type { BaseBlockStyles } from '@/core'
 import { computed } from 'vue'
 import { useStylePanelModel } from '@/vue/composables/style/useStylePanelModel'
@@ -18,6 +19,8 @@ const props = defineProps<{
   parentIsGrid?: boolean
   /** True when the selected block's parent is flex — reveals flex-item controls. */
   parentIsFlex?: boolean
+  /** Plugin-contributed sections bound to the same active style slice. */
+  pluginSections?: Component[]
 }>()
 
 const emit = defineEmits<{
@@ -61,5 +64,13 @@ const {
     </StyleSection>
 
     <StyleEffectsSection :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
+
+    <component
+      :is="section"
+      v-for="(section, index) in pluginSections"
+      :key="index"
+      :model-value="styles"
+      @update:model-value="emit('update:modelValue', $event)"
+    />
   </div>
 </template>

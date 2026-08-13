@@ -45,7 +45,7 @@ import { PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 import { displayBlockLabel } from '@/vue/utils/block-label'
 
-const { editor } = useEditorContext()
+const { editor, pluginSlots } = useEditorContext()
 const { t } = useUframeI18n()
 
 // This panel is docked right; let popovers opened from it (filter/shadow editors)
@@ -313,7 +313,7 @@ const targetLabel = computed(() => {
         :breakpoints="editor.breakpoints.value"
         @add-breakpoint="addBreakpoint"
       />
-      <StylePanel v-model="blockSlice" />
+      <StylePanel v-model="blockSlice" :plugin-sections="pluginSlots.styleSections" />
     </div>
 
     <SymbolInstancePanel
@@ -507,7 +507,12 @@ const targetLabel = computed(() => {
                its last class) shows the full editor too: the first edit
                extracts into an auto-named class and the panel retargets to it,
                so styles still always land in a named class. -->
-          <StylePanel v-model="blockSlice" :parent-is-grid="parentIsGrid" :parent-is-flex="parentIsFlex" />
+          <StylePanel
+            v-model="blockSlice"
+            :parent-is-grid="parentIsGrid"
+            :parent-is-flex="parentIsFlex"
+            :plugin-sections="pluginSlots.styleSections"
+          />
 
           <div
             v-if="block"

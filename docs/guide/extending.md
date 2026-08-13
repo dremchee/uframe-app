@@ -193,6 +193,10 @@ What each field does:
   unaffected — see [Theming](./theming).
 - **`toolbarSlots`** — components appended to the toolbar's `left` / `right`
   clusters.
+- **`styleSections`** — components appended to the built-in Style panel. Each
+  receives the active flat style slice through `modelValue` and emits
+  `update:modelValue`, so plugin controls work with classes, states and
+  breakpoints.
 - **`panels`** — custom left-sidebar panels. Each adds a rail item (icon + label)
   and renders `component` when active; `id` becomes the sidebar mode key, so keep
   it stable and unique.
@@ -227,6 +231,25 @@ section in Settings (`settingsSections`). Config (key / base URL / model) is kep
 in the editor's per-browser local prefs, never in the document. `@dremchee/uframe/plugins/ai`
 also re-exports the headless `generateBlocks` helper for calling generation
 directly.
+
+### The CSS Anchor plugin
+
+CSS Anchor Positioning authoring controls are available as an optional plugin:
+
+```ts
+import { cssAnchorPlugin } from '@dremchee/uframe/plugins/css-anchor'
+```
+
+```vue
+<PageEditor :plugins="[cssAnchorPlugin]" v-model="doc" />
+```
+
+The Anchoring section can expose the selected element under an `anchor-name`,
+attach another absolutely or fixed-positioned element through
+`position-anchor`, choose a `position-area`, and configure `flip-block` /
+`flip-inline` overflow fallbacks. The authored declarations remain ordinary
+document styles, so canvas rendering and exported CSS do not depend on the
+plugin runtime.
 
 ## Framework-neutral blocks (any framework)
 

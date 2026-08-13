@@ -1,7 +1,7 @@
 import type { BlockDefinition, BlockRegistry } from '@/core/types/block-registry'
 import type { UframePlugin } from '@/core/utils/plugin'
 import { describe, expect, it } from 'vitest'
-import { applyPlugins, collectPanels, collectPluginBlocks, collectToolbarSlots, definePlugin, mergeStyleTokens } from '@/core/utils/plugin'
+import { applyPlugins, collectPanels, collectPluginBlocks, collectStyleSections, collectToolbarSlots, definePlugin, mergeStyleTokens } from '@/core/utils/plugin'
 
 // Minimal stand-in — the helpers only ever read `.type`.
 function def(type: string, label = type): BlockDefinition {
@@ -82,6 +82,21 @@ describe('collectToolbarSlots', () => {
   it('handles undefined and missing sides', () => {
     expect(collectToolbarSlots(undefined, 'left')).toEqual([])
     expect(collectToolbarSlots([{ name: 'x' }], 'right')).toEqual([])
+  })
+})
+
+describe('collectStyleSections', () => {
+  it('flattens style sections in plugin order', () => {
+    const plugins = [
+      { name: 'a', styleSections: ['Anchors'] },
+      { name: 'b' },
+      { name: 'c', styleSections: ['Motion', 'SEO'] },
+    ]
+    expect(collectStyleSections(plugins)).toEqual(['Anchors', 'Motion', 'SEO'])
+  })
+
+  it('handles undefined', () => {
+    expect(collectStyleSections(undefined)).toEqual([])
   })
 })
 

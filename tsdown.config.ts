@@ -40,6 +40,8 @@ export default defineConfig({
     // CMS-backed dynamic content blocks are an independently importable
     // official plugin. The editor registers it by default for compatibility.
     'plugins/data': 'src/plugins/data/index.ts',
+    // Optional Style-panel controls for CSS Anchor Positioning.
+    'plugins/css-anchor': 'src/plugins/css-anchor/index.ts',
     // Framework-agnostic host client for the iframe embed (no Vue).
     'embed': 'src/embed/client.ts',
     // Published baseline for framework integrations that need the CSS string

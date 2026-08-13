@@ -7,6 +7,7 @@ import {
   collectOverlays,
   collectPanels,
   collectSettingsSections,
+  collectStyleSections,
   collectToolbarSlots,
   deepMergeRecord,
   mergeStyleTokens,
@@ -33,6 +34,7 @@ export function useEditorPluginChrome(editor: PageEditorInstance) {
   const pluginSlots: PluginSlots = reactive({
     toolbarLeft: computed(() => collectToolbarSlots(plugins.value, 'left')),
     toolbarRight: computed(() => collectToolbarSlots(plugins.value, 'right')),
+    styleSections: computed(() => collectStyleSections(plugins.value)),
     panels: computed(() => collectPanels(plugins.value)),
     overlays: computed(() => collectOverlays(plugins.value)),
     canvasLayers: computed(() => collectCanvasLayers(plugins.value)),
