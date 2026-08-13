@@ -41,6 +41,13 @@ export interface UframePlugin<TComponent = unknown> {
   styleTokens?: EditorStyleTokens
   /** Components appended to the toolbar's left / right clusters. */
   toolbarSlots?: { left?: TComponent[], right?: TComponent[] }
+  /**
+   * Sections appended to the built-in Style panel. Each receives the active
+   * flat style slice as `modelValue` and emits `update:modelValue`, so plugin
+   * controls participate in breakpoints, states, classes and undo exactly like
+   * the built-in controls.
+   */
+  styleSections?: TComponent[]
   /** Custom left-sidebar panels, each adding a rail mode. */
   panels?: UframePanel<TComponent>[]
   /**
@@ -74,6 +81,13 @@ export function collectToolbarSlots<TComponent>(
   side: 'left' | 'right',
 ): TComponent[] {
   return (plugins ?? []).flatMap(p => p.toolbarSlots?.[side] ?? [])
+}
+
+/** Style-panel sections contributed by plugins, in registration order. */
+export function collectStyleSections<TComponent>(
+  plugins: UframePlugin<TComponent>[] | undefined,
+): TComponent[] {
+  return (plugins ?? []).flatMap(p => p.styleSections ?? [])
 }
 
 /** Custom sidebar panels contributed by the plugins, in registration order. */

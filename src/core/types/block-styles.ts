@@ -55,6 +55,20 @@ export interface LayoutStyles {
   flexShrink?: number
   flexBasis?: CssLength
   position?: PositionValue
+  /** One or more CSS <dashed-ident> names exposed by this box. */
+  anchorName?: string
+  /** Limits which descendants can resolve named anchors. */
+  anchorScope?: string
+  /** Default anchor used by position-area and anchor functions. */
+  positionAnchor?: string
+  /** Placement of an anchored positioned box around its default anchor. */
+  positionArea?: string
+  /** Ordered overflow fallbacks, including flip-block / flip-inline tactics. */
+  positionTryFallbacks?: string
+  /** Strategy used to choose between viable fallback positions. */
+  positionTryOrder?: string
+  /** Conditions under which an anchored box remains visible. */
+  positionVisibility?: string
   top?: CssLength
   right?: CssLength
   bottom?: CssLength

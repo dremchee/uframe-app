@@ -31,8 +31,8 @@ export default defineConfig({
     outDir: fileURLToPath(new URL('./build/embed', import.meta.url)),
     emptyOutDir: true,
     rollupOptions: {
-      // Two entries in ONE build: the editor app (index.html) and the official
-      // AI plugin. Because they're co-built, Rollup hoists everything they share
+      // The editor app and official runtime plugins are built together. Rollup
+      // hoists everything they share
       // — Vue, the editor context (its inject key), core, ui — into shared
       // chunks, so a runtime `import('./plugins/ai.js')` reuses the app's already
       // loaded modules and `useEditorContext()` resolves. That's how the plugin
@@ -40,11 +40,12 @@ export default defineConfig({
       input: {
         'index': fileURLToPath(new URL('./embed/index.html', import.meta.url)),
         'plugins/ai': fileURLToPath(new URL('./src/plugins/ai/index.ts', import.meta.url)),
+        'plugins/css-anchor': fileURLToPath(new URL('./src/plugins/css-anchor/index.ts', import.meta.url)),
       },
       // Stable name for the plugin entry so the host can reference it by URL;
       // everything else stays hashed for cache-busting.
       output: {
-        entryFileNames: chunk => (chunk.name === 'plugins/ai' ? 'plugins/ai.js' : 'assets/[name]-[hash].js'),
+        entryFileNames: chunk => (chunk.name.startsWith('plugins/') ? `${chunk.name}.js` : 'assets/[name]-[hash].js'),
       },
       // Keep the plugin entry's exports (it's dynamically imported, not linked).
       preserveEntrySignatures: 'allow-extension',

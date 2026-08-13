@@ -9,6 +9,8 @@ export type PageEditorInstance = ReturnType<typeof usePageEditor>
 export interface PluginSlots {
   toolbarLeft: Component[]
   toolbarRight: Component[]
+  /** Sections appended to the built-in Style panel. */
+  styleSections: Component[]
   panels: UframePanel<Component>[]
   /** Free-floating layers mounted at the editor-shell root. */
   overlays: Component[]

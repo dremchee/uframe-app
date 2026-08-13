@@ -47,6 +47,17 @@ describe('serializeStyleDeclarations', () => {
     expect(serializeStyleDeclarations({ textWrap: 'balance' })).toBe('text-wrap: balance')
   })
 
+  it('serializes CSS anchor positioning declarations', () => {
+    expect(serializeStyleDeclarations({
+      anchorName: '--trigger',
+      position: 'absolute',
+      positionAnchor: '--trigger',
+      positionArea: 'top',
+      positionTryFallbacks: 'flip-block, flip-inline',
+      positionVisibility: 'anchor-visible',
+    })).toBe('anchor-name: --trigger; position: absolute; position-anchor: --trigger; position-area: top; position-try-fallbacks: flip-block, flip-inline; position-visibility: anchor-visible')
+  })
+
   it('serializes side-specific border styles and colors', () => {
     expect(serializeStyleDeclarations({
       borderBottomWidth: '1px',

@@ -93,6 +93,11 @@
       "import": "./dist/plugins/data.js",
       "require": "./dist/plugins/data.cjs"
     },
+    "./plugins/css-anchor": {
+      "types": "./dist/plugins/css-anchor.d.ts",
+      "import": "./dist/plugins/css-anchor.js",
+      "require": "./dist/plugins/css-anchor.cjs"
+    },
     "./embed": {
       "types": "./dist/embed.d.ts",
       "import": "./dist/embed.js",

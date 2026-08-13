@@ -4,6 +4,8 @@ import { PageEditor, safeParseGlobalSettings } from '@'
 import { useDebounceFn, useEventListener } from '@vueuse/core'
 import { shallowRef, watch } from 'vue'
 import { aiPlugin } from '@/plugins/ai'
+import { cssAnchorPlugin } from '@/plugins/css-anchor'
+import { cssAnchorTemplate } from './examples/css-anchor'
 import { dynamicTemplate, mockDataContext, mockSchema } from './examples/dynamic-content'
 import { mockAssetPick, mockAssets, resolveMockAsset } from './examples/media'
 import { pageTemplates, stripPageGlobals, templateGlobals } from './examples/templates'
@@ -17,14 +19,14 @@ import '../src/styles/editor.css'
 // page defaults) to a shared SITE so editing them is global across the set;
 // `stripPageGlobals` removes the per-page copies and `templateGlobals()` is the
 // shared seed (the editor merges the two back at render time).
-const defaults: PageDocument[] = [...pageTemplates, dynamicTemplate].map(stripPageGlobals)
+const defaults: PageDocument[] = [...pageTemplates, cssAnchorTemplate, dynamicTemplate].map(stripPageGlobals)
 
 // Dev persistence: the playground has no backend, so edits would vanish on
 // reload. Mirror the shared globals + page set + active page id to localStorage
 // (content edits flow through the single `v-model`, structural ones through
 // `v-model:pages`, globals through `v-model:globals`) and restore on load. Bump
 // the key suffix when the seed templates change shape.
-const STORAGE_KEY = 'uframe-playground:v4'
+const STORAGE_KEY = 'uframe-playground:v5'
 
 function loadSaved(): { globals?: GlobalSettings, pages: PageDocument[], activePageId?: string } | null {
   if (typeof localStorage === 'undefined')
@@ -108,7 +110,7 @@ function cancelPick() {
     v-model:pages="pages"
     v-model:active-page-id="activePageId"
     v-model:globals="globals"
-    :plugins="[aiPlugin]"
+    :plugins="[aiPlugin, cssAnchorPlugin]"
     :schema="mockSchema"
     :data-context="mockDataContext"
     :request-asset="requestAsset"
