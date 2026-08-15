@@ -8,6 +8,7 @@ import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigg
 import { findBlock, findBlockParentId, isDescendantOf } from '@/core'
 import CanvasBreadcrumbs from '@/vue/components/CanvasBreadcrumbs.vue'
 import CanvasFrameDocument from '@/vue/components/CanvasFrameDocument.vue'
+import CanvasRuler from '@/vue/components/CanvasRuler.vue'
 import { useCanvasBlockLabels } from '@/vue/composables/canvas/useCanvasBlockLabels'
 import { useCanvasContextBridge } from '@/vue/composables/canvas/useCanvasContextBridge'
 import { useCanvasDropOverlay } from '@/vue/composables/canvas/useCanvasDropOverlay'
@@ -25,12 +26,15 @@ import { localizedBlockCategory, localizedBlockLabel } from '@/vue/utils/block-l
 const { editor, features, dataContext, pluginSlots, canvas, untrustedEmbeds } = useEditorContext()
 const i18n = useUframeI18n()
 const { t } = i18n
+defineProps<{ rulerMode?: boolean }>()
 
 const frameRef = useTemplateRef<HTMLIFrameElement>('frameRef')
 const overlayRef = useTemplateRef<HTMLElement>('overlayRef')
 const canvasPaneRef = useTemplateRef<HTMLElement>('canvasPaneRef')
 const canvasFrameRef = useTemplateRef<HTMLElement>('canvasFrameRef')
 const selectionHandleRef = useTemplateRef<HTMLElement>('selectionHandleRef')
+const rulerGuideX = shallowRef<number | null>(null)
+const rulerClearRequest = shallowRef(0)
 const { iframeDoc, iframeWin, renderFrame } = useCanvasFrame({
   frame: frameRef,
   renderDocument(mountElement) {
@@ -128,7 +132,10 @@ useCanvasInteractions({
   iframeWin,
   isDragging,
   hotkeysEnabled: () => features.hotkeys,
-  onCanvasClick: closeInsertMenu,
+  onCanvasClick() {
+    closeInsertMenu()
+    rulerClearRequest.value++
+  },
 })
 
 // ── Overlays (selection / hover / spacing bands) ────────────────────────────
@@ -365,6 +372,16 @@ const {
 
 <template>
   <section ref="canvasPaneRef" class="relative flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+    <CanvasRuler
+      v-if="rulerMode && actualCanvasWidth != null"
+      class="mx-auto w-full"
+      :style="{ width: canvasWidthStyle }"
+      :width="actualCanvasWidth"
+      :breakpoints="editor.breakpoints.value"
+      :show-breakpoint-markers="editor.isCanvasResizeMode.value"
+      :clear-request="rulerClearRequest"
+      @update:guide-x="rulerGuideX = $event"
+    />
     <div
       ref="canvasFrameRef"
       class="relative flex-1 min-h-0 mx-auto bg-uf-panel"
@@ -381,6 +398,19 @@ const {
         :style="{ pointerEvents: isDragging ? 'none' : undefined }"
         :title="t('canvas.pageCanvas')"
       />
+      <div
+        v-if="rulerGuideX != null"
+        class="pointer-events-none absolute inset-y-0 z-20 w-px bg-uf-gap"
+        :style="{ left: `${rulerGuideX}px` }"
+      />
+      <output
+        v-if="rulerGuideX != null"
+        class="pointer-events-none absolute top-1 z-30 -translate-x-1/2 rounded-[2px] bg-uf-gap px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums text-white"
+        :style="{ left: `${rulerGuideX}px` }"
+        :aria-label="`${Math.round(rulerGuideX)} px`"
+      >
+        {{ Math.round(rulerGuideX) }} px
+      </output>
       <template v-if="editor.isCanvasResizeMode.value">
         <button
           type="button"

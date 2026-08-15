@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SidebarPanelAction } from '@/vue/composables/ui/useSidebar'
-import { nextTick, useTemplateRef, watch } from 'vue'
+import { nextTick, shallowRef, useTemplateRef, watch } from 'vue'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -13,6 +13,7 @@ import PagePreview from '@/vue/components/PagePreview.vue'
 import PropertiesPanel from '@/vue/components/PropertiesPanel.vue'
 import SidebarPanels from '@/vue/components/SidebarPanels.vue'
 import SidebarRail from '@/vue/components/SidebarRail.vue'
+import ViewportControls from '@/vue/components/ViewportControls.vue'
 import { useEditorShellLayout } from '@/vue/composables/ui/useEditorShellLayout'
 import { useSidebar } from '@/vue/composables/ui/useSidebar'
 import { useEditorContext } from '@/vue/context/editor-context'
@@ -28,6 +29,7 @@ defineProps<{
 
 const { editor, pluginSlots } = useEditorContext()
 const { t } = useUframeI18n()
+const rulerMode = shallowRef(false)
 const sidebar = useSidebar(editor, pluginSlots.panels)
 const rootEl = useTemplateRef<HTMLElement>('rootEl')
 const flyoutRef = useTemplateRef<HTMLElement>('flyoutRef')
@@ -128,8 +130,9 @@ defineExpose({ openAddBreakpoint, runPanelAction })
           class="h-full"
         >
           <ResizablePanel :min-size="40">
-            <main class="h-full min-w-0 min-h-0 overflow-hidden">
-              <CanvasViewport />
+            <main class="flex h-full min-w-0 min-h-0 flex-col overflow-hidden">
+              <ViewportControls v-model:ruler-mode="rulerMode" @add-breakpoint="openAddBreakpoint" />
+              <CanvasViewport class="min-h-0 flex-1" :ruler-mode="rulerMode" />
             </main>
           </ResizablePanel>
           <ResizableHandle />
