@@ -14,8 +14,8 @@ import {
 } from '@/components/ui'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { autoIconKey } from '@/vue/components/breakpoint-icons'
-import BreakpointSegmentControl from '@/vue/components/BreakpointSegmentControl.vue'
 import BreakpointForm from '@/vue/components/BreakpointForm.vue'
+import BreakpointSegmentControl from '@/vue/components/BreakpointSegmentControl.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 export type ViewportKey = StyleViewport

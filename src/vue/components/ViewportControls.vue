@@ -7,14 +7,13 @@ import BreakpointSegmentControl from '@/vue/components/BreakpointSegmentControl.
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 
-const { editor } = useEditorContext()
-const { t } = useUframeI18n()
 defineProps<{ rulerMode?: boolean }>()
 const emit = defineEmits<{
-  addBreakpoint: []
+  'addBreakpoint': []
   'update:rulerMode': [value: boolean]
 }>()
-
+const { editor } = useEditorContext()
+const { t } = useUframeI18n()
 const viewportOptions = computed(() => [
   { value: 'base', label: t('toolbar.viewportResponsive'), icon: Monitor },
   ...editor.breakpoints.value
@@ -101,8 +100,7 @@ function selectViewport(value: string) {
         <Button
           variant="ghost"
           size="icon"
-          :class="[
-            'h-7 w-7 text-uf-muted',
+          class="h-7 w-7 text-uf-muted" :class="[
             editor.isCanvasResizeMode.value && 'bg-uf-accent/10 text-uf-accent',
           ]"
           :aria-label="editor.isCanvasResizeMode.value ? t('toolbar.resizeCanvasStop') : t('toolbar.resizeCanvas')"
@@ -117,8 +115,7 @@ function selectViewport(value: string) {
         <Button
           variant="ghost"
           size="icon"
-          :class="[
-            'h-7 w-7 text-uf-muted',
+          class="h-7 w-7 text-uf-muted" :class="[
             rulerMode && 'bg-uf-accent/10 text-uf-accent',
           ]"
           :aria-label="rulerMode ? t('toolbar.rulerHide') : t('toolbar.rulerShow')"

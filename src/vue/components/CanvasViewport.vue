@@ -23,11 +23,10 @@ import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 import { localizedBlockCategory, localizedBlockLabel } from '@/vue/utils/block-label'
 
+defineProps<{ rulerMode?: boolean }>()
 const { editor, features, dataContext, pluginSlots, canvas, untrustedEmbeds } = useEditorContext()
 const i18n = useUframeI18n()
 const { t } = i18n
-defineProps<{ rulerMode?: boolean }>()
-
 const frameRef = useTemplateRef<HTMLIFrameElement>('frameRef')
 const overlayRef = useTemplateRef<HTMLElement>('overlayRef')
 const canvasPaneRef = useTemplateRef<HTMLElement>('canvasPaneRef')

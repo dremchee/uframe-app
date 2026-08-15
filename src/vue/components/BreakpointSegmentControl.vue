@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: StyleViewport]
-  add: []
+  'add': []
 }>()
 
 const { t } = useUframeI18n()

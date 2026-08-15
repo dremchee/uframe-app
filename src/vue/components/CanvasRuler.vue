@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { BreakpointDef } from '@/core'
 import { useEventListener } from '@vueuse/core'
 import { computed, shallowRef, useTemplateRef, watch } from 'vue'
-import type { BreakpointDef } from '@/core'
 
 const props = defineProps<{
   width: number
