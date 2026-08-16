@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { Monitor, Redo2, Ruler, ScanLine, Undo2 } from '@lucide/vue'
-import { computed } from 'vue'
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip } from '@/components/ui'
-import BreakpointAddMenuItem from '@/vue/components/BreakpointAddMenuItem.vue'
+import { Redo2, Ruler, ScanLine, Undo2 } from '@lucide/vue'
+import { Button, Tooltip } from '@/components/ui'
 import BreakpointSegmentControl from '@/vue/components/BreakpointSegmentControl.vue'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
@@ -14,25 +12,6 @@ const emit = defineEmits<{
 }>()
 const { editor } = useEditorContext()
 const { t } = useUframeI18n()
-const viewportOptions = computed(() => [
-  { value: 'base', label: t('toolbar.viewportResponsive'), icon: Monitor },
-  ...editor.breakpoints.value
-    .map(breakpoint => ({
-      value: breakpoint.id,
-      label: breakpoint.label || breakpoint.id,
-    })),
-])
-
-const activeOption = computed(() =>
-  viewportOptions.value.find(option => option.value === editor.editBreakpoint.value),
-)
-
-const widthLabel = computed(() => {
-  if (editor.customWidth.value != null || editor.canvasWidth.value != null)
-    return `${editor.canvasWidth.value}px`
-  return activeOption.value?.label ?? t('toolbar.customViewport')
-})
-
 function selectViewport(value: string) {
   editor.setEditBreakpoint(value)
 }
@@ -68,26 +47,6 @@ function selectViewport(value: string) {
       </Tooltip>
     </div>
     <div class="flex items-center gap-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button variant="subtle" size="sm" class="h-7 min-w-[104px] justify-between gap-1.5 px-2.5 text-[11px] font-medium tabular-nums" :aria-label="t('toolbar.viewport')">
-            {{ widthLabel }}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center" class="min-w-56">
-          <DropdownMenuItem
-            v-for="option in viewportOptions"
-            :key="option.value"
-            :class="option.value === editor.editBreakpoint.value ? 'bg-uf-panel-muted text-uf-accent' : ''"
-            @select="selectViewport(option.value)"
-          >
-            <span class="flex-1">{{ option.label }}</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <BreakpointAddMenuItem @select="emit('addBreakpoint')" />
-        </DropdownMenuContent>
-      </DropdownMenu>
-
       <BreakpointSegmentControl
         compact
         :model-value="editor.editBreakpoint.value"

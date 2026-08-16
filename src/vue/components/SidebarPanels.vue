@@ -120,9 +120,6 @@ const btn = 'inline-flex items-center justify-center w-6 h-6 rounded-md bg-trans
         >
           <PanelsTopLeft data-icon="inline-start" />
           {{ t('sidebar.addSlot') }}
-          <span class="ml-auto text-[10px] font-normal text-uf-muted">
-            {{ slotParentId ? t('sidebar.addSlotToSelected') : t('sidebar.addSlotSelectContainer') }}
-          </span>
         </Button>
       </div>
       <component

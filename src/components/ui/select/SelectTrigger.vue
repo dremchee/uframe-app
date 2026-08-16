@@ -22,7 +22,7 @@ const classes = computed(() =>
     'uf-ui-select-trigger',
     'flex h-9 w-full items-center justify-between gap-2 whitespace-nowrap',
     'rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs',
-    'cursor-pointer [&>span]:line-clamp-1',
+    'cursor-pointer [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate',
     'placeholder:text-muted-foreground',
     'focus:outline-none focus:ring-1 focus:ring-uf-accent focus:border-uf-accent',
     'disabled:cursor-not-allowed disabled:opacity-50',

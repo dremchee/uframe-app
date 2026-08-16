@@ -3,8 +3,10 @@ import type { BaseBlockStyles, BlockStyles, PageBlock } from '@/core'
 import type { PageEditorInstance } from '@/vue/context/editor-context'
 import { computed } from 'vue'
 import { fontFamilyStack, serializeShadows } from '@/core'
+import { useUframeI18n } from '@/vue/i18n'
 
 const props = defineProps<{ editor: PageEditorInstance }>()
+const { t } = useUframeI18n()
 
 const tokens = computed(() => props.editor.variables.value)
 const blocks = computed(() => {
@@ -160,17 +162,32 @@ const consistencyScore = computed(() => Math.max(0, Math.round(100
   - Math.min(25, singletonValueCount.value)
   - (styleEntryCount.value ? (hardcodedValueCount.value / styleEntryCount.value) * 25 : 0))))
 const summaryMetrics = computed(() => [
-  { label: 'Consistency', value: `${consistencyScore.value}%` },
-  { label: 'Styled blocks', value: `${blocks.value.filter(block => block.style || block.classes?.length).length}/${blocks.value.length}` },
-  { label: 'Classes', value: Object.keys(props.editor.effectiveDocument.value.styles ?? {}).length },
-  { label: 'Tokens used', value: `${tokenUsage.value.used}/${tokens.value.length}` },
+  { label: t('styleGuide.consistency'), value: `${consistencyScore.value}%` },
+  { label: t('styleGuide.styledBlocks'), value: `${blocks.value.filter(block => block.style || block.classes?.length).length}/${blocks.value.length}` },
+  { label: t('styleGuide.classes'), value: Object.keys(props.editor.effectiveDocument.value.styles ?? {}).length },
+  { label: t('styleGuide.tokensUsed'), value: `${tokenUsage.value.used}/${tokens.value.length}` },
 ])
 const issues = computed(() => [
-  tokenUsage.value.unused.length ? `${tokenUsage.value.unused.length} unused token${tokenUsage.value.unused.length === 1 ? '' : 's'}` : null,
-  hardcodedValueCount.value ? `${hardcodedValueCount.value} hardcoded style values` : null,
-  singletonValueCount.value ? `${singletonValueCount.value} one-off values` : null,
-  responsiveMetrics.value.used < props.editor.breakpoints.value.length ? `${props.editor.breakpoints.value.length - responsiveMetrics.value.used} breakpoints without overrides` : null,
+  tokenUsage.value.unused.length
+    ? t(tokenUsage.value.unused.length === 1 ? 'styleGuide.unusedToken' : 'styleGuide.unusedTokens', { n: tokenUsage.value.unused.length })
+    : null,
+  hardcodedValueCount.value ? t('styleGuide.hardcodedValues', { n: hardcodedValueCount.value }) : null,
+  singletonValueCount.value ? t('styleGuide.oneOffValues', { n: singletonValueCount.value }) : null,
+  responsiveMetrics.value.used < props.editor.breakpoints.value.length
+    ? t('styleGuide.breakpointsWithoutOverrides', { n: props.editor.breakpoints.value.length - responsiveMetrics.value.used })
+    : null,
 ].filter((issue): issue is string => issue != null))
+
+function propertyLabel(name: string): string {
+  const key = name === 'margin'
+    ? 'style.margin'
+    : name === 'padding'
+      ? 'style.padding'
+      : name === 'border radius'
+        ? 'style.radius'
+        : undefined
+  return key ? t(key) : name
+}
 
 function resolveCssVariables(value: string): string {
   return value.replace(/var\(--([\w-]+)\)/g, (_match, key: string) =>
@@ -186,7 +203,7 @@ function radiusPreview(value: string): string {
   <div class="flex flex-col gap-5">
     <section>
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Overview
+        {{ t('styleGuide.overview') }}
       </p>
       <div class="grid grid-cols-2 gap-px overflow-hidden rounded-md bg-uf-border">
         <div v-for="metric in summaryMetrics" :key="metric.label" class="bg-uf-panel px-3 py-3">
@@ -201,7 +218,7 @@ function radiusPreview(value: string): string {
     </section>
     <section v-if="propertyFrequency.length">
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Usage
+        {{ t('styleGuide.usage') }}
       </p>
       <div class="border-y border-uf-border">
         <div v-for="property in propertyFrequency" :key="property.name" class="grid grid-cols-[1fr_2fr_auto] items-center gap-3 border-b border-uf-border px-3 py-2 last:border-b-0">
@@ -213,7 +230,7 @@ function radiusPreview(value: string): string {
     </section>
     <section v-if="colors.length">
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Colors
+        {{ t('styleGuide.colors') }}
       </p>
       <div class="grid grid-cols-2 gap-3">
         <div v-for="color in colors" :key="color.value" class="min-w-0">
@@ -230,7 +247,7 @@ function radiusPreview(value: string): string {
     </section>
     <section v-if="fonts.length || typeScale.length">
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Typography
+        {{ t('styleGuide.typography') }}
       </p>
       <div v-if="fonts.length" class="overflow-hidden bg-uf-panel">
         <div v-for="font in fonts" :key="font.family" class="border-b border-uf-border px-3 py-2.5 last:border-b-0">
@@ -248,38 +265,38 @@ function radiusPreview(value: string): string {
             <code>{{ step.size }}</code><span>{{ step.weights }} · {{ step.lineHeight }}</span>
           </div>
           <p class="mt-1" :style="{ fontSize: step.size, lineHeight: step.lineHeight, fontFamily: fonts[0] ? fontFamilyStack(fonts[0].family) : undefined }">
-            The quick brown fox jumps
+            {{ t('styleGuide.sampleText') }}
           </p>
         </div>
       </div>
     </section>
     <section v-if="spacingProperties.length || shapeProperties.length || boxShadows.length">
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Spacing &amp; shape
+        {{ t('styleGuide.spacingShape') }}
       </p>
       <div v-if="spacingProperties.length" class="overflow-hidden bg-uf-panel">
         <div class="grid grid-cols-[1fr_auto_44px] gap-2 border-b border-uf-border px-3 py-2 text-xs font-medium text-uf-muted">
-          <span>Purpose</span><span>Value</span><span>Preview</span>
+          <span>{{ t('styleGuide.purpose') }}</span><span>{{ t('styleGuide.value') }}</span><span>{{ t('styleGuide.preview') }}</span>
         </div>
         <div v-for="property in spacingProperties" :key="property.name" class="grid grid-cols-[1fr_auto_44px] items-center gap-2 border-b border-uf-border px-3 py-2 last:border-b-0">
-          <span class="min-w-0 truncate text-sm">{{ property.name }}</span><code class="max-w-24 truncate text-xs text-uf-muted">{{ property.value }}</code><span class="h-2 rounded-sm bg-uf-muted/50" :style="{ width: `min(44px, ${property.value})` }" />
+          <span class="min-w-0 truncate text-sm">{{ propertyLabel(property.name) }}</span><code class="max-w-24 truncate text-xs text-uf-muted">{{ property.value }}</code><span class="h-2 rounded-sm bg-uf-muted/50" :style="{ width: `min(44px, ${property.value})` }" />
         </div>
       </div>
       <div v-if="shapeProperties.length" class="mt-3 overflow-hidden bg-uf-panel">
         <div class="grid grid-cols-[44px_1fr_auto] gap-2 border-b border-uf-border px-3 py-2 text-xs font-medium text-uf-muted">
-          <span>Preview</span><span>Element</span><span>Value</span>
+          <span>{{ t('styleGuide.preview') }}</span><span>{{ t('styleGuide.element') }}</span><span>{{ t('styleGuide.value') }}</span>
         </div>
         <div v-for="property in shapeProperties" :key="property.name" class="grid grid-cols-[44px_1fr_auto] items-center gap-2 border-b border-uf-border px-3 py-2 last:border-b-0">
           <span v-if="property.name.toLowerCase().includes('radius')" class="relative size-8 overflow-hidden">
             <span class="absolute left-0 top-0 size-10 border border-r-0 border-b-0 border-uf-muted/70" :style="{ borderTopLeftRadius: radiusPreview(property.value) }" />
           </span>
           <span v-else class="size-6 border border-uf-muted/50 bg-uf-panel-muted" />
-          <span class="min-w-0 truncate text-sm">{{ property.name }}</span><code class="max-w-24 truncate text-xs text-uf-muted">{{ resolveCssVariables(property.value) }}</code>
+          <span class="min-w-0 truncate text-sm">{{ propertyLabel(property.name) }}</span><code class="max-w-24 truncate text-xs text-uf-muted">{{ resolveCssVariables(property.value) }}</code>
         </div>
       </div>
       <div v-if="boxShadows.length" class="mt-3 overflow-hidden bg-uf-panel">
         <div class="grid grid-cols-[1fr_44px] gap-2 border-b border-uf-border px-3 py-2 text-xs font-medium text-uf-muted">
-          <span>Shadow</span><span>Preview</span>
+          <span>{{ t('styleGuide.shadow') }}</span><span>{{ t('styleGuide.preview') }}</span>
         </div>
         <div v-for="shadow in boxShadows" :key="shadow" class="grid grid-cols-[1fr_44px] items-center gap-2 border-b border-uf-border px-3 py-2 last:border-b-0">
           <code class="min-w-0 truncate text-xs text-uf-muted">{{ shadow }}</code><span class="size-7 rounded-md bg-uf-panel-muted" :style="{ boxShadow: shadow }" />
@@ -288,35 +305,35 @@ function radiusPreview(value: string): string {
     </section>
     <section>
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Responsive
+        {{ t('styleGuide.responsive') }}
       </p>
       <div class="grid grid-cols-3 gap-px overflow-hidden rounded-md bg-uf-border">
         <div class="bg-uf-panel px-3 py-2">
           <p class="text-lg font-semibold">
             {{ responsiveMetrics.used }}
           </p><p class="text-[10px] text-uf-muted">
-            Breakpoints used
+            {{ t('styleGuide.breakpointsUsed') }}
           </p>
         </div>
         <div class="bg-uf-panel px-3 py-2">
           <p class="text-lg font-semibold">
             {{ responsiveMetrics.layers }}
           </p><p class="text-[10px] text-uf-muted">
-            Override layers
+            {{ t('styleGuide.overrideLayers') }}
           </p>
         </div>
         <div class="bg-uf-panel px-3 py-2">
           <p class="text-lg font-semibold">
             {{ responsiveMetrics.properties }}
           </p><p class="text-[10px] text-uf-muted">
-            Properties
+            {{ t('styleGuide.properties') }}
           </p>
         </div>
       </div>
     </section>
     <section>
       <p class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-uf-muted">
-        Issues
+        {{ t('styleGuide.issues') }}
       </p>
       <div v-if="issues.length" class="border-y border-uf-border">
         <div v-for="issue in issues" :key="issue" class="flex items-center gap-2 border-b border-uf-border px-3 py-2 text-sm last:border-b-0">
@@ -324,11 +341,11 @@ function radiusPreview(value: string): string {
         </div>
       </div>
       <p v-else class="text-sm text-uf-muted">
-        No obvious consistency issues found.
+        {{ t('styleGuide.noIssues') }}
       </p>
     </section>
     <p v-if="!tokens.length && !fonts.length" class="m-0 text-[11px] leading-snug text-uf-muted">
-      Add colors, fonts, and variables to build this template guide.
+      {{ t('styleGuide.empty') }}
     </p>
   </div>
 </template>

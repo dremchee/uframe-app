@@ -1,15 +1,12 @@
 import type { Ref } from 'vue'
 import type { SidebarController } from '@/vue/composables/ui/useSidebar'
 import { onClickOutside } from '@vueuse/core'
-import { provide, ref } from 'vue'
+import { provide } from 'vue'
 import { UI_PORTAL_TARGET } from '@/components/ui'
-
-const CSS_PREVIEW_COLLAPSED_SIZE = 33 // h-8 (32px) + 1px top border
-const CSS_PREVIEW_EXPANDED_SIZE = 280
 
 /**
  * Owns editor-shell layout interactions: the editor-local portal target,
- * floating sidebar dismissal and resize, plus CSS preview panel sizing.
+ * floating sidebar dismissal and resize.
  */
 interface UseEditorShellLayoutOptions {
   sidebar: SidebarController
@@ -63,19 +60,7 @@ export function useEditorShellLayout(options: UseEditorShellLayoutOptions) {
     handle.addEventListener('pointerup', onUp)
   }
 
-  const cssPreviewCollapsed = ref(true)
-  function toggleCssPreview(resize: (size: number) => void) {
-    const next = cssPreviewCollapsed.value
-      ? CSS_PREVIEW_EXPANDED_SIZE
-      : CSS_PREVIEW_COLLAPSED_SIZE
-    resize(next)
-    cssPreviewCollapsed.value = !cssPreviewCollapsed.value
-  }
-
   return {
     startPanelResize,
-    toggleCssPreview,
-    cssPreviewCollapsed,
-    cssPreviewCollapsedSize: CSS_PREVIEW_COLLAPSED_SIZE,
   }
 }

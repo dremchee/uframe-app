@@ -28,6 +28,7 @@ import AttributesSection from '@/vue/components/AttributesSection.vue'
 import BlockActionsMenu from '@/vue/components/BlockActionsMenu.vue'
 import ClassNameInput from '@/vue/components/ClassNameInput.vue'
 import ContentTab from '@/vue/components/ContentTab.vue'
+import CssPreviewPopover from '@/vue/components/CssPreviewPopover.vue'
 import StylePanel from '@/vue/components/style-panel/StylePanel.vue'
 import StyleVariantSelector from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import SymbolInstancePanel from '@/vue/components/SymbolInstancePanel.vue'
@@ -289,6 +290,7 @@ const targetLabel = computed(() => {
         {{ targetLabel }}
       </h2>
       <div class="flex items-center gap-1.5">
+        <CssPreviewPopover />
         <BlockActionsMenu
           v-if="block && !isPageSelected"
           :block="block"
@@ -324,7 +326,7 @@ const targetLabel = computed(() => {
     />
 
     <div v-else class="min-h-0 grid gap-2 p-3 overflow-auto scrollbar-hide">
-      <Tabs v-model="activeTab" default-value="style">
+      <Tabs v-model="activeTab" default-value="style" class="flex flex-col gap-3">
         <TabsList v-if="hasContentTab">
           <TabsTrigger value="style">
             {{ t('properties.style') }}
@@ -334,7 +336,7 @@ const targetLabel = computed(() => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent v-if="hasContentTab" value="content" class="mt-2 flex flex-col gap-3 pt-2">
+        <TabsContent v-if="hasContentTab" value="content" class="flex flex-col gap-3">
           <SymbolMasterPropertiesSection
             v-if="isAuthoringSymbolProperties && editingSymbol && block"
             :block="block"
@@ -352,9 +354,7 @@ const targetLabel = computed(() => {
           />
         </TabsContent>
 
-        <!-- Same top construction as the Content tab, so switching tabs never
-             shifts the first section's offset under the tab list. -->
-        <TabsContent value="style" class="mt-2 flex flex-col gap-2 pt-2">
+        <TabsContent value="style" class="flex flex-col gap-2">
           <section class="flex flex-col gap-1.5">
             <span
               class="text-uf-muted text-[11px] font-semibold uppercase tracking-wider"

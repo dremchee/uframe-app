@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends string">
 import type { Component } from 'vue'
-import { ChevronDown } from '@lucide/vue'
+import { Ellipsis } from '@lucide/vue'
 import { computed } from 'vue'
 import {
   DropdownMenu,
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { useUframeI18n } from '@/vue/i18n'
+import TruncatedText from './TruncatedText.vue'
 
 export interface SegmentOption<V extends string> {
   value: V
@@ -30,7 +31,7 @@ const props = defineProps<{
   /**
    * Options tucked behind a dropdown rendered as the track's last segment.
    * While one of them is selected no tab matches, so the trigger carries the
-   * selection instead: active styling + the option's glyph + a small chevron.
+   * selection instead: active styling + the option's glyph + a menu indicator.
    */
   overflow?: Array<SegmentOption<T>>
   ariaLabel?: string
@@ -76,7 +77,7 @@ const overflowTriggerClass = computed(() => cn(
           <TabsTrigger
             :value="opt.value"
             :aria-label="opt.label"
-            class="flex-1 h-[calc(100%-1px)] gap-1.5 border border-transparent data-[state=active]:shadow-sm bg-transparent"
+            class="flex-1 min-w-0 h-[calc(100%-1px)] gap-1.5 border border-transparent data-[state=active]:shadow-sm bg-transparent"
           >
             <slot name="option" :option="opt" :active="modelValue === opt.value">
               <component
@@ -85,7 +86,7 @@ const overflowTriggerClass = computed(() => cn(
                 :size="14"
                 :stroke-width="2"
               />
-              <span v-if="!opt.icon" class="truncate">{{ opt.label }}</span>
+              <TruncatedText v-if="!opt.icon" :text="opt.label" />
             </slot>
           </TabsTrigger>
         </Tooltip>
@@ -93,7 +94,7 @@ const overflowTriggerClass = computed(() => cn(
           v-else
           :value="opt.value"
           :aria-label="opt.label"
-          class="flex-1 h-[calc(100%-1px)] gap-1.5 border border-transparent data-[state=active]:shadow-sm bg-transparent"
+          class="flex-1 min-w-0 h-[calc(100%-1px)] gap-1.5 border border-transparent data-[state=active]:shadow-sm bg-transparent"
         >
           <slot name="option" :option="opt" :active="modelValue === opt.value">
             <component
@@ -102,7 +103,7 @@ const overflowTriggerClass = computed(() => cn(
               :size="14"
               :stroke-width="2"
             />
-            <span class="truncate">{{ opt.label }}</span>
+            <TruncatedText :text="opt.label" />
           </slot>
         </TabsTrigger>
       </template>
@@ -122,11 +123,11 @@ const overflowTriggerClass = computed(() => cn(
                   :size="14"
                   :stroke-width="2"
                 />
-                <span v-else class="truncate">{{ activeOverflow.label }}</span>
+                <TruncatedText v-else :text="activeOverflow.label" />
               </slot>
-              <ChevronDown :size="11" :stroke-width="2" class="-mr-1 opacity-60" aria-hidden="true" />
+              <Ellipsis :size="14" :stroke-width="2" class="-mr-1 opacity-60" aria-hidden="true" />
             </template>
-            <ChevronDown v-else :size="14" :stroke-width="2" aria-hidden="true" />
+            <Ellipsis v-else :size="15" :stroke-width="2" aria-hidden="true" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="min-w-36">

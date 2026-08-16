@@ -185,7 +185,7 @@ function localizedFilterSummary(entry: FilterEntry): string {
           <template v-if="entry.type === 'drop-shadow'">
             <EffectSliderRow label="X" :model-value="entry.x ?? 0" :min="-100" :max="100" unit="px" @update:model-value="v => patch({ x: v })" />
             <EffectSliderRow label="Y" :model-value="entry.y ?? 0" :min="-100" :max="100" unit="px" @update:model-value="v => patch({ y: v })" />
-            <EffectSliderRow label="Blur" :model-value="entry.blur ?? 0" :min="0" :max="100" unit="px" @update:model-value="v => patch({ blur: v })" />
+            <EffectSliderRow :label="t('style.blur')" :model-value="entry.blur ?? 0" :min="0" :max="100" unit="px" @update:model-value="v => patch({ blur: v })" />
             <div class="flex flex-col gap-1.5">
               <span class="text-[11px] font-semibold uppercase tracking-wider text-uf-muted">{{ t('style.color') }}</span>
               <ColorInput class="h-8 w-full" popover-side="left" :model-value="entry.color ?? ''" placeholder="rgba(0, 0, 0, 0.7)" @update:model-value="v => patch({ color: v })" />

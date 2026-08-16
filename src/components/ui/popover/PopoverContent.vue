@@ -37,7 +37,10 @@ const props = withDefaults(defineProps<PopoverContentProps & {
   align: 'center',
   sideOffset: 6,
 })
-const emits = defineEmits<PopoverContentEmits>()
+const emits = defineEmits<PopoverContentEmits & {
+  pointerenter: [event: PointerEvent]
+  pointerleave: [event: PointerEvent]
+}>()
 const portalTarget = usePortalTarget()
 const { t } = useUframeI18n()
 
@@ -61,7 +64,12 @@ const classes = computed(() =>
 
 <template>
   <PopoverPortal :to="portalTarget ?? undefined">
-    <PopoverContent v-bind="forwarded" :class="classes">
+    <PopoverContent
+      v-bind="forwarded"
+      :class="classes"
+      @pointerenter="emits('pointerenter', $event)"
+      @pointerleave="emits('pointerleave', $event)"
+    >
       <template v-if="title">
         <div class="flex items-center justify-between gap-2 border-b border-uf-border px-2.5 py-2">
           <span class="min-w-0 truncate text-sm font-semibold text-uf-text">{{ title }}</span>
@@ -78,13 +86,19 @@ const classes = computed(() =>
         </div>
       </template>
       <template v-else>
-        <PopoverClose
-          v-if="!hideClose"
-          class="absolute right-1.5 top-1.5 z-10 inline-flex size-5 items-center justify-center rounded text-uf-muted cursor-pointer transition-colors outline-none hover:bg-uf-panel-muted hover:text-uf-text focus-visible:ring-1 focus-visible:ring-uf-accent"
-          :aria-label="t('common.close')"
+        <div
+          v-if="!hideClose || $slots.actions"
+          class="absolute right-1.5 top-1.5 z-10 flex items-center gap-0.5"
         >
-          <X :size="13" :stroke-width="2" />
-        </PopoverClose>
+          <slot name="actions" />
+          <PopoverClose
+            v-if="!hideClose"
+            class="inline-flex size-5 items-center justify-center rounded text-uf-muted cursor-pointer transition-colors outline-none hover:bg-uf-panel-muted hover:text-uf-text focus-visible:ring-1 focus-visible:ring-uf-accent"
+            :aria-label="t('common.close')"
+          >
+            <X :size="13" :stroke-width="2" />
+          </PopoverClose>
+        </div>
         <slot />
       </template>
     </PopoverContent>

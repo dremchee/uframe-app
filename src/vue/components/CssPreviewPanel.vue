@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BlockStyles } from '@/core'
 import { computed } from 'vue'
-import { CodeEditor, Tooltip } from '@/components/ui'
+import { CodeEditor } from '@/components/ui'
 import {
   classKeyApplies,
   formatCss,
@@ -12,8 +12,9 @@ import {
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 
-const emit = defineEmits<{
-  toggle: []
+const props = defineProps<{
+  /** Removes the docked-panel affordances when shown inside a popover. */
+  embedded?: boolean
 }>()
 
 const { editor } = useEditorContext()
@@ -67,18 +68,33 @@ const headerLabel = computed(() => {
     return 'CSS · body'
   return `CSS · ${block.value.type}`
 })
+
+async function copyCss(): Promise<boolean> {
+  if (!css.value || typeof navigator === 'undefined' || !navigator.clipboard)
+    return false
+
+  try {
+    await navigator.clipboard.writeText(css.value)
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+defineExpose({ copyCss })
 </script>
 
 <template>
-  <section class="uf-css-preview flex flex-col min-h-0 h-full overflow-hidden border-t border-uf-border bg-uf-panel">
-    <Tooltip :text="t('cssPreview.toggleHint')">
-      <div
-        class="shrink-0 flex items-center h-8 px-3 text-[10px] uppercase tracking-wider font-semibold text-uf-muted border-b border-uf-border cursor-pointer select-none hover:bg-uf-panel-muted"
-        @dblclick="emit('toggle')"
-      >
-        {{ headerLabel }}
-      </div>
-    </Tooltip>
+  <section
+    class="uf-css-preview flex h-full min-h-0 flex-col overflow-hidden bg-uf-panel"
+    :class="!props.embedded && 'border-t border-uf-border'"
+  >
+    <div
+      class="flex h-8 shrink-0 items-center border-b border-uf-border px-3 text-[10px] font-semibold uppercase tracking-wider text-uf-muted select-none"
+    >
+      {{ headerLabel }}
+    </div>
     <div class="flex-1 min-h-0 overflow-auto p-2 scrollbar-hide">
       <CodeEditor
         v-if="css"

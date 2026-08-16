@@ -50,6 +50,10 @@ function set(group: Group, side: Side, value: string) {
   emit('update:modelValue', next)
 }
 
+function fieldLabel(group: Group, side: Side): string {
+  return t(`style.${group}Side`, { side: t(`style.${side.toLowerCase()}`) })
+}
+
 // Key of the field whose popover is open, so the rest of the box can dim while
 // the active trigger stays lifted above the shade.
 const open = ref<string | null>(null)
@@ -129,7 +133,7 @@ const labelText = 'absolute top-1 left-2 text-[10px] font-semibold uppercase tra
         <SpacingField
           :model-value="get('margin', edge.side)"
           :dir="edge.dir"
-          :label="`Margin ${edge.side}`"
+          :label="fieldLabel('margin', edge.side)"
           @change="value => set('margin', edge.side, value)"
           @update:open="value => setOpen(`m-${edge.side}`, value)"
           @update:dragging="value => setDragging(`m-${edge.side}`, value)"
@@ -149,7 +153,7 @@ const labelText = 'absolute top-1 left-2 text-[10px] font-semibold uppercase tra
           <SpacingField
             :model-value="get('padding', edge.side)"
             :dir="edge.dir"
-            :label="`Padding ${edge.side}`"
+            :label="fieldLabel('padding', edge.side)"
             @change="value => set('padding', edge.side, value)"
             @update:open="value => setOpen(`p-${edge.side}`, value)"
             @update:dragging="value => setDragging(`p-${edge.side}`, value)"

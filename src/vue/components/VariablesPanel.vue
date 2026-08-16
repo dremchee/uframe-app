@@ -114,9 +114,9 @@ function updateVariable(index: number, patch: Partial<CssVariable>) {
       <div class="-mx-3 mt-1 border-t border-uf-border pt-3" />
       <div class="flex items-center gap-3 rounded-md border border-uf-border bg-uf-panel px-3 py-3">
         <span class="grid size-9 shrink-0 place-items-center rounded-md bg-uf-accent/10 text-uf-accent"><BookOpen :size="17" :stroke-width="1.75" /></span>
-        <span class="min-w-0 flex-1"><span class="block text-sm font-semibold text-uf-text">Style guide</span><span class="mt-0.5 block truncate text-xs text-uf-muted">Colors, type, spacing, and shadows</span></span>
+        <span class="min-w-0 flex-1"><span class="block text-sm font-semibold text-uf-text">{{ t('styleGuide.title') }}</span><span class="mt-0.5 block truncate text-xs text-uf-muted">{{ t('styleGuide.cardDescription') }}</span></span>
         <Button size="sm" @click="styleGuideOpen = true">
-          Open
+          {{ t('styleGuide.open') }}
         </Button>
       </div>
     </ScrollArea>
@@ -124,7 +124,7 @@ function updateVariable(index: number, patch: Partial<CssVariable>) {
     <Dialog v-model:open="styleGuideOpen">
       <DialogContent class="max-h-[85vh] max-w-3xl overflow-y-auto p-3 sm:p-3">
         <DialogHeader class="px-3 pt-3">
-          <DialogTitle>Template style guide</DialogTitle>
+          <DialogTitle>{{ t('styleGuide.dialogTitle') }}</DialogTitle>
         </DialogHeader>
         <div class="px-3 pb-3">
           <TemplateStyleGuide :editor="editor" />

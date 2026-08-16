@@ -7,7 +7,6 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui'
 import CanvasViewport from '@/vue/components/CanvasViewport.vue'
-import CssPreviewPanel from '@/vue/components/CssPreviewPanel.vue'
 import EditorToolbar from '@/vue/components/EditorToolbar.vue'
 import PagePreview from '@/vue/components/PagePreview.vue'
 import PropertiesPanel from '@/vue/components/PropertiesPanel.vue'
@@ -61,8 +60,6 @@ const PROPERTIES_PANEL_MAX_WIDTH = 480
 
 const {
   startPanelResize,
-  toggleCssPreview,
-  cssPreviewCollapsedSize,
 } = useEditorShellLayout({ sidebar, rootEl, flyoutRef })
 
 function runPanelAction(target: string, action: string) {
@@ -142,26 +139,7 @@ defineExpose({ openAddBreakpoint, runPanelAction })
             :min-size="PROPERTIES_PANEL_MIN_WIDTH"
             :max-size="PROPERTIES_PANEL_MAX_WIDTH"
           >
-            <ResizablePanelGroup
-              direction="vertical"
-              auto-save-id="uf-properties-css-preview-v1"
-              class="h-full"
-            >
-              <ResizablePanel :min-size="20">
-                <PropertiesPanel />
-              </ResizablePanel>
-              <ResizableHandle />
-              <ResizablePanel
-                size-unit="px"
-                :default-size="cssPreviewCollapsedSize"
-                :min-size="cssPreviewCollapsedSize"
-                :max-size="600"
-              >
-                <template #default="{ resize }">
-                  <CssPreviewPanel @toggle="toggleCssPreview(resize)" />
-                </template>
-              </ResizablePanel>
-            </ResizablePanelGroup>
+            <PropertiesPanel />
           </ResizablePanel>
         </ResizablePanelGroup>
         <!-- Floating flyout (unpinned): overlays the canvas, dismissed on blur. -->

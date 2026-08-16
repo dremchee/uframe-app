@@ -6,7 +6,7 @@ defineProps<SelectValueProps>()
 </script>
 
 <template>
-  <SelectValue v-bind="$props">
+  <SelectValue v-bind="$props" class="min-w-0 flex-1 truncate text-left">
     <slot />
   </SelectValue>
 </template>

@@ -8,6 +8,7 @@ import SelectItem from '@/components/ui/select/SelectItem.vue'
 import SelectTrigger from '@/components/ui/select/SelectTrigger.vue'
 import SelectValue from '@/components/ui/select/SelectValue.vue'
 import { cn } from '@/lib/utils'
+import { useUframeI18n } from '@/vue/i18n'
 import { CSS_UNITS, formatLength, isKeywordUnit, isValidLengthInput, parseLength, sizeInputPlaceholder } from './units'
 
 const props = withDefaults(defineProps<{
@@ -33,6 +34,7 @@ const emit = defineEmits<{
 // Sentinel value for the unit dropdown's "Variable…" action — never committed as
 // a real unit.
 const BIND_UNIT = '__var__'
+const { t } = useUframeI18n()
 
 const unitOptions = computed(() => props.units ?? CSS_UNITS)
 
@@ -103,7 +105,7 @@ function onUnit(value: unknown) {
     <Select v-if="unitOptions.length > 1 || bindable" :model-value="unit" @update:model-value="onUnit">
       <SelectTrigger
         class="h-6 min-w-6 w-auto shrink-0 justify-center gap-0 rounded-sm border-0 bg-transparent px-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted shadow-none transition-colors hover:bg-uf-panel-muted focus:outline-none focus:ring-0 focus-visible:ring-0 data-[state=open]:bg-uf-panel-muted [&>svg]:hidden"
-        aria-label="Select unit"
+        :aria-label="t('common.selectUnit')"
       >
         <SelectValue />
       </SelectTrigger>

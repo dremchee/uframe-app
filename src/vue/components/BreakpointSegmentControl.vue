@@ -79,13 +79,15 @@ const tabClass = computed(() => cn(
   'flex-1 gap-1.5 border border-transparent bg-transparent',
   props.compact
     ? 'size-7 rounded-md p-0 data-[state=active]:bg-uf-accent/10 data-[state=active]:text-uf-accent'
-    : 'h-[calc(100%-1px)] rounded-md data-[state=active]:bg-uf-accent/10 data-[state=active]:text-uf-accent',
+    : 'h-[calc(100%-1px)] rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs',
 ))
 const overflowTriggerClass = computed(() => cn(
   'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
   props.compact ? 'size-7 p-0 text-uf-muted hover:bg-uf-panel-muted hover:text-uf-text' : 'h-[calc(100%-1px)] gap-1.5 px-2 py-1',
   activeOverflow.value
-    ? 'bg-uf-accent/10 text-uf-accent'
+    ? props.compact
+      ? 'bg-uf-accent/10 text-uf-accent'
+      : 'bg-background text-foreground shadow-xs'
     : 'text-muted-foreground hover:text-foreground',
 ))
 </script>
