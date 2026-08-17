@@ -104,7 +104,7 @@ function onUnit(value: unknown) {
     />
     <Select v-if="unitOptions.length > 1 || bindable" :model-value="unit" @update:model-value="onUnit">
       <SelectTrigger
-        class="h-6 min-w-6 w-auto shrink-0 justify-center gap-0 rounded-sm border-0 bg-transparent px-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted shadow-none transition-colors hover:bg-uf-panel-muted focus:outline-none focus:ring-0 focus-visible:ring-0 data-[state=open]:bg-uf-panel-muted [&>svg]:hidden"
+        class="h-6 min-w-6 w-auto shrink-0 justify-center gap-0 rounded-sm border-0 bg-transparent px-1 text-center text-[10px] font-semibold uppercase tracking-[0.06em] text-uf-muted shadow-none transition-colors hover:bg-uf-panel-muted focus:outline-none focus:ring-0 focus-visible:ring-0 data-[state=open]:bg-uf-panel-muted [&>svg]:hidden [&>span]:text-center"
         :aria-label="t('common.selectUnit')"
       >
         <SelectValue />

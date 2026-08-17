@@ -20,9 +20,9 @@ const forwarded = useForwardProps(props)
 const classes = computed(() =>
   cn(
     'uf-ui-select-trigger',
-    'flex h-9 w-full items-center justify-between gap-2 whitespace-nowrap',
+    'flex h-9 w-full items-center justify-between gap-2 whitespace-nowrap text-left',
     'rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs',
-    'cursor-pointer [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate',
+    'cursor-pointer [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate [&>span]:text-left',
     'placeholder:text-muted-foreground',
     'focus:outline-none focus:ring-1 focus:ring-uf-accent focus:border-uf-accent',
     'disabled:cursor-not-allowed disabled:opacity-50',
