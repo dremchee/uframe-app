@@ -12,6 +12,44 @@ const apiSidebar = existsSync(apiSidebarPath)
 export default defineConfig({
   title: 'uframe',
   description: 'Embeddable page editor for any host — iframe client or Vue library.',
+  locales: {
+    root: {
+      label: 'English',
+      lang: 'en',
+    },
+    ru: {
+      label: 'Русский',
+      lang: 'ru',
+      link: '/ru/',
+      title: 'uframe',
+      description: 'Встраиваемый редактор страниц для любого приложения.',
+      themeConfig: {
+        nav: [
+          { text: 'Руководство', link: '/ru/guide/overview' },
+          { text: 'Демо', link: '/ru/demo' },
+          { text: 'API (English)', link: '/api/' },
+        ],
+        sidebar: {
+          '/ru/guide/': [
+            {
+              text: 'Руководство',
+              items: [
+                { text: 'Обзор', link: '/ru/guide/overview' },
+                { text: 'Начало работы', link: '/ru/guide/getting-started' },
+                { text: 'Локализация', link: '/ru/guide/localization' },
+                { text: 'Редактирование на холсте', link: '/ru/guide/editing' },
+                { text: 'API клиента и протокол', link: '/ru/guide/embedding' },
+                { text: 'Рендеринг страниц', link: '/ru/guide/rendering' },
+                { text: 'Расширение редактора', link: '/ru/guide/extending' },
+                { text: 'Темизация', link: '/ru/guide/theming' },
+                { text: 'Интеграции', link: '/ru/guide/integrations' },
+              ],
+            },
+          ],
+        },
+      },
+    },
+  },
   cleanUrls: true,
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]],
   themeConfig: {
