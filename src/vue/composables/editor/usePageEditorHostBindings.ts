@@ -9,6 +9,7 @@ interface UsePageEditorHostBindingsOptions {
   pagesModel: Ref<PageDocument[] | undefined>
   activePageIdModel: Ref<string | undefined>
   globalsModel: Ref<GlobalSettings | null | undefined>
+  pinPagesPanelOnLoad?: boolean
   onError: (errors: string[]) => void
 }
 
@@ -28,6 +29,7 @@ export function usePageEditorHostBindings(options: UsePageEditorHostBindingsOpti
     pagesModel,
     activePageIdModel,
     globalsModel,
+    pinPagesPanelOnLoad,
     onError,
   } = options
 
@@ -81,7 +83,8 @@ export function usePageEditorHostBindings(options: UsePageEditorHostBindingsOpti
     if (isMultiPage && !pagesPanelShown) {
       pagesPanelShown = true
       editor.storage.value.sidebarMode = 'pages'
-      editor.storage.value.sidebarPinned = true
+      if (pinPagesPanelOnLoad !== false)
+        editor.storage.value.sidebarPinned = true
     }
   }, { immediate: true })
 

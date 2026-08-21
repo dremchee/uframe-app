@@ -13,8 +13,10 @@ import { PageEditor } from '@/vue'
 // absent we fail closed: never fall back to '*', which would accept messages
 // from — and broadcast document content to — any origin. The bundled embed
 // client always sets it; a hand-rolled host must too.
-const parentOrigin = new URLSearchParams(location.search).get('parentOrigin')
-const initialToolbarVisible = new URLSearchParams(location.search).get('toolbarVisible') !== 'false'
+const searchParams = new URLSearchParams(location.search)
+const parentOrigin = searchParams.get('parentOrigin')
+const initialToolbarVisible = searchParams.get('toolbarVisible') !== 'false'
+const isDocsDemo = searchParams.get('docsDemo') === '1'
 
 // Single-document mode (host never supplies `pages`).
 const document = shallowRef<PageDocument>(createPageDocument())
@@ -284,6 +286,8 @@ onBeforeUnmount(() => window.removeEventListener('message', onMessage))
     v-model:globals="globals"
     :readonly="readonly"
     :toolbar-visible="toolbarVisible"
+    :prefs-key="isDocsDemo ? 'uframe-docs-demo-ui' : undefined"
+    :pin-pages-panel-on-load="!isDocsDemo"
     :locale="locale"
     :messages="messages"
     :ui-theme="uiTheme"

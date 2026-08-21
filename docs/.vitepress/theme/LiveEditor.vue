@@ -2,15 +2,17 @@
 import type { GlobalSettings, PageDocument } from '@/core'
 import type { UframeEditorHandle } from '@/embed/client'
 import { useData } from 'vitepress'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { safeParseGlobalSettings } from '@/core'
 import { createUframeEditor } from '@/embed/client'
+import { ru } from '@/vue/i18n/ru'
 import { dynamicTemplate, mockDataContext, mockSchema } from '../../../playground/examples/dynamic-content'
 import { pageTemplates, stripPageGlobals, templateGlobals } from '../../../playground/examples/templates'
 
 // Follow VitePress's appearance (which itself follows the system preference) so
 // the embedded editor switches dark/light in step with the docs.
-const { isDark } = useData()
+const { isDark, lang } = useData()
+const editorLocale = computed(() => lang.value === 'ru' ? 'ru' : 'en')
 
 // This is the real thing: the editor runs inside an <iframe> driven by the
 // framework-agnostic `uframe/embed` client — exactly the integration shown in
@@ -100,11 +102,13 @@ onMounted(() => {
   }
   editor = createUframeEditor({
     target: host.value!,
-    src: `${import.meta.env.BASE_URL}embed/index.html`,
+    src: `${import.meta.env.BASE_URL}embed/index.html?docsDemo=1`,
     pages,
     activePageId,
     globals,
     theme: isDark.value ? 'dark' : 'light',
+    locale: editorLocale.value,
+    messages: editorLocale.value === 'ru' ? { ru } : undefined,
     // Load the official AI plugin as a real URL plugin — the same `plugins`
     // path any host uses. It's co-built with the embed app, so it shares the
     // editor's runtime (Vue + context) and its slots light up on register.
@@ -142,6 +146,13 @@ onMounted(() => {
 
 // Keep the editor in sync when the docs theme (or system preference) flips.
 watch(isDark, dark => editor?.setTheme(dark ? 'dark' : 'light'))
+
+// VitePress changes `lang` when the documentation locale changes. Send the
+// catalog before the locale so the iframe never renders an untranslated frame.
+watch(editorLocale, locale => {
+  editor?.setMessages(locale === 'ru' ? { ru } : {})
+  editor?.setLocale(locale)
+})
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
@@ -186,24 +197,6 @@ onBeforeUnmount(() => {
   border: 1px solid var(--vp-c-divider);
   border-radius: 10px;
   overflow: hidden;
-  /* Elevation + brand glow so the demo reads as the hero of the page. Negative
-     spreads keep the horizontal reach within the 32px gutter (no x-scrollbar). */
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.08),
-    0 30px 60px -30px rgba(15, 23, 42, 0.45),
-    0 14px 56px -26px rgba(99, 102, 241, 0.78),
-    0 0 44px -14px rgba(139, 92, 246, 0.66),
-    0 0 22px -8px rgba(99, 102, 241, 0.6);
-  transition: box-shadow 0.3s ease;
-}
-
-/* Stronger, cooler glow on the dark docs theme. */
-.dark .uframe-live {
-  box-shadow:
-    0 30px 60px -30px rgba(0, 0, 0, 0.6),
-    0 14px 56px -26px rgba(99, 102, 241, 0.9),
-    0 0 46px -16px rgba(139, 92, 246, 0.8),
-    0 0 24px -8px rgba(129, 140, 248, 0.7);
 }
 
 /* Float above the whole layout (nav included) as a fixed overlay. */

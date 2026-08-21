@@ -56,6 +56,8 @@ const props = withDefaults(defineProps<{
   untrustedEmbeds?: boolean
   /** Editor-UI locale; defaults to `en`. Combine with `messages` to translate. */
   locale?: string
+  /** Pin the Pages panel automatically when a multi-page document loads. */
+  pinPagesPanelOnLoad?: boolean
   /**
    * Per-locale overrides for the editor-chrome strings, merged over the bundled
    * English catalog (override only the keys you need). Shape mirrors `en`.
@@ -273,6 +275,7 @@ usePageEditorHostBindings({
   pagesModel,
   activePageIdModel,
   globalsModel,
+  pinPagesPanelOnLoad: props.pinPagesPanelOnLoad,
   onError: errors => emit('error', errors),
 })
 </script>
