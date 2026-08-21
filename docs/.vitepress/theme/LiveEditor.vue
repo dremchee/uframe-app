@@ -149,7 +149,7 @@ watch(isDark, dark => editor?.setTheme(dark ? 'dark' : 'light'))
 
 // VitePress changes `lang` when the documentation locale changes. Send the
 // catalog before the locale so the iframe never renders an untranslated frame.
-watch(editorLocale, locale => {
+watch(editorLocale, (locale) => {
   editor?.setMessages(locale === 'ru' ? { ru } : {})
   editor?.setLocale(locale)
 })
