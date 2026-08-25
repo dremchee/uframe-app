@@ -9,7 +9,7 @@ import { useEventListener } from '@vueuse/core'
  * would otherwise stay stuck open. Pass the `open` model and this closes it on
  * window blur.
  */
-export function useDismissOnCanvasFocus(open: Ref<boolean>): void {
+export function useDismissOnCanvasFocus(open: Ref<boolean | undefined>): void {
   useEventListener(window, 'blur', () => {
     open.value = false
   })

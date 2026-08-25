@@ -33,13 +33,13 @@ const model = computed({
 })
 
 // The virtualized list opts out of reka's built-in filtering, so the options
-// are pre-filtered here: substring match, case-insensitive. An empty query
-// lists everything so the field doubles as a "browse existing classes"
-// affordance, like the old datalist.
+// are pre-filtered here: substring match, case-insensitive. Suggestions stay
+// hidden until the user enters at least three characters, avoiding an
+// overwhelming "browse all classes" list on focus.
 const filtered = computed(() => {
   const q = props.modelValue.trim().toLowerCase()
-  if (!q)
-    return props.suggestions
+  if (q.length < 3)
+    return []
   return props.suggestions.filter(name => name.toLowerCase().includes(q))
 })
 

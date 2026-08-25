@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { AutocompleteRootEmits, AutocompleteRootProps } from 'reka-ui'
-import { AutocompleteRoot, useForwardPropsEmits } from 'reka-ui'
+import { useVModel } from '@vueuse/core'
+import { AutocompleteRoot, useForwardProps } from 'reka-ui'
 import { computed, useTemplateRef } from 'vue'
+import { useDismissOnCanvasFocus } from '@/vue/composables/ui'
 
 /**
  * Free-text input + suggestion list on reka's Autocomplete: `modelValue` IS
@@ -10,7 +12,12 @@ import { computed, useTemplateRef } from 'vue'
  */
 const props = defineProps<AutocompleteRootProps>()
 const emit = defineEmits<AutocompleteRootEmits>()
-const forwarded = useForwardPropsEmits(props, emit)
+const forwarded = useForwardProps(props)
+const open = useVModel(props, 'open', emit, {
+  passive: true,
+  defaultValue: props.defaultOpen ?? false,
+})
+useDismissOnCanvasFocus(open)
 
 // Surface reka's highlight state: a consumer deciding what Enter means
 // (pick the highlighted row vs submit the typed text) needs to see it.
@@ -21,7 +28,7 @@ defineExpose({
 </script>
 
 <template>
-  <AutocompleteRoot ref="root" v-bind="forwarded">
+  <AutocompleteRoot ref="root" v-bind="forwarded" v-model:open="open">
     <slot />
   </AutocompleteRoot>
 </template>

@@ -42,7 +42,7 @@ import { useBlockStyleModel } from '@/vue/composables/style/useBlockStyleModel'
 import { useStyleContrast } from '@/vue/composables/style/useStyleContrast'
 import { useStyleInheritance } from '@/vue/composables/style/useStyleInheritance'
 import { useEditorContext } from '@/vue/context/editor-context'
-import { PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
+import { makePanelEdgeReference, PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 import { displayBlockLabel } from '@/vue/utils/block-label'
 
@@ -122,10 +122,22 @@ const isAuthoringSymbolProperties = computed(() =>
 // variants) via editor.renameClass — same flow as the Classes panel.
 const renameClassKey = ref<string | null>(null)
 const renameClassValue = ref('')
-function openClassRename(name: string) {
+const renameClassAnchorEl = ref<HTMLElement | null>(null)
+const renameClassPopoverReference = makePanelEdgeReference(panelEl, renameClassAnchorEl, 'left')
+
+function openClassRename(name: string, event?: MouseEvent) {
+  renameClassAnchorEl.value = event?.currentTarget instanceof HTMLElement
+    ? event.currentTarget
+    : null
   renameClassKey.value = name
   renameClassValue.value = name
 }
+
+function closeClassRename() {
+  renameClassKey.value = null
+  renameClassAnchorEl.value = null
+}
+
 function submitClassRename() {
   const from = renameClassKey.value
   if (!from)
@@ -133,7 +145,7 @@ function submitClassRename() {
   const to = sanitizeClassName(renameClassValue.value.trim())
   if (!to || !editor.renameClass(from, to))
     return
-  renameClassKey.value = null
+  closeClassRename()
   // Keep the style panel pointed at the class it was editing under its new name.
   if (editingTarget.value.kind === 'class' && editingTarget.value.name === from)
     editingTarget.value = { kind: 'class', name: to }
@@ -373,7 +385,7 @@ const targetLabel = computed(() => {
                 v-for="cls in blockClasses"
                 :key="cls"
                 :open="renameClassKey === cls"
-                @update:open="(o: boolean) => (o ? openClassRename(cls) : (renameClassKey = null))"
+                @update:open="(o: boolean) => (o ? openClassRename(cls) : closeClassRename())"
               >
                 <div class="relative">
                   <PopoverAnchor class="pointer-events-none absolute inset-0" />
@@ -387,7 +399,7 @@ const targetLabel = computed(() => {
                       )
                     "
                     @click="focusClass(cls)"
-                    @dblclick="openClassRename(cls)"
+                    @dblclick="openClassRename(cls, $event)"
                   >
                     <span>{{ cls }}</span>
                     <span
@@ -404,6 +416,8 @@ const targetLabel = computed(() => {
                 <PopoverContent
                   class="w-60"
                   align="start"
+                  side="left"
+                  :reference="renameClassPopoverReference"
                   :title="t('properties.renameClass')"
                   @interact-outside="preventOverlayDismiss"
                   @focus-outside="(e: Event) => e.preventDefault()"
@@ -417,7 +431,7 @@ const targetLabel = computed(() => {
                       {{ t('properties.classRenameHint') }}
                     </p>
                     <div class="flex items-center justify-end gap-2">
-                      <Button type="button" variant="outline" size="sm" @click="renameClassKey = null">
+                      <Button type="button" variant="outline" size="sm" @click="closeClassRename">
                         {{ t('common.cancel') }}
                       </Button>
                       <Button type="submit" size="sm">
