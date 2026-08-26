@@ -2,7 +2,7 @@
 import type { BlockRegistry, PageDocument, ResolveContext } from '@/core'
 import type { I18n } from '@/vue/i18n'
 import { computed, provide } from 'vue'
-import CanvasBlockRenderer from '@/vue/components/CanvasBlockRenderer.vue'
+import CanvasBlockRenderer from '@/vue/components/canvas/CanvasBlockRenderer.vue'
 import { useBlockStylesheet } from '@/vue/composables/style/useBlockStylesheet'
 import { embedTrustKey } from '@/vue/context/embed-trust'
 import { provideUframeI18nContext, useUframeI18n } from '@/vue/i18n'

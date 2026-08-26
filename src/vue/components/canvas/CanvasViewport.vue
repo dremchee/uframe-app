@@ -6,9 +6,9 @@ import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { computed, h, nextTick, render, shallowRef, useTemplateRef, watch } from 'vue'
 import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigger } from '@/components/ui'
 import { findBlock, findBlockParentId, isDescendantOf } from '@/core'
-import CanvasBreadcrumbs from '@/vue/components/CanvasBreadcrumbs.vue'
-import CanvasFrameDocument from '@/vue/components/CanvasFrameDocument.vue'
-import CanvasRuler from '@/vue/components/CanvasRuler.vue'
+import CanvasBreadcrumbs from '@/vue/components/canvas/CanvasBreadcrumbs.vue'
+import CanvasFrameDocument from '@/vue/components/canvas/CanvasFrameDocument.vue'
+import CanvasRuler from '@/vue/components/canvas/CanvasRuler.vue'
 import { useCanvasBlockLabels } from '@/vue/composables/canvas/useCanvasBlockLabels'
 import { useCanvasContextBridge } from '@/vue/composables/canvas/useCanvasContextBridge'
 import { useCanvasDropOverlay } from '@/vue/composables/canvas/useCanvasDropOverlay'
@@ -99,6 +99,8 @@ const { indicator, isDragging } = useCanvasDropOverlay({
     isDescendantOf(editor.document.value.blocks, ancestorId, descendantId),
   resolveDropTarget: (hit: CanvasDropIndicator) => {
     const blocks = editor.document.value.blocks
+    if (hit.blockId === null)
+      return { parentId: null, index: blocks.length }
     if (hit.position === 'inside') {
       const block = findBlock(blocks, hit.blockId)
       return { parentId: hit.blockId, index: block?.children?.length ?? 0 }

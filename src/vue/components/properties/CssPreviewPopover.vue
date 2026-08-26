@@ -2,7 +2,7 @@
 import { Check, Code2, Copy } from '@lucide/vue'
 import { onBeforeUnmount, ref, shallowRef, useTemplateRef } from 'vue'
 import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@/components/ui'
-import CssPreviewPanel from '@/vue/components/CssPreviewPanel.vue'
+import CssPreviewPanel from '@/vue/components/properties/CssPreviewPanel.vue'
 import { usePanelEdgePopover } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, nextTick } from 'vue'
-import NeutralBlockHost from '@/vue/components/NeutralBlockHost.vue'
+import NeutralBlockHost from '@/vue/components/canvas/NeutralBlockHost.vue'
 
 // A minimal custom element to host. jsdom supports customElements.define +
 // upgrade, so document.createElement('uf-test-el') yields an upgraded instance.

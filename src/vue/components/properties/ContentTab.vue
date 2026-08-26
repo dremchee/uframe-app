@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SettingsField } from '@/core'
-import BindingsSection from '@/vue/components/BindingsSection.vue'
-import SchemaSettings from '@/vue/components/SchemaSettings.vue'
+import BindingsSection from '@/vue/components/properties/BindingsSection.vue'
+import SchemaSettings from '@/vue/components/properties/SchemaSettings.vue'
 
 // Body of the block settings "Content" tab: the props form (a Vue
 // settingsComponent or schema-driven SchemaSettings), and

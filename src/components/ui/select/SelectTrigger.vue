@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { SelectTriggerProps } from 'reka-ui'
 import { ChevronDown } from '@lucide/vue'
+import { useEventListener } from '@vueuse/core'
 import {
+  injectSelectRootContext,
   SelectIcon,
   SelectTrigger,
 
   useForwardProps,
 } from 'reka-ui'
-import { computed } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<
@@ -17,6 +19,28 @@ const props = defineProps<
 >()
 
 const forwarded = useForwardProps(props)
+const select = injectSelectRootContext()
+const wasOpenOnPointerDown = shallowRef(false)
+
+// The dismissable layer sees a second click on the trigger before reka's
+// trigger handler. Remember the pre-dismiss state in the window capture phase
+// so the target handler can prevent reka from immediately reopening it.
+useEventListener(window, 'pointerdown', (event) => {
+  const trigger = select.triggerElement.value
+  wasOpenOnPointerDown.value = select.open.value
+    && !!trigger
+    && event.target instanceof Node
+    && trigger.contains(event.target)
+}, { capture: true })
+
+function closeOnRepeatedTriggerClick(event: PointerEvent) {
+  if (!wasOpenOnPointerDown.value)
+    return
+  event.preventDefault()
+  event.stopImmediatePropagation()
+  select.onOpenChange(false)
+}
+
 const classes = computed(() =>
   cn(
     'uf-ui-select-trigger',
@@ -32,7 +56,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <SelectTrigger v-bind="forwarded" :class="classes">
+  <SelectTrigger v-bind="forwarded" :class="classes" @pointerdown.capture="closeOnRepeatedTriggerClick">
     <slot />
     <SelectIcon as-child>
       <ChevronDown class="size-4 opacity-50 shrink-0" />

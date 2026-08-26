@@ -17,6 +17,9 @@ const open = useVModel(props, 'open', emit, {
   passive: true,
   defaultValue: props.defaultOpen ?? false,
 })
+const model = useVModel(props, 'modelValue', emit, {
+  passive: true,
+})
 useDismissOnCanvasFocus(open)
 
 // Surface reka's highlight state: a consumer deciding what Enter means
@@ -28,7 +31,7 @@ defineExpose({
 </script>
 
 <template>
-  <AutocompleteRoot ref="root" v-bind="forwarded" v-model:open="open">
+  <AutocompleteRoot ref="root" v-bind="forwarded" v-model="model" v-model:open="open">
     <slot />
   </AutocompleteRoot>
 </template>

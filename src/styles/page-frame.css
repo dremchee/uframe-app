@@ -130,8 +130,19 @@
   border: 0;
 }
 
-.uf-empty-state,
 .uf-canvas-empty {
+  margin: 0;
+  box-sizing: border-box;
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--uf-muted);
+  font-size: 13px;
+}
+
+.uf-empty-state {
   margin: 0;
   padding: 24px;
   color: var(--uf-muted);

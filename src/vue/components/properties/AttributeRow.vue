@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttributeDraft } from '@/vue/components/AttributeForm.vue'
+import type { AttributeDraft } from '@/vue/components/properties/AttributeForm.vue'
 import { Braces, Pencil, Trash2 } from '@lucide/vue'
 import { shallowRef } from 'vue'
 import {
@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from '@/components/ui'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
-import AttributeForm from '@/vue/components/AttributeForm.vue'
+import AttributeForm from '@/vue/components/properties/AttributeForm.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 defineProps<{

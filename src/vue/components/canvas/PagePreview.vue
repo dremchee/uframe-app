@@ -6,7 +6,7 @@ import { defaultBlockDefinitions } from '@/blocks'
 import { applyPlugins, createBlockRegistry, renderFontHead } from '@/core'
 import { dataPlugin } from '@/plugins/data'
 import { pageFrameStyles } from '@/styles/page-frame'
-import CanvasFrameDocument from '@/vue/components/CanvasFrameDocument.vue'
+import CanvasFrameDocument from '@/vue/components/canvas/CanvasFrameDocument.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 const props = withDefaults(defineProps<{

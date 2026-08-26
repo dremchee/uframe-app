@@ -2,7 +2,7 @@
 import type { HtmlAttributes } from '@/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, nextTick, ref } from 'vue'
-import AttributesSection from '@/vue/components/AttributesSection.vue'
+import AttributesSection from '@/vue/components/properties/AttributesSection.vue'
 
 const apps: Array<{ unmount: () => void }> = []
 const containers: HTMLElement[] = []

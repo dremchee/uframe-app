@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, nextTick } from 'vue'
 import { buttonDef } from '@/blocks/button'
-import CanvasBlockRenderer from '@/vue/components/CanvasBlockRenderer.vue'
+import CanvasBlockRenderer from '@/vue/components/canvas/CanvasBlockRenderer.vue'
 
 const apps: Array<{ unmount: () => void }> = []
 

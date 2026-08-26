@@ -14,7 +14,7 @@ import {
   Textarea,
 } from '@/components/ui'
 import { getInstancePropertyValues, getSymbolPropertyDefault } from '@/core'
-import BindingsSection from '@/vue/components/BindingsSection.vue'
+import BindingsSection from '@/vue/components/properties/BindingsSection.vue'
 import StyleField from '@/vue/components/style-panel/StyleField.vue'
 import { useUframeI18n } from '@/vue/i18n'
 import { localizedLabel, localizedPlaceholder } from '@/vue/utils/translation-fallback'

@@ -8,7 +8,6 @@ import {
   AutocompleteInput,
   AutocompleteItem,
   AutocompleteVirtualizer,
-  Tooltip,
 } from '@/components/ui'
 import { useUframeI18n } from '@/vue/i18n'
 
@@ -65,42 +64,41 @@ function onEnterKey(event: KeyboardEvent) {
 </script>
 
 <template>
-  <Autocomplete
-    ref="root"
-    v-model="model"
-    v-model:open="open"
-    class="relative min-w-0"
-    ignore-filter
-    open-on-focus
-    open-on-click
-  >
-    <AutocompleteAnchor class="relative block min-w-0">
-      <AutocompleteInput
-        class="pr-9"
-        :placeholder="placeholder"
-        @keydown.enter="onEnterKey"
-        @keydown.esc="open = false"
-      />
-      <!-- In-field apply trigger — same action as pressing Enter on typed text. -->
-      <Tooltip :text="t('classes.add')">
-        <button
-          type="button"
-          class="absolute right-1.5 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-sm text-uf-muted transition-colors hover:bg-uf-panel-muted hover:text-uf-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uf-accent"
-          :aria-label="t('classes.add')"
-          @click="apply(modelValue)"
-        >
-          <Plus :size="14" :stroke-width="1.75" />
-        </button>
-      </Tooltip>
-    </AutocompleteAnchor>
+  <div class="relative min-w-0">
+    <Autocomplete
+      ref="root"
+      v-model="model"
+      v-model:open="open"
+      ignore-filter
+      open-on-focus
+      open-on-click
+    >
+      <AutocompleteAnchor class="relative block min-w-0">
+        <AutocompleteInput
+          class="pr-9"
+          :placeholder="placeholder"
+          @keydown.enter="onEnterKey"
+          @keydown.esc="open = false"
+        />
+      </AutocompleteAnchor>
 
-    <AutocompleteContent v-if="filtered.length">
-      <!-- estimate-size matches the item row height (h-8). -->
-      <AutocompleteVirtualizer v-slot="{ option }" :options="filtered" :estimate-size="32">
-        <AutocompleteItem :value="option" @select.prevent="apply(String(option))">
-          <span class="truncate">{{ option }}</span>
-        </AutocompleteItem>
-      </AutocompleteVirtualizer>
-    </AutocompleteContent>
-  </Autocomplete>
+      <AutocompleteContent v-if="filtered.length">
+        <!-- estimate-size matches the item row height (h-8). -->
+        <AutocompleteVirtualizer v-slot="{ option }" :options="filtered" :estimate-size="32">
+          <AutocompleteItem :value="option" @select.prevent="apply(String(option))">
+            <span class="truncate">{{ option }}</span>
+          </AutocompleteItem>
+        </AutocompleteVirtualizer>
+      </AutocompleteContent>
+    </Autocomplete>
+    <button
+      type="button"
+      class="absolute right-1.5 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-sm text-uf-muted transition-colors hover:bg-uf-panel-muted hover:text-uf-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uf-accent"
+      :aria-label="t('classes.add')"
+      :title="t('classes.add')"
+      @click="apply(modelValue)"
+    >
+      <Plus :size="14" :stroke-width="1.75" />
+    </button>
+  </div>
 </template>

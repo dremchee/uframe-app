@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HtmlAttributes } from '@/core'
-import type { AttributeDraft } from '@/vue/components/AttributeForm.vue'
+import type { AttributeDraft } from '@/vue/components/properties/AttributeForm.vue'
 import { Info, Plus } from '@lucide/vue'
 import { computed, shallowRef } from 'vue'
 import {
@@ -12,8 +12,8 @@ import {
 } from '@/components/ui'
 import { normalizeHtmlAttributes } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
-import AttributeForm from '@/vue/components/AttributeForm.vue'
-import AttributeRow from '@/vue/components/AttributeRow.vue'
+import AttributeForm from '@/vue/components/properties/AttributeForm.vue'
+import AttributeRow from '@/vue/components/properties/AttributeRow.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 const model = defineModel<HtmlAttributes>({ required: true })

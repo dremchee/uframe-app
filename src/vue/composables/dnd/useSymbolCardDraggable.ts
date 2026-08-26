@@ -1,6 +1,7 @@
 import type { Ref } from 'vue'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { onBeforeUnmount, onMounted } from 'vue'
+import { setLibraryCardDragPreview } from '@/vue/composables/dnd/setLibraryCardDragPreview'
 import { LIBRARY_DRAG_TYPE } from '@/vue/composables/dnd/useTreeNodeDnd'
 
 type ElOrInstance = HTMLElement | { $el?: unknown } | null
@@ -21,14 +22,26 @@ export function useSymbolCardDraggable(el: Ref<ElOrInstance>, symbolId: Ref<stri
     const element = resolveElement(el.value)
     if (!element)
       return
+    const draggableElement: HTMLElement = element
 
     cleanup = draggable({
-      element,
+      element: draggableElement,
       getInitialData: () => ({
         [LIBRARY_DRAG_TYPE]: true,
         symbolId: symbolId.value,
       }),
     })
+    draggableElement.addEventListener('dragstart', onDragStart)
+
+    function onDragStart(event: DragEvent) {
+      setLibraryCardDragPreview(draggableElement, event)
+    }
+
+    const previousCleanup = cleanup
+    cleanup = () => {
+      draggableElement.removeEventListener('dragstart', onDragStart)
+      previousCleanup()
+    }
   })
 
   onBeforeUnmount(() => {

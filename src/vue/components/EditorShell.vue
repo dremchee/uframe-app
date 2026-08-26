@@ -6,10 +6,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui'
-import CanvasViewport from '@/vue/components/CanvasViewport.vue'
+import CanvasViewport from '@/vue/components/canvas/CanvasViewport.vue'
+import PagePreview from '@/vue/components/canvas/PagePreview.vue'
 import EditorToolbar from '@/vue/components/EditorToolbar.vue'
-import PagePreview from '@/vue/components/PagePreview.vue'
-import PropertiesPanel from '@/vue/components/PropertiesPanel.vue'
+import PropertiesPanel from '@/vue/components/properties/PropertiesPanel.vue'
 import SidebarPanels from '@/vue/components/SidebarPanels.vue'
 import SidebarRail from '@/vue/components/SidebarRail.vue'
 import ViewportControls from '@/vue/components/ViewportControls.vue'

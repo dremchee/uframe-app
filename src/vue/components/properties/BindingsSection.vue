@@ -2,7 +2,7 @@
 import { Database } from '@lucide/vue'
 import { computed } from 'vue'
 import { findDataScopeCollection } from '@/plugins/data'
-import BindingPicker from '@/vue/components/BindingPicker.vue'
+import BindingPicker from '@/vue/components/properties/BindingPicker.vue'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 

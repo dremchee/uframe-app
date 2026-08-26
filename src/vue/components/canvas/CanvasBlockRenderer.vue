@@ -7,7 +7,7 @@ import {
   resolveBlockHtmlAttributes,
   styleClassName,
 } from '@/core'
-import NeutralBlockHost from '@/vue/components/NeutralBlockHost.vue'
+import NeutralBlockHost from '@/vue/components/canvas/NeutralBlockHost.vue'
 import { useCanvasBlockPreview } from '@/vue/composables/canvas/useCanvasBlockPreview'
 import { useCanvasSymbolInstance } from '@/vue/composables/canvas/useCanvasSymbolInstance'
 import { useUframeI18n } from '@/vue/i18n'

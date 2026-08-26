@@ -9,7 +9,8 @@ import { renderedBoxElement } from '@/vue/utils/canvas-dom'
 export type CanvasDropPosition = 'before' | 'after' | 'inside'
 
 export interface CanvasDropIndicator {
-  blockId: string
+  /** `null` identifies the empty document's root drop zone. */
+  blockId: string | null
   position: CanvasDropPosition
   rect: { top: number, left: number, width: number, height: number }
   /** Set when the target is a component Slot (blockId = owning instance) — drops append to its fill. */
@@ -55,6 +56,17 @@ export function useCanvasDropOverlay(options: UseCanvasDropOverlayOptions) {
 
     const win = doc.defaultView
     const blocks = Array.from(doc.querySelectorAll<HTMLElement>('.uf-canvas-block')).reverse()
+
+    // An empty document has no block box to hit-test. Treat its canvas as a
+    // root-level target so the first library card can be dropped onto it.
+    if (blocks.length === 0) {
+      return {
+        blockId: null,
+        position: 'inside',
+        rect: { top: 0, left: 0, width: overlayRect.width, height: overlayRect.height },
+      }
+    }
+
     for (const el of blocks) {
       // A Data List preview copy tags its id with `~n`; resolve to the canonical
       // block so a drop onto any copy targets the one template (the indicator
@@ -171,7 +183,7 @@ export function useCanvasDropOverlay(options: UseCanvasDropOverlayOptions) {
           // Slot hits skip resolveDropTarget: the fill they append to may not
           // exist yet, so the editor owns the whole prepare-and-insert step.
           const resolved = hit.slotId ? null : options.resolveDropTarget(hit)
-          const target: CanvasDropTarget | null = hit.slotId
+          const target: CanvasDropTarget | null = hit.slotId && hit.blockId !== null
             ? { kind: 'slot', instanceId: hit.blockId, slotId: hit.slotId }
             : resolved && { kind: 'position', ...resolved }
           if (!target)

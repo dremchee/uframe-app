@@ -6,7 +6,6 @@ import type { EditingTarget } from '@/vue/composables/style/useBlockClasses'
 import {
   Ellipsis,
   Plus,
-  X,
 } from '@lucide/vue'
 import { computed, nextTick, provide, ref, useTemplateRef, watch } from 'vue'
 import {
@@ -24,11 +23,12 @@ import {
 import { COMPONENT_SLOT_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { cn } from '@/lib/utils'
-import AttributesSection from '@/vue/components/AttributesSection.vue'
 import BlockActionsMenu from '@/vue/components/BlockActionsMenu.vue'
-import ClassNameInput from '@/vue/components/ClassNameInput.vue'
-import ContentTab from '@/vue/components/ContentTab.vue'
-import CssPreviewPopover from '@/vue/components/CssPreviewPopover.vue'
+import AttributesSection from '@/vue/components/properties/AttributesSection.vue'
+import ClassNameChip from '@/vue/components/properties/ClassNameChip.vue'
+import ClassNameInput from '@/vue/components/properties/ClassNameInput.vue'
+import ContentTab from '@/vue/components/properties/ContentTab.vue'
+import CssPreviewPopover from '@/vue/components/properties/CssPreviewPopover.vue'
 import StylePanel from '@/vue/components/style-panel/StylePanel.vue'
 import StyleVariantSelector from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import SymbolInstancePanel from '@/vue/components/SymbolInstancePanel.vue'
@@ -56,18 +56,6 @@ provide(PANEL_POPOVER_ANCHOR, { boundaryEl: panelEl, side: 'left' })
 
 const activeTab = ref<'content' | 'style'>('style')
 const elementNameInput = useTemplateRef<{ focus: () => void }>('elementNameInput')
-
-function classChipClass(name: string): string {
-  if (editingClass.value === name)
-    return 'border-uf-accent bg-uf-accent text-uf-accent-foreground hover:bg-uf-accent/90'
-  return 'border-uf-accent/25 bg-uf-accent/10 text-uf-accent hover:bg-uf-accent/15'
-}
-
-function classChipRemoveClass(name: string): string {
-  return editingClass.value === name
-    ? 'text-uf-accent-foreground/75 hover:bg-black/10 hover:text-uf-accent-foreground'
-    : 'opacity-75 hover:bg-black/15 hover:opacity-100'
-}
 
 // The edited breakpoint is the toolbar viewport — single source of truth, so
 // the panel tabs and the toolbar stay in sync both ways.
@@ -389,29 +377,14 @@ const targetLabel = computed(() => {
               >
                 <div class="relative">
                   <PopoverAnchor class="pointer-events-none absolute inset-0" />
-                  <button
-                    type="button"
-                    :class="
-                      cn(
-                        'inline-flex items-center gap-1 min-h-5.5 py-0.5 pl-2 pr-1 rounded-sm',
-                        'border text-[11px] cursor-pointer transition-colors',
-                        classChipClass(cls),
-                      )
-                    "
-                    @click="focusClass(cls)"
-                    @dblclick="openClassRename(cls, $event)"
-                  >
-                    <span>{{ cls }}</span>
-                    <span
-                      :class="cn('inline-flex items-center justify-center w-4 h-4 rounded-[2px] cursor-pointer', classChipRemoveClass(cls))"
-                      role="button"
-                      :aria-label="t('properties.removeClass', { name: cls })"
-                      @click.stop="removeClass(cls)"
-                      @dblclick.stop
-                    >
-                      <X :size="10" :stroke-width="2" />
-                    </span>
-                  </button>
+                  <ClassNameChip
+                    :name="cls"
+                    :active="editingClass === cls"
+                    :remove-label="t('properties.removeClass', { name: cls })"
+                    @select="focusClass(cls)"
+                    @rename="openClassRename(cls, $event)"
+                    @remove="removeClass(cls)"
+                  />
                 </div>
                 <PopoverContent
                   class="w-60"
