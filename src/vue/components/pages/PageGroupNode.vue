@@ -2,8 +2,8 @@
 import type { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import type { GroupNode } from '@/vue/composables/pages/pages-tree'
 import { computed, inject } from 'vue'
-import PageGroupHeader from '@/vue/components/PageGroupHeader.vue'
-import PageRow from '@/vue/components/PageRow.vue'
+import PageGroupHeader from '@/vue/components/pages/PageGroupHeader.vue'
+import PageRow from '@/vue/components/pages/PageRow.vue'
 import { PAGES_PANEL_KEY } from '@/vue/composables/pages/pages-panel-context'
 
 const props = defineProps<{

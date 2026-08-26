@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SymbolDefinition } from '@/core'
 import { ScrollArea } from '@/components/ui'
-import SymbolLibraryCard from '@/vue/components/SymbolLibraryCard.vue'
+import SymbolLibraryCard from '@/vue/components/library/SymbolLibraryCard.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 defineProps<{

@@ -4,7 +4,7 @@ import { ChevronRight, Ellipsis, EyeOff } from '@lucide/vue'
 import { useTemplateRef } from 'vue'
 import { treeRowDomId } from '@/core'
 import { cn } from '@/lib/utils'
-import BlockActionsMenu from '@/vue/components/BlockActionsMenu.vue'
+import BlockActionsMenu from '@/vue/components/shared/BlockActionsMenu.vue'
 import { usePageTreeRow } from '@/vue/composables/tree/usePageTreeRow'
 import { useEditorContext } from '@/vue/context/editor-context'
 

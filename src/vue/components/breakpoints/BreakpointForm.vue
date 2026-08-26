@@ -4,7 +4,7 @@ import type { SegmentOption } from '@/components/ui'
 import type { BreakpointDirection } from '@/core'
 import { ChevronsLeft, ChevronsRight, CircleAlert, MoveHorizontal } from '@lucide/vue'
 import { Alert, AlertDescription, Button, Input, NumberField, NumberFieldInput, SegmentControl } from '@/components/ui'
-import { BREAKPOINT_ICONS } from '@/vue/components/breakpoint-icons'
+import { BREAKPOINT_ICONS } from '@/vue/components/breakpoints/breakpoint-icons'
 import { useUframeI18n } from '@/vue/i18n'
 
 const props = defineProps<{

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PageBlock } from '@/core'
-import type { BreakpointDraft } from '@/vue/components/BreakpointForm.vue'
+import type { BreakpointDraft } from '@/vue/components/breakpoints/BreakpointForm.vue'
 import type { StateKey, ViewportKey } from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import type { EditingTarget } from '@/vue/composables/style/useBlockClasses'
 import {
@@ -23,7 +23,7 @@ import {
 import { COMPONENT_SLOT_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { cn } from '@/lib/utils'
-import BlockActionsMenu from '@/vue/components/BlockActionsMenu.vue'
+import BlockActionsMenu from '@/vue/components/shared/BlockActionsMenu.vue'
 import AttributesSection from '@/vue/components/properties/AttributesSection.vue'
 import ClassNameChip from '@/vue/components/properties/ClassNameChip.vue'
 import ClassNameInput from '@/vue/components/properties/ClassNameInput.vue'
@@ -31,8 +31,8 @@ import ContentTab from '@/vue/components/properties/ContentTab.vue'
 import CssPreviewPopover from '@/vue/components/properties/CssPreviewPopover.vue'
 import StylePanel from '@/vue/components/style-panel/StylePanel.vue'
 import StyleVariantSelector from '@/vue/components/style-panel/StyleVariantSelector.vue'
-import SymbolInstancePanel from '@/vue/components/SymbolInstancePanel.vue'
-import SymbolMasterPropertiesSection from '@/vue/components/SymbolMasterPropertiesSection.vue'
+import SymbolInstancePanel from '@/vue/components/symbols/SymbolInstancePanel.vue'
+import SymbolMasterPropertiesSection from '@/vue/components/symbols/SymbolMasterPropertiesSection.vue'
 import {
   useBlockClasses,
 } from '@/vue/composables/style/useBlockClasses'

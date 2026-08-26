@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CssVariable } from '@/core'
-import type { VariableDraft } from '@/vue/components/VariableForm.vue'
+import type { VariableDraft } from '@/vue/components/variables/VariableForm.vue'
 import type { PageEditorInstance } from '@/vue/context/editor-context'
 import { BookOpen, Plus } from '@lucide/vue'
 import { provide, ref } from 'vue'
@@ -16,9 +16,9 @@ import {
   ScrollArea,
 } from '@/components/ui'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
-import TemplateStyleGuide from '@/vue/components/TemplateStyleGuide.vue'
-import VariableForm from '@/vue/components/VariableForm.vue'
-import VariableRow from '@/vue/components/VariableRow.vue'
+import TemplateStyleGuide from '@/vue/components/variables/TemplateStyleGuide.vue'
+import VariableForm from '@/vue/components/variables/VariableForm.vue'
+import VariableRow from '@/vue/components/variables/VariableRow.vue'
 import { makePanelEdgeReference, PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
 

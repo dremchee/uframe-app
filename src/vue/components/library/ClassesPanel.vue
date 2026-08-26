@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PageEditorInstance } from '@/vue/context/editor-context'
 import { ScrollArea } from '@/components/ui'
-import ClassLibraryEntries from '@/vue/components/ClassLibraryEntries.vue'
-import ClassLibraryToolbar from '@/vue/components/ClassLibraryToolbar.vue'
+import ClassLibraryEntries from '@/vue/components/library/ClassLibraryEntries.vue'
+import ClassLibraryToolbar from '@/vue/components/library/ClassLibraryToolbar.vue'
 import { useClassLibrary } from '@/vue/composables/style/useClassLibrary'
 import { useUframeI18n } from '@/vue/i18n'
 

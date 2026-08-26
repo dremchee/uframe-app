@@ -3,7 +3,7 @@ import type { BlockDefinition } from '@/core'
 import { Search, X } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 import { Input, ScrollArea } from '@/components/ui'
-import BlockLibraryCard from '@/vue/components/BlockLibraryCard.vue'
+import BlockLibraryCard from '@/vue/components/library/BlockLibraryCard.vue'
 import { useUframeI18n } from '@/vue/i18n'
 import { localizedBlockCategory, localizedBlockDescription, localizedBlockLabel } from '@/vue/utils/block-label'
 

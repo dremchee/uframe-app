@@ -4,7 +4,7 @@ import { Check, CircleAlert, Edit3, Eye, Moon, Sun, SunMoon } from '@lucide/vue'
 import { computed } from 'vue'
 import { Button, Tooltip } from '@/components/ui'
 import { cn } from '@/lib/utils'
-import EditorExportMenu from '@/vue/components/EditorExportMenu.vue'
+import EditorExportMenu from '@/vue/components/editor/EditorExportMenu.vue'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 

@@ -1,5 +1,5 @@
 export { default as PagePreview } from '@/vue/components/canvas/PagePreview.vue'
-export { default as PageEditor } from '@/vue/components/PageEditor.vue'
+export { default as PageEditor } from '@/vue/components/editor/PageEditor.vue'
 export * from '@/vue/composables/editor/useAutosave'
 export * from '@/vue/composables/editor/useEditorHistory'
 export * from '@/vue/composables/editor/useEditorHotkeys'

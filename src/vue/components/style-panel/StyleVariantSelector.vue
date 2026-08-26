@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BreakpointDef, StyleState, StyleViewport } from '@/core'
-import type { BreakpointDraft } from '@/vue/components/BreakpointForm.vue'
+import type { BreakpointDraft } from '@/vue/components/breakpoints/BreakpointForm.vue'
 import { computed, nextTick, ref } from 'vue'
 import {
   Popover,
@@ -13,9 +13,9 @@ import {
   SelectValue,
 } from '@/components/ui'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
-import { autoIconKey } from '@/vue/components/breakpoint-icons'
-import BreakpointForm from '@/vue/components/BreakpointForm.vue'
-import BreakpointSegmentControl from '@/vue/components/BreakpointSegmentControl.vue'
+import { autoIconKey } from '@/vue/components/breakpoints/breakpoint-icons'
+import BreakpointForm from '@/vue/components/breakpoints/BreakpointForm.vue'
+import BreakpointSegmentControl from '@/vue/components/breakpoints/BreakpointSegmentControl.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 export type ViewportKey = StyleViewport

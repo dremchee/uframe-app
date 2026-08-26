@@ -5,8 +5,8 @@ import { Trash2 } from '@lucide/vue'
 import { computed } from 'vue'
 import { IconButton } from '@/components/ui'
 import { fontFamilyStack } from '@/core'
-import FontAddPopover from '@/vue/components/FontAddPopover.vue'
-import FontEditPopover from '@/vue/components/FontEditPopover.vue'
+import FontAddPopover from '@/vue/components/settings/FontAddPopover.vue'
+import FontEditPopover from '@/vue/components/settings/FontEditPopover.vue'
 import { useUframeI18n } from '@/vue/i18n'
 
 const props = defineProps<{

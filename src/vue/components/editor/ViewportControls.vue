@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Redo2, Ruler, ScanLine, Undo2 } from '@lucide/vue'
 import { Button, Tooltip } from '@/components/ui'
-import BreakpointSegmentControl from '@/vue/components/BreakpointSegmentControl.vue'
+import BreakpointSegmentControl from '@/vue/components/breakpoints/BreakpointSegmentControl.vue'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
 
