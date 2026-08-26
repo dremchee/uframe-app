@@ -93,4 +93,7 @@ export const ptBR = {
     search: 'Pesquisar blocos',
     noMatches: 'Nenhum bloco encontrado.',
   },
+  canvas: {
+    emptySection: 'Solte blocos dentro desta seção',
+  },
 }

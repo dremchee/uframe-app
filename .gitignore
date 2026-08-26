@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 build
+.playwright-cli
 # VitePress build output + cache, and the generated TypeDoc API reference
 docs/.vitepress/dist
 docs/.vitepress/cache

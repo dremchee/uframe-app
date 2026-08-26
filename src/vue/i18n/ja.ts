@@ -93,4 +93,7 @@ export const ja = {
     search: 'ブロックを検索',
     noMatches: 'ブロックが見つかりません。',
   },
+  canvas: {
+    emptySection: 'このセクション内にブロックをドロップ',
+  },
 }

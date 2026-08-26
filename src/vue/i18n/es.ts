@@ -93,4 +93,7 @@ export const es = {
     search: 'Buscar bloques',
     noMatches: 'No se encontraron bloques.',
   },
+  canvas: {
+    emptySection: 'Suelta bloques dentro de esta sección',
+  },
 }

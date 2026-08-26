@@ -93,4 +93,7 @@ export const de = {
     search: 'Blöcke suchen',
     noMatches: 'Keine Blöcke gefunden.',
   },
+  canvas: {
+    emptySection: 'Blöcke in diesen Abschnitt ziehen',
+  },
 }

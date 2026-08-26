@@ -93,4 +93,7 @@ export const zhCN = {
     search: '搜索区块',
     noMatches: '未找到区块。',
   },
+  canvas: {
+    emptySection: '将区块拖放到此分区中',
+  },
 }

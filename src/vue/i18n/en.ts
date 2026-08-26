@@ -617,6 +617,7 @@ export const en = {
     resizePanel: 'Resize panel',
     dragToMove: 'Drag to move',
     empty: 'Add a block from the left panel.',
+    emptySection: 'Drop blocks inside this section',
     slotFallback: 'Drop fallback content into {name}',
     selectOptionFallback: 'Add Select Option children',
     circularComponent: 'Circular component reference',

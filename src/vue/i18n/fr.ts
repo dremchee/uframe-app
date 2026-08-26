@@ -93,4 +93,7 @@ export const fr = {
     search: 'Rechercher des blocs',
     noMatches: 'Aucun bloc trouvé.',
   },
+  canvas: {
+    emptySection: 'Déposez des blocs dans cette section',
+  },
 }
