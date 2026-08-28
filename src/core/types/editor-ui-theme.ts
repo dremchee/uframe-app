@@ -16,6 +16,12 @@ export interface EditorUiThemeTokens {
   muted: string
   /** Brand and selection accent. */
   accent: string
+  /** Text and icons displayed on a solid accent surface. Overrides the automatic contrast colour. */
+  accentForeground: string
+  /** Text and icons displayed on a translucent accent selection. */
+  accentSoftForeground: string
+  /** Identity colour for component and symbol instances. */
+  symbol: string
   /** Accent used for hover and pressed states. */
   accentStrong: string
   /** Destructive actions and validation errors. */
@@ -53,6 +59,9 @@ const TOKEN_PROPERTIES = {
   text: ['--uf-text', '--foreground', '--card-foreground', '--popover-foreground', '--secondary-foreground', '--accent-foreground'],
   muted: ['--uf-muted', '--muted-foreground'],
   accent: ['--uf-accent', '--primary', '--ring'],
+  accentForeground: ['--uf-accent-foreground'],
+  accentSoftForeground: ['--uf-accent-soft-foreground'],
+  symbol: ['--uf-symbol'],
   accentStrong: ['--uf-accent-strong'],
   danger: ['--uf-danger', '--destructive'],
   radius: ['--uf-radius', '--radius'],

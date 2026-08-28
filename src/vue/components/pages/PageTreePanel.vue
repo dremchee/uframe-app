@@ -105,7 +105,7 @@ const bodyItemClass = computed(() => cn(
   'relative flex items-center gap-0.5 w-full h-8 px-1 rounded-sm cursor-pointer transition-colors',
   'text-uf-text text-[12px] font-bold text-left',
   !isBodySelected.value && 'hover:bg-uf-panel-muted',
-  isBodySelected.value && 'bg-uf-accent/14 text-uf-accent-strong',
+  isBodySelected.value && 'bg-uf-accent/14 text-uf-accent-strong dark:text-uf-accent-soft-foreground',
   bodyDropPosition.value === 'inside' && 'bg-uf-accent/14 shadow-[inset_0_0_0_1px_var(--color-uf-accent)]',
 ))
 </script>

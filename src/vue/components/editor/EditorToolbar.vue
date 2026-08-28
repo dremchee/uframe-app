@@ -43,10 +43,10 @@ const savedLabel = computed(() => {
 </script>
 
 <template>
-  <header class="relative shrink-0 z-10 flex items-center justify-between gap-4 min-h-14 px-4 py-2.5 border-b border-uf-border bg-uf-panel/95 backdrop-blur-md">
-    <div class="flex items-center gap-2">
+  <header class="relative z-10 flex min-h-10 shrink-0 items-center justify-between gap-3 px-3 py-1.5">
+    <div class="flex items-center gap-1.5">
       <!-- Logo inlined so it ships with the library (no external asset). -->
-      <svg viewBox="0 0 131 131" class="size-7 shrink-0" aria-hidden="true">
+      <svg viewBox="0 0 131 131" class="size-6 shrink-0" aria-hidden="true">
         <rect x="20" y="20" width="111" height="111" rx="25" fill="#1A0C67" />
         <rect width="111" height="111" rx="25" fill="#3E1BFA" />
         <path
@@ -57,12 +57,12 @@ const savedLabel = computed(() => {
       <component :is="c" v-for="(c, i) in pluginSlots.toolbarLeft" :key="i" />
     </div>
 
-    <div class="inline-flex items-center gap-2">
+    <div class="inline-flex items-center gap-1.5">
       <component :is="c" v-for="(c, i) in pluginSlots.toolbarRight" :key="i" />
       <span
         v-if="savedLabel"
         :class="cn(
-          'inline-flex items-center gap-1 h-6 pl-1.5 pr-2 rounded-full text-[11px] font-medium tabular-nums',
+          'inline-flex h-5.5 items-center gap-1 rounded-full pl-1.5 pr-2 text-[10px] font-medium tabular-nums',
           autosaveError ? 'bg-uf-danger/10 text-uf-danger' : 'bg-uf-accent/10 text-uf-accent',
         )"
       >
@@ -73,6 +73,7 @@ const savedLabel = computed(() => {
         <Button
           variant="outline"
           size="icon"
+          class="h-7 w-7 [&_svg]:size-3.5"
           type="button"
           :aria-label="t('toolbar.themeChange', { name: THEME_LABEL[editor.storage.value.theme] })"
           @click="cycleTheme"
@@ -86,6 +87,7 @@ const savedLabel = computed(() => {
         <Button
           variant="outline"
           size="icon"
+          class="h-7 w-7 [&_svg]:size-3.5"
           type="button"
           :aria-label="editor.isPreviewMode.value ? t('toolbar.edit') : t('toolbar.preview')"
           @click="editor.isPreviewMode.value = !editor.isPreviewMode.value"
@@ -94,7 +96,7 @@ const savedLabel = computed(() => {
           <Eye v-else />
         </Button>
       </Tooltip>
-      <EditorExportMenu :editor="editor" :untrusted-embeds="untrustedEmbeds" />
+      <EditorExportMenu compact :editor="editor" :untrusted-embeds="untrustedEmbeds" />
     </div>
   </header>
 </template>

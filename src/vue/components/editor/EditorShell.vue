@@ -45,11 +45,10 @@ watch(() => editor.revealInTreeRequest.value?.nonce, (nonce) => {
     sidebar.mode.value = 'layers'
 })
 
-// A 1px divider line that is the resize handle: a wide invisible grab zone is
-// painted by ::after (centred on the line). On hover/drag a ::before overlay
-// thickens the line to 3px accent — drawn over the 1px footprint so the panel
-// never resizes, matching ResizableHandle.
-const RESIZE_HANDLE = 'z-20 w-px shrink-0 cursor-col-resize bg-uf-border transition-colors after:absolute after:z-20 after:inset-y-0 after:left-1/2 after:w-2.5 after:-translate-x-1/2 before:absolute before:z-20 before:inset-y-0 before:left-1/2 before:w-[3px] before:-translate-x-1/2 before:content-[""] before:bg-transparent before:transition-colors hover:before:bg-uf-accent'
+// Panels sit as separate surfaces with a compact, visible resize gutter. Its
+// dotted grip makes the draggable area discoverable without adding whitespace
+// around the panels.
+const RESIZE_HANDLE = 'group z-20 w-[5px] shrink-0 cursor-col-resize bg-transparent text-uf-muted transition-colors after:absolute after:inset-y-0 after:left-1/2 after:w-[3px] after:-translate-x-1/2 after:content-[""] after:transition-colors hover:after:bg-uf-accent hover:text-uf-accent active:after:bg-uf-accent'
 
 // Keep the inspector compact on wide screens while preserving drag-resize.
 // Reka's px sizing is the splitter equivalent of clamp(320px, 380px, 480px):
@@ -81,7 +80,7 @@ defineExpose({ openAddBreakpoint, runPanelAction })
 <template>
   <div
     ref="rootEl"
-    class="uf-editor flex flex-col h-screen overflow-hidden bg-uf-bg text-uf-text font-pb text-sm leading-tight transition-colors duration-150"
+    class="uf-editor flex flex-col h-screen overflow-hidden bg-uf-panel-muted text-uf-text font-pb text-sm leading-tight transition-colors duration-150"
     :style="styleTokens"
   >
     <EditorToolbar v-if="toolbarVisible !== false" />
@@ -92,33 +91,45 @@ defineExpose({ openAddBreakpoint, runPanelAction })
       :blocks="editor.registry.value"
       :width="editor.canvasWidth.value"
     />
-    <div v-else class="flex flex-1 min-h-0">
-      <SidebarRail
-        class="uf-sidebar-rail"
-        :mode="sidebar.pinned.value || sidebar.flyoutOpen.value ? sidebar.mode.value : null"
-        :panels="pluginSlots.panels"
-        :multi-page="editor.isMultiPage.value"
-        @select="sidebar.selectMode"
-      />
-      <!-- Docked panel (pinned): a resizable column that pushes the canvas. The
-           handle is the divider line itself (1px) with a wide invisible grab
-           zone via ::after, so the panel needs no own right border. -->
-      <template v-if="sidebar.pinned.value">
+    <div
+      v-else
+      class="m-1 flex flex-1 min-h-0 rounded-xl bg-uf-panel-muted p-1"
+      :class="sidebar.pinned.value ? 'gap-0' : 'gap-1'"
+    >
+      <div class="flex min-h-0 shrink-0 overflow-hidden rounded-lg border border-uf-border bg-uf-panel">
+        <SidebarRail
+          class="uf-sidebar-rail"
+          :class="sidebar.pinned.value && 'border-r border-uf-border'"
+          :mode="sidebar.pinned.value || sidebar.flyoutOpen.value ? sidebar.mode.value : null"
+          :panels="pluginSlots.panels"
+          :multi-page="editor.isMultiPage.value"
+          @select="sidebar.selectMode"
+        />
         <SidebarPanels
+          v-if="sidebar.pinned.value"
           ref="dockedPanels"
           :editor="editor"
           :sidebar="sidebar"
           :panels="pluginSlots.panels"
-          class="shrink-0"
+          class="min-h-0 shrink-0 border-0"
           :style="{ width: `${sidebar.panelWidth.value}px` }"
         />
+      </div>
+      <!-- Docked panel (pinned): a resizable column that pushes the canvas. -->
+      <template v-if="sidebar.pinned.value">
         <div
           class="relative" :class="[RESIZE_HANDLE]"
           role="separator"
           aria-orientation="vertical"
           :aria-label="t('canvas.resizePanel')"
           @pointerdown="startPanelResize"
-        />
+        >
+          <span class="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-px opacity-70 group-hover:opacity-100" aria-hidden="true">
+            <span class="size-[2px] rounded-full bg-current" />
+            <span class="size-[2px] rounded-full bg-current" />
+            <span class="size-[2px] rounded-full bg-current" />
+          </span>
+        </div>
       </template>
       <div class="relative flex-1 min-w-0 min-h-0">
         <ResizablePanelGroup
@@ -126,14 +137,16 @@ defineExpose({ openAddBreakpoint, runPanelAction })
           auto-save-id="uf-editor-shell-v2"
           class="h-full"
         >
-          <ResizablePanel :min-size="40">
-            <main class="flex h-full min-w-0 min-h-0 flex-col overflow-hidden">
+          <ResizablePanel allow-overflow :min-size="40">
+            <main class="flex h-full min-w-0 min-h-0 flex-col overflow-hidden rounded-lg border border-uf-border bg-uf-panel shadow-sm">
               <ViewportControls v-model:ruler-mode="rulerMode" @add-breakpoint="openAddBreakpoint" />
               <CanvasViewport class="min-h-0 flex-1" :ruler-mode="rulerMode" />
             </main>
           </ResizablePanel>
-          <ResizableHandle />
+          <ResizableHandle with-handle class="mx-0 w-1.5 bg-transparent" />
           <ResizablePanel
+            allow-overflow
+            class="min-w-0 [contain:inline-size]"
             size-unit="px"
             :default-size="PROPERTIES_PANEL_DEFAULT_WIDTH"
             :min-size="PROPERTIES_PANEL_MIN_WIDTH"
@@ -146,7 +159,7 @@ defineExpose({ openAddBreakpoint, runPanelAction })
         <template v-if="!sidebar.pinned.value && sidebar.flyoutOpen.value">
           <div
             ref="flyoutRef"
-            class="absolute inset-y-0 left-0 z-30 shadow-xl"
+            class="absolute inset-y-0 left-0 z-30 overflow-hidden rounded-lg border border-uf-border bg-uf-panel shadow-[6px_0_18px_rgb(15_23_42_/_14%)]"
             :style="{ width: `${sidebar.panelWidth.value}px` }"
           >
             <SidebarPanels
@@ -164,7 +177,13 @@ defineExpose({ openAddBreakpoint, runPanelAction })
             aria-orientation="vertical"
             :aria-label="t('canvas.resizePanel')"
             @pointerdown="startPanelResize"
-          />
+          >
+            <span class="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-px opacity-70 group-hover:opacity-100" aria-hidden="true">
+              <span class="size-[2px] rounded-full bg-current" />
+              <span class="size-[2px] rounded-full bg-current" />
+              <span class="size-[2px] rounded-full bg-current" />
+            </span>
+          </div>
         </template>
       </div>
     </div>

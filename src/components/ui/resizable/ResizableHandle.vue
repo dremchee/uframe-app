@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SplitterResizeHandleEmits, SplitterResizeHandleProps } from 'reka-ui'
-import { GripVertical } from '@lucide/vue'
 import {
   SplitterResizeHandle,
 
@@ -21,7 +20,7 @@ const forwarded = useForwardPropsEmits(delegated, emits)
 
 const classes = computed(() =>
   cn(
-    'uf-ui-resizable-handle relative z-20 flex w-px items-center justify-center bg-uf-border transition-colors',
+    'uf-ui-resizable-handle group relative z-20 flex w-px items-center justify-center bg-uf-border transition-colors',
     'after:absolute after:z-20 after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2',
     'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
     'data-[orientation=vertical]:h-px data-[orientation=vertical]:w-full',
@@ -50,9 +49,13 @@ const classes = computed(() =>
   <SplitterResizeHandle v-bind="forwarded" :class="classes">
     <template v-if="withHandle">
       <div
-        class="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border data-[orientation=vertical]:h-3 data-[orientation=vertical]:w-4"
+        class="z-10 flex h-4 w-1.5 items-center justify-center rounded-sm bg-uf-panel-muted text-uf-muted transition-colors group-hover:text-uf-accent data-[orientation=vertical]:h-3 data-[orientation=vertical]:w-4"
       >
-        <GripVertical :size="10" :stroke-width="1.75" class="text-muted-foreground" />
+        <span class="flex flex-col gap-px" aria-hidden="true">
+          <span class="size-[2px] rounded-full bg-current" />
+          <span class="size-[2px] rounded-full bg-current" />
+          <span class="size-[2px] rounded-full bg-current" />
+        </span>
       </div>
     </template>
   </SplitterResizeHandle>

@@ -50,11 +50,14 @@
      readability — see the `:root` / `.dark` raw token blocks below. */
   --color-uf-accent: var(--uf-accent);
   --color-uf-accent-strong: var(--uf-accent-strong);
+  /* Accent surfaces have two distinct text roles: solid fills use the
+     contrast foreground; translucent selections use a readable accent tint. */
   --color-uf-accent-foreground: var(--uf-accent-foreground);
+  --color-uf-accent-soft-foreground: var(--uf-accent-soft-foreground);
 
-  /* Components (symbol instances) get their own identity color — Tailwind
-     violet-600 — so they read distinctly from the blue selection accent. */
-  --color-uf-symbol: oklch(0.541 0.281 293.009);
+  /* Components (symbol instances) have their own identity token so they read
+     distinctly from the selection accent and can be themed by the host. */
+  --color-uf-symbol: var(--uf-symbol);
   /* Data blocks (Data List / Data Item) get their own identity color — a teal,
      distinct from the symbol violet and the blue selection accent — so dynamic
      content reads apart on the canvas and in the navigator. */
@@ -119,6 +122,8 @@
     --uf-accent: oklch(0.546 0.245 262.881);
     --uf-accent-strong: oklch(0.488 0.243 264.376);
     --uf-accent-foreground: #fff;
+    --uf-accent-soft-foreground: var(--uf-accent-strong);
+    --uf-symbol: oklch(0.541 0.281 293.009);
     --uf-danger: #be123c;
     --uf-radius: 8px;
     --uf-shadow: 0 18px 45px rgb(15 23 42 / 10%);
@@ -191,10 +196,11 @@
     --uf-border-strong: oklch(1 0 0 / 30%);
     --uf-text: oklch(0.96 0.005 248);
     --uf-muted: oklch(0.70 0.020 248);
-    /* The dark-theme accent is deliberately light, so white labels on an
-       accent-filled control fail contrast. Keep the foreground as a separate
-       semantic token rather than coupling each badge to a colour literal. */
-    --uf-accent-foreground: oklch(0.22 0.04 160);
+    --uf-accent-foreground: #fff;
+    /* Soft selections sit on the dark panel, not directly on the accent.
+       Brighten their label separately from text placed on a solid accent. */
+    --uf-accent-soft-foreground: color-mix(in oklch, var(--uf-accent) 70%, white);
+    --uf-symbol: oklch(0.65 0.23 293.009);
   }
 
   html,
@@ -217,6 +223,17 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Reka's splitter panels normally use `overflow: hidden`, which clips the
+     subtle elevation on the editor's canvas and inspector cards. `clip` keeps
+     them non-scrollable while `overflow-clip-margin` reserves room for the
+     shadow; nested panel bodies remain the scroll containers. */
+  @supports (overflow: clip) {
+    .uf-editor .uf-ui-resizable-panel--allow-overflow {
+      overflow: clip !important;
+      overflow-clip-margin: 0.5rem;
+    }
   }
 }
 

@@ -156,7 +156,7 @@ export function usePageTreeRow(options: UsePageTreeRowOptions) {
     'relative flex items-center gap-0.5 w-full h-8 px-1 rounded-sm cursor-grab active:cursor-grabbing transition-colors',
     'text-uf-text text-[12px] text-left',
     !selected() && isHovered.value && 'bg-uf-panel-muted',
-    selected() && 'bg-uf-accent/14 text-uf-accent-strong',
+    selected() && 'bg-uf-accent/14 text-uf-accent-strong dark:text-uf-accent-soft-foreground',
     dropPosition.value === 'before' && `${DROP_LINE} after:-top-px`,
     dropPosition.value === 'after' && `${DROP_LINE} after:-bottom-px`,
     dropPosition.value === 'inside' && DROP_INSIDE,

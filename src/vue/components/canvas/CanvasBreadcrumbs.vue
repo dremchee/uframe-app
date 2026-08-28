@@ -103,7 +103,7 @@ function hover(id: string | null) {
         type="button"
         class="inline-flex items-center gap-1 shrink-0 rounded px-1.5 py-0.5 max-w-40
           transition-colors hover:bg-uf-panel-muted hover:text-uf-text"
-        :class="crumb.current ? 'bg-uf-accent/15 text-uf-accent' : ''"
+        :class="crumb.current ? 'bg-uf-accent/15 text-uf-accent-strong dark:text-uf-accent-soft-foreground' : ''"
         :aria-current="crumb.current ? 'true' : undefined"
         @click="select(crumb.selectId)"
         @mouseenter="hover(crumb.selectId)"

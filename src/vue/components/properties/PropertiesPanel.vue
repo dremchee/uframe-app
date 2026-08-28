@@ -281,7 +281,7 @@ const targetLabel = computed(() => {
 <template>
   <aside
     ref="panelEl"
-    class="flex flex-col h-full w-full min-w-0 min-h-0 overflow-hidden border-l border-uf-border bg-uf-panel"
+    class="flex flex-col h-full w-full min-w-0 min-h-0 overflow-hidden rounded-lg border border-uf-border bg-uf-panel shadow-sm"
   >
     <div
       class="shrink-0 flex items-center justify-between gap-2 min-h-12 px-3.5 py-3 border-b border-uf-border"

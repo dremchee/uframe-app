@@ -68,7 +68,7 @@ function commitRename() {
 }
 
 const row = 'group relative flex items-center gap-1 w-full min-h-8 pr-2 py-1 rounded-md cursor-pointer text-uf-text transition-colors hover:bg-uf-panel-muted'
-const rowActive = 'bg-uf-accent/12 text-uf-accent-strong hover:bg-uf-accent/12'
+const rowActive = 'bg-uf-accent/12 text-uf-accent-strong hover:bg-uf-accent/12 dark:text-uf-accent-soft-foreground'
 </script>
 
 <template>

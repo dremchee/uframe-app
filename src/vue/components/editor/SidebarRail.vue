@@ -42,12 +42,12 @@ const items = computed(() => [
 ])
 
 const btn = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-transparent text-uf-muted cursor-pointer transition-colors hover:bg-uf-panel-muted hover:text-uf-text'
-const btnActive = 'bg-uf-accent/12 text-uf-accent-strong hover:bg-uf-accent/12 hover:text-uf-accent-strong'
+const btnActive = 'bg-uf-accent/12 text-uf-accent-strong hover:bg-uf-accent/12 hover:text-uf-accent-strong dark:text-uf-accent-soft-foreground dark:hover:text-uf-accent-soft-foreground'
 </script>
 
 <template>
   <div
-    class="flex flex-col items-center gap-1 shrink-0 w-12 py-2 border-r border-uf-border bg-uf-panel"
+    class="flex flex-col items-center gap-1 shrink-0 w-12 py-2 bg-uf-panel"
     role="tablist"
     :aria-label="t('sidebar.panel')"
   >

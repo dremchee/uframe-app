@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const chipClass = computed(() => props.active
-  ? 'border-uf-accent bg-uf-accent text-uf-accent-foreground hover:bg-uf-accent/90'
+  ? 'border-uf-accent bg-uf-accent text-uf-accent-foreground hover:brightness-95'
   : 'border-uf-accent/35 bg-uf-panel text-uf-accent hover:bg-uf-accent/10')
 
 const removeClass = computed(() => props.active

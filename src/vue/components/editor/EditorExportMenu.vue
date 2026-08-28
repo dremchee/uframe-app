@@ -17,6 +17,7 @@ import { useUframeI18n } from '@/vue/i18n'
 const props = defineProps<{
   editor: PageEditorInstance
   untrustedEmbeds: boolean
+  compact?: boolean
 }>()
 
 const { t } = useUframeI18n()
@@ -79,7 +80,14 @@ function exportZip() {
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger>
-      <Button variant="outline" size="icon" type="button" :title="t('toolbar.export')" :aria-label="t('toolbar.export')">
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        :class="props.compact && 'h-7 w-7 [&_svg]:size-3.5'"
+        :title="t('toolbar.export')"
+        :aria-label="t('toolbar.export')"
+      >
         <Download />
       </Button>
     </DropdownMenuTrigger>

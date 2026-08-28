@@ -103,7 +103,7 @@ const {
       v-if="icon || isHidden"
       :class="cn(
         'flex-none',
-        (isSymbolInstance || isSlot || isSlotFill) ? 'text-uf-symbol' : isDataBlock ? 'text-uf-data' : selected ? 'text-uf-accent-strong' : 'text-uf-muted',
+        selected ? 'text-uf-accent-strong dark:text-uf-accent-soft-foreground' : (isSymbolInstance || isSlot || isSlotFill) ? 'text-uf-symbol' : isDataBlock ? 'text-uf-data' : 'text-uf-muted',
       )"
       :size="12"
       :stroke-width="1.75"
@@ -130,8 +130,8 @@ const {
       :class="cn(
         'flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis font-medium',
         canRename && 'cursor-text',
-        (isSymbolInstance || isSlot || isSlotFill) && 'text-uf-symbol',
-        isDataBlock && 'text-uf-data',
+        !selected && (isSymbolInstance || isSlot || isSlotFill) && 'text-uf-symbol',
+        !selected && isDataBlock && 'text-uf-data',
         isHidden && 'opacity-50',
       )"
       :title="canRename ? t('layers.renameElement') : undefined"
@@ -142,7 +142,8 @@ const {
       v-if="trailingHint"
       ref="trailingHintElement"
       :class="cn(
-        'flex-none max-w-[45%] overflow-hidden whitespace-nowrap text-ellipsis text-[11px] text-uf-muted',
+        'flex-none max-w-[45%] overflow-hidden whitespace-nowrap text-ellipsis text-[11px]',
+        selected ? 'text-uf-accent-strong/75 dark:text-uf-accent-soft-foreground/75' : 'text-uf-muted',
         // A complete class hint reserves room for More. If it is already
         // truncated, More overlaps it and supplies the fade instead.
         !isTrailingHintTruncated && 'mr-5',
@@ -176,6 +177,7 @@ const {
             'inline-flex items-center justify-center w-4.5 h-4.5 p-0 rounded-sm text-uf-muted cursor-pointer transition-colors',
             actionBackdrop.solid,
             'hover:bg-black/8 hover:text-uf-text data-[state=open]:bg-black/8 data-[state=open]:text-uf-text',
+            selected && 'text-uf-accent-strong/80 hover:bg-uf-accent/10 hover:text-uf-accent-strong data-[state=open]:bg-uf-accent/10 data-[state=open]:text-uf-accent-strong dark:text-uf-accent-soft-foreground/80 dark:hover:bg-white/10 dark:hover:text-uf-accent-soft-foreground dark:data-[state=open]:bg-white/10 dark:data-[state=open]:text-uf-accent-soft-foreground',
           )"
           :aria-label="t('layers.actions')"
           @click.stop

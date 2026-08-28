@@ -13,6 +13,11 @@ export function useEditorRootStyleTokens(tokens: ComputedRef<Record<string, stri
   const initial = new Map<string, string>()
   const applied = new Set<string>()
 
+  function remember(property: string) {
+    if (!initial.has(property))
+      initial.set(property, root.style.getPropertyValue(property))
+  }
+
   const stop = watch(tokens, (next) => {
     for (const property of applied) {
       if (!(property in next)) {
@@ -21,8 +26,7 @@ export function useEditorRootStyleTokens(tokens: ComputedRef<Record<string, stri
       }
     }
     for (const [property, value] of Object.entries(next)) {
-      if (!initial.has(property))
-        initial.set(property, root.style.getPropertyValue(property))
+      remember(property)
       root.style.setProperty(property, value)
       applied.add(property)
     }

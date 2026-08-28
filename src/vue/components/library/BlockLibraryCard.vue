@@ -2,6 +2,7 @@
 import type { BlockDefinition } from '@/core'
 import { computed, toRef, useTemplateRef } from 'vue'
 import { Card, CardDescription, CardTitle } from '@/components/ui'
+import TruncatedText from '@/components/ui/segment-control/TruncatedText.vue'
 import { useBlockCardDraggable } from '@/vue/composables/dnd/useBlockCardDraggable'
 import { useUframeI18n } from '@/vue/i18n'
 import { localizedBlockDescription, localizedBlockLabel } from '@/vue/utils/block-label'
@@ -46,12 +47,12 @@ useBlockCardDraggable(
         aria-hidden="true"
       />
     </span>
-    <div class="flex flex-col gap-0.5 min-w-0">
+    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
       <CardTitle class="text-sm">
         {{ label }}
       </CardTitle>
       <CardDescription v-if="description" class="text-[11px] leading-tight">
-        {{ description }}
+        <TruncatedText :text="description" />
       </CardDescription>
     </div>
   </Card>

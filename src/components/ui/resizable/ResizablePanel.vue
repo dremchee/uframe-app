@@ -5,15 +5,20 @@ import {
 
   useForwardPropsEmits,
 } from 'reka-ui'
+import { computed } from 'vue'
 
-const props = defineProps<SplitterPanelProps>()
+const props = defineProps<SplitterPanelProps & { allowOverflow?: boolean }>()
 const emits = defineEmits<SplitterPanelEmits>()
 
-const forwarded = useForwardPropsEmits(props, emits)
+const delegated = computed(() => {
+  const { allowOverflow: _, ...rest } = props
+  return rest
+})
+const forwarded = useForwardPropsEmits(delegated, emits)
 </script>
 
 <template>
-  <SplitterPanel v-bind="forwarded">
+  <SplitterPanel v-bind="forwarded" :class="{ 'uf-ui-resizable-panel--allow-overflow': props.allowOverflow }">
     <template #default="slotProps">
       <slot v-bind="slotProps" />
     </template>
