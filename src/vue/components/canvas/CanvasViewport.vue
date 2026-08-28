@@ -385,7 +385,7 @@ const {
     />
     <div
       ref="canvasFrameRef"
-      class="relative flex-1 min-h-0 mx-auto bg-uf-panel"
+      class="relative flex-1 min-h-0 mx-auto bg-uf-bg"
       :class="[
         editor.isCanvasResizeMode.value && (isResizeHandleHovered
           ? 'ring-2 ring-uf-accent ring-offset-2 ring-offset-uf-bg'
