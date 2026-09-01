@@ -13,7 +13,7 @@ const props = defineProps<{
     :type="props.props.type ?? 'text'"
     :name="props.props.name"
     :placeholder="props.props.placeholder || undefined"
-    :value="props.props.value ?? ''"
+    :value="props.props.value || undefined"
     :required="props.props.required || undefined"
     :disabled="props.props.disabled || undefined"
     @input.stop
