@@ -23,8 +23,8 @@ function makeRegistry(): BlockRegistry {
       acceptsChildren: true,
     },
     {
-      type: 'div',
-      label: 'Div',
+      type: 'box',
+      label: 'Box',
       defaultProps: {},
       propsSchema: z.object({}),
       renderComponent: {},
@@ -351,13 +351,13 @@ describe('usePageEditor', () => {
   })
 
   describe('tree operations (wrap / unwrap / hide)', () => {
-    it('wrapBlock replaces the block with a div wrapper containing it', () => {
+    it('wrapBlock replaces the block with a Box wrapper containing it', () => {
       withEditor((editor) => {
         editor.insertBlock('heading', null, 0)
         const heading = editor.document.value.blocks[0]!
         expect(editor.wrapBlock(heading.id)).toBe(true)
         const wrapper = editor.document.value.blocks[0]!
-        expect(wrapper.type).toBe('div')
+        expect(wrapper.type).toBe('box')
         expect(wrapper.children?.map(b => b.id)).toEqual([heading.id])
         expect(editor.selectedBlockId.value).toBe(wrapper.id)
       })

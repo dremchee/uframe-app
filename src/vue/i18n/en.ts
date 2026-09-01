@@ -254,7 +254,7 @@ export const en = {
   blockActions: {
     duplicate: 'Duplicate',
     rename: 'Rename',
-    wrap: 'Wrap in div',
+    wrap: 'Wrap in Box',
     unwrap: 'Unwrap',
     createComponent: 'Create component',
     show: 'Show',
@@ -637,7 +637,7 @@ export const en = {
     renamePage: 'Rename page',
     addBlock: 'Add block',
     duplicate: 'Duplicate',
-    wrap: 'Wrap in div',
+    wrap: 'Wrap in Box',
     removeWrapper: 'Remove wrapper',
     hide: 'Hide',
     show: 'Show',
