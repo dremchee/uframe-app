@@ -12,7 +12,7 @@ export const basicDocument: PageDocument = {
   blocks: [
     {
       id: 'hero-section',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '96px',
@@ -53,7 +53,7 @@ export const basicDocument: PageDocument = {
         },
         {
           id: 'hero-cta-row',
-          type: 'box',
+          type: 'element',
           props: {},
           style: {
             display: 'flex',

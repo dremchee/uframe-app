@@ -23,7 +23,7 @@ function makeRegistry(): BlockRegistry {
       acceptsChildren: true,
     },
     {
-      type: 'box',
+      type: 'element',
       label: 'Box',
       defaultProps: {},
       propsSchema: z.object({}),
@@ -351,13 +351,13 @@ describe('usePageEditor', () => {
   })
 
   describe('tree operations (wrap / unwrap / hide)', () => {
-    it('wrapBlock replaces the block with a Box wrapper containing it', () => {
+    it('wrapBlock replaces the block with a Element wrapper containing it', () => {
       withEditor((editor) => {
         editor.insertBlock('heading', null, 0)
         const heading = editor.document.value.blocks[0]!
         expect(editor.wrapBlock(heading.id)).toBe(true)
         const wrapper = editor.document.value.blocks[0]!
-        expect(wrapper.type).toBe('box')
+        expect(wrapper.type).toBe('element')
         expect(wrapper.children?.map(b => b.id)).toEqual([heading.id])
         expect(editor.selectedBlockId.value).toBe(wrapper.id)
       })
@@ -852,7 +852,7 @@ describe('usePageEditor', () => {
         editor.detachSymbolInstance(instanceId)
         const detached = editor.document.value.blocks[0]!
         expect(detached.type).toBe('container')
-        expect(detached.children?.[0]?.type).toBe('box')
+        expect(detached.children?.[0]?.type).toBe('element')
         expect(detached.children?.[0]?.children?.map(child => child.type)).toEqual(['heading', 'button'])
       })
     })

@@ -85,7 +85,7 @@ export function validateDocumentBlocks(document: PageDocument, registry: BlockRe
       return
     // An unrecognised type is not a reason to reject the whole document: it is
     // usually a plugin block whose plugin this host hasn't loaded. The canvas
-    // and the export render it as a Box and the stored block is left intact,
+    // and the export render it as an Element and the stored block is left intact,
     // so failing here would throw away everything else in the document too.
     if (!registry[block.type])
       return

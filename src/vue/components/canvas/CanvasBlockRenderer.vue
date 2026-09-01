@@ -3,8 +3,8 @@ import type { BlockRegistry, PageBlock, ResolveContext, SymbolDefinition } from 
 import { computed } from 'vue'
 import {
   blockClassName,
-  BOX_BLOCK_TYPE,
   COMPONENT_SLOT_BLOCK_TYPE,
+  ELEMENT_BLOCK_TYPE,
   resolveBlockHtmlAttributes,
   styleClassName,
 } from '@/core'
@@ -115,7 +115,7 @@ const registered = computed(() =>
 // flattening a plugin block here would destroy it on the next autosave.
 const isFallback = computed(() => !isSymbolInstance.value && !registered.value)
 const definition = computed(() =>
-  isSymbolInstance.value ? undefined : (registered.value ?? props.registry[BOX_BLOCK_TYPE]),
+  isSymbolInstance.value ? undefined : (registered.value ?? props.registry[ELEMENT_BLOCK_TYPE]),
 )
 const renderComponent = computed(() => definition.value?.renderComponent)
 // Framework-neutral blocks render via a custom element (`element`) instead of a

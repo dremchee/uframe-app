@@ -94,6 +94,6 @@ export const fr = {
     noMatches: 'Aucun bloc trouvé.',
   },
   canvas: {
-    emptyBox: 'Déposez des blocs ici',
+    emptyElement: 'Déposez des blocs ici',
   },
 }

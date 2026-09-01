@@ -1,11 +1,11 @@
 import type { ShallowRef } from 'vue'
 import type { GlobalSettings, PageBlock, PageDocument, SymbolDefinition } from '@/core'
 import {
-  BOX_BLOCK_TYPE,
   cloneBlockWithNewIds,
   COMPONENT_SLOT_BLOCK_TYPE,
   createSymbolDefinitionFromBlock,
   createSymbolInstanceBlock,
+  ELEMENT_BLOCK_TYPE,
   findBlock,
   insertBlockInTree,
   mapBlockTree,
@@ -89,7 +89,7 @@ export function useEditorSymbolInstances(options: UseEditorSymbolInstancesOption
 
     const materialized = materializeSymbolInstance(instance, symbol).root
     const [plainRoot] = mapBlockTree([materialized], block => block.type === COMPONENT_SLOT_BLOCK_TYPE
-      ? { ...block, type: BOX_BLOCK_TYPE, props: {} }
+      ? { ...block, type: ELEMENT_BLOCK_TYPE, props: {} }
       : block)
     const detached = cloneBlockWithNewIds(plainRoot ?? materialized)
     const blocks = updateBlockInTree(document.value.blocks, blockId, () => detached)

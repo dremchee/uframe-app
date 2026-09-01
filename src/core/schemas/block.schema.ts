@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BOX_TAGS } from '@/core/types/page-document'
+import { ELEMENT_TAGS } from '@/core/types/page-document'
 
 export const textBlockPropsSchema = z.object({
   content: z.string(),
@@ -33,8 +33,8 @@ export const spacerBlockPropsSchema = z.object({
   height: z.number().min(0).max(640),
 })
 
-export const boxBlockPropsSchema = z.object({
-  tag: z.enum(BOX_TAGS).optional(),
+export const elementBlockPropsSchema = z.object({
+  tag: z.enum(ELEMENT_TAGS).optional(),
 })
 
 export const slotBlockPropsSchema = z.object({

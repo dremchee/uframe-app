@@ -103,7 +103,7 @@ const landingTemplate: PageDocument = {
   blocks: [
     {
       id: 'lp-hero',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         ...SECTION_PAD,
@@ -152,7 +152,7 @@ const landingTemplate: PageDocument = {
     },
     {
       id: 'lp-features',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: 'var(--surface)' },
       children: [
@@ -164,7 +164,7 @@ const landingTemplate: PageDocument = {
         },
         {
           id: 'lp-features-grid',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', maxWidth: '960px', marginLeft: 'auto', marginRight: 'auto' },
           children: [
@@ -189,7 +189,7 @@ const aboutTemplate: PageDocument = {
   blocks: [
     {
       id: 'ab-hero',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: '#f8fafc', textAlign: 'center' },
       children: [
@@ -209,13 +209,13 @@ const aboutTemplate: PageDocument = {
     },
     {
       id: 'ab-story',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: 'var(--surface)' },
       children: [
         {
           id: 'ab-story-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { maxWidth: '720px', marginLeft: 'auto', marginRight: 'auto' },
           children: [
@@ -243,7 +243,7 @@ const aboutTemplate: PageDocument = {
     },
     {
       id: 'ab-team',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: '#f8fafc' },
       children: [
@@ -255,7 +255,7 @@ const aboutTemplate: PageDocument = {
         },
         {
           id: 'ab-team-grid',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', maxWidth: '860px', marginLeft: 'auto', marginRight: 'auto' },
           children: [
@@ -280,7 +280,7 @@ const pricingTemplate: PageDocument = {
   blocks: [
     {
       id: 'pr-head',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, paddingBottom: '32px', textAlign: 'center' },
       children: [
@@ -300,13 +300,13 @@ const pricingTemplate: PageDocument = {
     },
     {
       id: 'pr-grid-sec',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, paddingTop: '24px' },
       children: [
         {
           id: 'pr-grid',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px', maxWidth: '960px', marginLeft: 'auto', marginRight: 'auto', alignItems: 'stretch' },
           children: [
@@ -331,13 +331,13 @@ const contactTemplate: PageDocument = {
   blocks: [
     {
       id: 'ct-sec',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: '#f8fafc' },
       children: [
         {
           id: 'ct-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { maxWidth: '520px', marginLeft: 'auto', marginRight: 'auto' },
           children: [
@@ -404,13 +404,13 @@ const blogTemplate: PageDocument = {
   blocks: [
     {
       id: 'bl-hero',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, paddingBottom: '32px', backgroundColor: 'var(--surface)' },
       children: [
         {
           id: 'bl-hero-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { maxWidth: '760px', marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' },
           children: [
@@ -423,7 +423,7 @@ const blogTemplate: PageDocument = {
     },
     {
       id: 'bl-cover-sec',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { paddingLeft: '24px', paddingRight: '24px', backgroundColor: 'var(--surface)' },
       children: [
@@ -437,13 +437,13 @@ const blogTemplate: PageDocument = {
     },
     {
       id: 'bl-body',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: 'var(--surface)' },
       children: [
         {
           id: 'bl-body-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { maxWidth: '720px', marginLeft: 'auto', marginRight: 'auto' },
           children: [
@@ -452,7 +452,7 @@ const blogTemplate: PageDocument = {
             { id: 'bl-p2', type: 'paragraph', props: { content: 'A small set of primitives composes into anything: structure, content, media, and forms. Constraints make the system predictable and the output clean.' }, style: { fontSize: '17px', lineHeight: '1.8', color: '#334155', marginBottom: '24px' } },
             {
               id: 'bl-quote',
-              type: 'box',
+              type: 'element',
               props: {},
               style: { paddingTop: '4px', paddingBottom: '4px', paddingLeft: '20px', borderLeftWidth: '3px', borderStyle: 'solid', borderColor: 'var(--brand)', marginBottom: '24px' },
               children: [
@@ -489,7 +489,7 @@ const blogIndexTemplate: PageDocument = {
   blocks: [
     {
       id: 'bi-head',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, paddingBottom: '32px', textAlign: 'center' },
       children: [
@@ -499,13 +499,13 @@ const blogIndexTemplate: PageDocument = {
     },
     {
       id: 'bi-grid-sec',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, paddingTop: '24px' },
       children: [
         {
           id: 'bi-grid',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px', maxWidth: '1000px', marginLeft: 'auto', marginRight: 'auto', alignItems: 'stretch' },
           children: [
@@ -527,7 +527,7 @@ function bullet(id: string, text: string): PageDocument['blocks'][number] {
 function articleCard(id: string, title: string, excerpt: string, img: string): PageDocument['blocks'][number] {
   return {
     id,
-    type: 'box',
+    type: 'element',
     props: {},
     style: {
       display: 'flex',
@@ -544,10 +544,10 @@ function articleCard(id: string, title: string, excerpt: string, img: string): P
       ...RADIUS_ALL,
     },
     children: [
-      { id: `${id}-cover`, type: 'box', props: {}, style: { height: '160px', backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center' } },
+      { id: `${id}-cover`, type: 'element', props: {}, style: { height: '160px', backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center' } },
       {
         id: `${id}-body`,
-        type: 'box',
+        type: 'element',
         props: {},
         style: { display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '18px', paddingBottom: '20px', paddingLeft: '20px', paddingRight: '20px' },
         children: [
@@ -565,7 +565,7 @@ function featureCard(id: string, icon: FeatureIcon, title: string, body: string)
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${icon.fg}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon.paths}</svg>`
   return {
     id,
-    type: 'box',
+    type: 'element',
     props: {},
     style: { ...CARD },
     children: [
@@ -584,7 +584,7 @@ function featureCard(id: string, icon: FeatureIcon, title: string, body: string)
 function teamCard(id: string, name: string, role: string, avatar: string): PageDocument['blocks'][number] {
   return {
     id,
-    type: 'box',
+    type: 'element',
     props: {},
     style: { ...CARD, textAlign: 'center' },
     children: [
@@ -603,7 +603,7 @@ function teamCard(id: string, name: string, role: string, avatar: string): PageD
 function priceCard(id: string, name: string, price: string, blurb: string, featured: boolean): PageDocument['blocks'][number] {
   return {
     id,
-    type: 'box',
+    type: 'element',
     props: {},
     style: {
       ...CARD,
@@ -663,7 +663,7 @@ function inputStyle(): BlockStyles {
 function field(id: string, label: string, control: PageDocument['blocks'][number]): PageDocument['blocks'][number] {
   return {
     id,
-    type: 'box',
+    type: 'element',
     props: {},
     style: { display: 'flex', flexDirection: 'column', gap: '6px' },
     children: [
@@ -705,7 +705,7 @@ const headerSymbol: SymbolDefinition = {
   defaultVariantId: 'var-header-default',
   root: {
     id: 'site-header-root',
-    type: 'box',
+    type: 'element',
     props: { tag: 'section' },
     style: {
       display: 'flex',
@@ -724,7 +724,7 @@ const headerSymbol: SymbolDefinition = {
       { id: 'site-header-logo', type: 'heading', props: { content: '◆ Acme', level: 3 }, style: { fontSize: '18px', fontWeight: 700, color: 'var(--ink)' } },
       {
         id: 'site-header-nav',
-        type: 'box',
+        type: 'element',
         props: {},
         style: { display: 'flex', gap: '24px', alignItems: 'center' },
         children: NAV.map((n, i) => navLink(`site-header-nav-${i}`, n.label, n.href, 'var(--ink)')),
@@ -741,7 +741,7 @@ const footerSymbol: SymbolDefinition = {
   defaultVariantId: 'var-footer-default',
   root: {
     id: 'site-footer-root',
-    type: 'box',
+    type: 'element',
     props: { tag: 'section' },
     style: {
       paddingTop: '40px',
@@ -755,7 +755,7 @@ const footerSymbol: SymbolDefinition = {
     children: [
       {
         id: 'site-footer-links',
-        type: 'box',
+        type: 'element',
         props: {},
         style: { display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '12px', flexWrap: 'wrap' },
         children: NAV.map((n, i) => navLink(`site-footer-nav-${i}`, n.label, n.href, '#cbd5f5')),

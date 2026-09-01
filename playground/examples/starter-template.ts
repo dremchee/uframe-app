@@ -54,7 +54,7 @@ export const starterTemplate: PageDocument = {
     // ── Hero ────────────────────────────────────────────────────────────────
     {
       id: 'hero',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '128px',
@@ -100,7 +100,7 @@ export const starterTemplate: PageDocument = {
         },
         {
           id: 'hero-cta-row',
-          type: 'box',
+          type: 'element',
           props: {},
           style: {
             display: 'flex',
@@ -187,7 +187,7 @@ export const starterTemplate: PageDocument = {
     // ── Features ──────────────────────────────────────────────────────────────
     {
       id: 'features',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '80px',
@@ -224,7 +224,7 @@ export const starterTemplate: PageDocument = {
         },
         {
           id: 'features-grid',
-          type: 'box',
+          type: 'element',
           props: {},
           // Responsive CSS Grid: auto-fit + minmax reflows the cards 3→2→1 as the
           // canvas narrows, no fixed widths or media queries. Editable in the
@@ -241,7 +241,7 @@ export const starterTemplate: PageDocument = {
           children: [
             {
               id: 'feature-card-1',
-              type: 'box',
+              type: 'element',
               props: {},
               style: {
                 paddingTop: '32px',
@@ -287,7 +287,7 @@ export const starterTemplate: PageDocument = {
             },
             {
               id: 'feature-card-2',
-              type: 'box',
+              type: 'element',
               props: {},
               style: {
                 paddingTop: '32px',
@@ -333,7 +333,7 @@ export const starterTemplate: PageDocument = {
             },
             {
               id: 'feature-card-3',
-              type: 'box',
+              type: 'element',
               props: {},
               style: {
                 paddingTop: '32px',
@@ -385,7 +385,7 @@ export const starterTemplate: PageDocument = {
     // ── Content list ─────────────────────────────────────────────────────────
     {
       id: 'workflow',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '80px',
@@ -397,7 +397,7 @@ export const starterTemplate: PageDocument = {
       children: [
         {
           id: 'workflow-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: {
             maxWidth: '720px',
@@ -517,7 +517,7 @@ export const starterTemplate: PageDocument = {
     // ── Media ──────────────────────────────────────────────────────────────────
     {
       id: 'media',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '80px',
@@ -529,7 +529,7 @@ export const starterTemplate: PageDocument = {
       children: [
         {
           id: 'media-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: {
             maxWidth: '760px',
@@ -579,7 +579,7 @@ export const starterTemplate: PageDocument = {
     // ── Contact form ──────────────────────────────────────────────────────────
     {
       id: 'contact',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '88px',
@@ -593,7 +593,7 @@ export const starterTemplate: PageDocument = {
       children: [
         {
           id: 'contact-inner',
-          type: 'box',
+          type: 'element',
           props: {},
           style: {
             maxWidth: '560px',
@@ -653,7 +653,7 @@ export const starterTemplate: PageDocument = {
                 // Name field
                 {
                   id: 'field-name',
-                  type: 'box',
+                  type: 'element',
                   props: {},
                   style: { display: 'flex', flexDirection: 'column', gap: '6px' },
                   children: [
@@ -692,7 +692,7 @@ export const starterTemplate: PageDocument = {
                 // Email field
                 {
                   id: 'field-email',
-                  type: 'box',
+                  type: 'element',
                   props: {},
                   style: { display: 'flex', flexDirection: 'column', gap: '6px' },
                   children: [
@@ -731,7 +731,7 @@ export const starterTemplate: PageDocument = {
                 // Topic select
                 {
                   id: 'field-topic',
-                  type: 'box',
+                  type: 'element',
                   props: {},
                   style: { display: 'flex', flexDirection: 'column', gap: '6px' },
                   children: [
@@ -775,7 +775,7 @@ export const starterTemplate: PageDocument = {
                 // Message textarea
                 {
                   id: 'field-message',
-                  type: 'box',
+                  type: 'element',
                   props: {},
                   style: { display: 'flex', flexDirection: 'column', gap: '6px' },
                   children: [
@@ -814,7 +814,7 @@ export const starterTemplate: PageDocument = {
                 // Preferred contact — radios
                 {
                   id: 'field-pref',
-                  type: 'box',
+                  type: 'element',
                   props: {},
                   style: { display: 'flex', flexDirection: 'column', gap: '8px' },
                   children: [
@@ -882,7 +882,7 @@ export const starterTemplate: PageDocument = {
     // ── Footer ──────────────────────────────────────────────────────────────────
     {
       id: 'footer',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: {
         paddingTop: '40px',
@@ -902,7 +902,7 @@ export const starterTemplate: PageDocument = {
         },
         {
           id: 'footer-links',
-          type: 'box',
+          type: 'element',
           props: {},
           style: { display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '16px' },
           children: [

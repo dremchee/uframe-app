@@ -1,5 +1,5 @@
 import type { GlobalSettings, PageBlock, PageDocument, SymbolDefinition } from '@/core/types/page-document'
-import { BOX_BLOCK_TYPE } from '@/core/types/page-document'
+import { ELEMENT_BLOCK_TYPE } from '@/core/types/page-document'
 import { mapBlockTree } from '@/core/utils/block-tree'
 
 /**
@@ -8,7 +8,7 @@ import { mapBlockTree } from '@/core/utils/block-tree'
  * Renaming a type is self-versioning: a stored `type: 'section'` is itself the
  * proof that the document predates the rename, so conversions need no schema
  * version counter. That only holds while merges introduce a *new* type id
- * instead of reusing one of the merged names — `box` rather than `div`. Keep
+ * instead of reusing one of the merged names — `element` rather than `div`. Keep
  * following that rule and this table stays the whole migration story.
  */
 export interface BlockConversion {
@@ -30,10 +30,10 @@ export interface BlockConversion {
 export const BLOCK_CONVERSIONS: BlockConversion[] = [
   // 0.18: Section / Container / Div were one block wearing three labels —
   // identical props, identical schema, and Container/Div emitted byte-identical
-  // HTML. They collapse into Box, which carries the tag as a prop.
-  { from: 'section', to: BOX_BLOCK_TYPE, props: p => ({ ...p, tag: 'section' }), since: '0.18' },
-  { from: 'container', to: BOX_BLOCK_TYPE, props: p => ({ ...p, tag: 'div' }), since: '0.18' },
-  { from: 'div', to: BOX_BLOCK_TYPE, props: p => ({ ...p, tag: 'div' }), since: '0.18' },
+  // HTML. They collapse into Element, which carries the tag as a prop.
+  { from: 'section', to: ELEMENT_BLOCK_TYPE, props: p => ({ ...p, tag: 'section' }), since: '0.18' },
+  { from: 'container', to: ELEMENT_BLOCK_TYPE, props: p => ({ ...p, tag: 'div' }), since: '0.18' },
+  { from: 'div', to: ELEMENT_BLOCK_TYPE, props: p => ({ ...p, tag: 'div' }), since: '0.18' },
 ]
 
 export interface ConvertLegacyOptions {
@@ -55,7 +55,7 @@ export interface ConvertLegacyOptions {
  * Only types listed in the table are rewritten. An unrecognised type is left
  * exactly as it is: it may belong to a plugin this host has not loaded, and
  * flattening it here would destroy it on the next autosave. The canvas and the
- * export render such a block as a Box without touching the stored document.
+ * export render such a block as an Element without touching the stored document.
  */
 function createConverter(options: ConvertLegacyOptions): (block: PageBlock) => PageBlock {
   const byType: Record<string, BlockConversion> = {}

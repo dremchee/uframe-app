@@ -94,6 +94,6 @@ export const es = {
     noMatches: 'No se encontraron bloques.',
   },
   canvas: {
-    emptyBox: 'Suelta bloques aquí dentro',
+    emptyElement: 'Suelta bloques aquí dentro',
   },
 }

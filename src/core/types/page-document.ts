@@ -335,19 +335,20 @@ export interface SpacerBlockProps {
 }
 
 /**
- * The universal container block. Replaces the former Section / Container / Div
- * trio, which differed by rendered tag alone — the tag is now a prop.
+ * The universal container block: its defining feature is that the author picks
+ * the HTML element it renders as. Replaces the former Section / Container / Div
+ * trio, which differed by that tag alone.
  */
-export const BOX_BLOCK_TYPE = 'box'
+export const ELEMENT_BLOCK_TYPE = 'element'
 
-/** Semantic elements a Box may render as. */
-export const BOX_TAGS = ['div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav'] as const
+/** Semantic elements an Element block may render as. */
+export const ELEMENT_TAGS = ['div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav'] as const
 
-export type BoxTag = typeof BOX_TAGS[number]
+export type ElementTag = typeof ELEMENT_TAGS[number]
 
-export interface BoxBlockProps {
+export interface ElementBlockProps {
   /** Rendered element. Defaults to `div`. */
-  tag?: BoxTag
+  tag?: ElementTag
 }
 
 export interface SlotBlockProps {

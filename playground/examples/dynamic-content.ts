@@ -122,7 +122,7 @@ export const dynamicTemplate: PageDocument = {
     },
     {
       id: 'demo-sec',
-      type: 'box',
+      type: 'element',
       props: { tag: 'section' },
       style: { ...SECTION_PAD, backgroundColor: 'var(--surface)' },
       children: [
@@ -141,7 +141,7 @@ export const dynamicTemplate: PageDocument = {
           children: [
             {
               id: 'demo-card',
-              type: 'box',
+              type: 'element',
               props: {},
               style: { ...CARD },
               children: [

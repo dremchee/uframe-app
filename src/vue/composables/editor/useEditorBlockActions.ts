@@ -1,10 +1,10 @@
 import type { ShallowRef } from 'vue'
 import type { BlockRegistry, PageBlock, PageDocument } from '@/core'
 import {
-  BOX_BLOCK_TYPE,
   cloneBlockWithNewIds,
   COMPONENT_SLOT_BLOCK_TYPE,
   createBlock,
+  ELEMENT_BLOCK_TYPE,
   findBlock,
   findBlockParentId,
   getBlockPath,
@@ -132,7 +132,7 @@ export function useEditorBlockActions(options: UseEditorBlockActionsOptions) {
   }
 
   function wrapBlock(id: string): boolean {
-    const definition = registry.value[BOX_BLOCK_TYPE]
+    const definition = registry.value[ELEMENT_BLOCK_TYPE]
     if (!definition)
       return false
     const target = findBlock(document.value.blocks, id)

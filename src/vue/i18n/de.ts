@@ -94,6 +94,6 @@ export const de = {
     noMatches: 'Keine Blöcke gefunden.',
   },
   canvas: {
-    emptyBox: 'Blöcke hier hineinziehen',
+    emptyElement: 'Blöcke hier hineinziehen',
   },
 }

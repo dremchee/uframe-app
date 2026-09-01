@@ -30,17 +30,17 @@ function symbol(root: PageBlock): SymbolDefinition {
 }
 
 describe('convertLegacyBlocks', () => {
-  it('rewrites the retired container trio to Box, carrying the tag', () => {
+  it('rewrites the retired container trio to Element, carrying the tag', () => {
     const out = convertLegacyBlocks(doc([
       block('section', [block('container'), block('div')]),
     ]))
 
     const root = out.blocks[0]!
-    expect(root.type).toBe('box')
+    expect(root.type).toBe('element')
     expect(root.props).toEqual({ tag: 'section' })
     expect(root.children?.map(child => [child.type, child.props])).toEqual([
-      ['box', { tag: 'div' }],
-      ['box', { tag: 'div' }],
+      ['element', { tag: 'div' }],
+      ['element', { tag: 'div' }],
     ])
   })
 
@@ -48,8 +48,8 @@ describe('convertLegacyBlocks', () => {
     const out = convertLegacyBlocks(doc([], { s: symbol(block('section', [block('div')])) }))
 
     const root = out.symbols!.s!.root
-    expect(root.type).toBe('box')
-    expect(root.children?.[0]?.type).toBe('box')
+    expect(root.type).toBe('element')
+    expect(root.children?.[0]?.type).toBe('element')
   })
 
   it('is idempotent, so every entry point may call it', () => {
@@ -59,7 +59,7 @@ describe('convertLegacyBlocks', () => {
 
   it('leaves a type it does not know alone', () => {
     // A plugin block whose plugin this host has not loaded. Rewriting it would
-    // destroy it on the next autosave; the canvas renders it as a Box instead.
+    // destroy it on the next autosave; the canvas renders it as an Element instead.
     const out = convertLegacyBlocks(doc([block('acme-carousel')]))
     expect(out.blocks[0]!.type).toBe('acme-carousel')
   })
@@ -73,9 +73,9 @@ describe('convertLegacyBlocks', () => {
 
   it('applies host conversions on top of the built-ins', () => {
     const out = convertLegacyBlocks(doc([block('acme-stack')]), {
-      conversions: [{ from: 'acme-stack', to: 'box', props: () => ({ tag: 'div' }), since: '1.0' }],
+      conversions: [{ from: 'acme-stack', to: 'element', props: () => ({ tag: 'div' }), since: '1.0' }],
     })
-    expect(out.blocks[0]!.type).toBe('box')
+    expect(out.blocks[0]!.type).toBe('element')
   })
 
   it('reports every conversion it makes', () => {
@@ -83,7 +83,7 @@ describe('convertLegacyBlocks', () => {
     convertLegacyBlocks(doc([block('section', [block('div')])]), {
       onConvert: (from, to) => seen.push(`${from}->${to}`),
     })
-    expect(seen).toEqual(['section->box', 'div->box'])
+    expect(seen).toEqual(['section->element', 'div->element'])
   })
 })
 
@@ -96,7 +96,7 @@ describe('convertLegacyGlobals', () => {
       symbols: { s: symbol(block('container')) },
     } as unknown as GlobalSettings
 
-    expect(convertLegacyGlobals(globals).symbols!.s!.root.type).toBe('box')
+    expect(convertLegacyGlobals(globals).symbols!.s!.root.type).toBe('element')
   })
 
   it('passes globals without symbols straight through', () => {

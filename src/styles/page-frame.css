@@ -106,7 +106,7 @@
    old `uf-*` defaults now live in each block's editable defaultStyle preset —
    user-owned classes that ship with a clean export. */
 
-.uf-box-block,
+.uf-element-block,
 .uf-link-block {
   min-height: 24px;
 }

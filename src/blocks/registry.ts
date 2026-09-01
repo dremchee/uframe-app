@@ -1,12 +1,12 @@
 import type { VueBlockDefinition } from '@/blocks/registry-helpers'
+import { buttonDef } from '@/blocks/button'
+import { checkboxDef } from '@/blocks/checkbox'
+import { dividerDef } from '@/blocks/divider'
 // The default block manifest. Each block's definition lives next to its
 // renderer (src/blocks/<type>/index.ts); this file just orders them for the
 // Add panel. Categories group automatically from each def's `category` field;
 // first occurrence wins for section order.
-import { boxDef } from '@/blocks/box'
-import { buttonDef } from '@/blocks/button'
-import { checkboxDef } from '@/blocks/checkbox'
-import { dividerDef } from '@/blocks/divider'
+import { elementDef } from '@/blocks/element'
 import { embedDef } from '@/blocks/embed'
 import { formDef } from '@/blocks/form'
 import { headingDef } from '@/blocks/heading'
@@ -34,7 +34,7 @@ export type { VueBlockDefinition } from '@/blocks/registry-helpers'
 // The registry treats every block uniformly at runtime, so erase the prop type here.
 export const defaultBlockDefinitions = [
   // Structure
-  boxDef,
+  elementDef,
   dividerDef,
   spacerDef,
   slotDef,

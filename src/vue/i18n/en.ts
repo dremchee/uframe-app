@@ -254,7 +254,7 @@ export const en = {
   blockActions: {
     duplicate: 'Duplicate',
     rename: 'Rename',
-    wrap: 'Wrap in Box',
+    wrap: 'Wrap in Element',
     unwrap: 'Unwrap',
     createComponent: 'Create component',
     show: 'Show',
@@ -618,7 +618,7 @@ export const en = {
     resizePanel: 'Resize panel',
     dragToMove: 'Drag to move',
     empty: 'Add a block from the left panel.',
-    emptyBox: 'Drop blocks inside',
+    emptyElement: 'Drop blocks inside',
     slotFallback: 'Drop fallback content into {name}',
     selectOptionFallback: 'Add Select Option children',
     circularComponent: 'Circular component reference',
@@ -638,7 +638,7 @@ export const en = {
     renamePage: 'Rename page',
     addBlock: 'Add block',
     duplicate: 'Duplicate',
-    wrap: 'Wrap in Box',
+    wrap: 'Wrap in Element',
     removeWrapper: 'Remove wrapper',
     hide: 'Hide',
     show: 'Show',
@@ -678,7 +678,7 @@ export const en = {
       Other: 'Other',
     },
     meta: {
-      box: { label: 'Box', description: 'Container — choose its tag' },
+      element: { label: 'Element', description: 'Container — choose its tag' },
       button: { label: 'Button', description: 'Call to action' },
       checkbox: { label: 'Checkbox', description: 'Toggle field' },
       dataItem: { label: 'Data Item', description: 'Binds its children to a single record (singleton or relation)' },
@@ -781,7 +781,7 @@ export const en = {
       submit: 'Submit',
       reset: 'Reset',
     },
-    box: {
+    element: {
       tag: 'Tag',
       tagPlaceholder: 'Tag',
     },

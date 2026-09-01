@@ -94,6 +94,6 @@ export const ja = {
     noMatches: 'ブロックが見つかりません。',
   },
   canvas: {
-    emptyBox: 'ここにブロックをドロップ',
+    emptyElement: 'ここにブロックをドロップ',
   },
 }

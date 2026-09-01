@@ -94,6 +94,6 @@ export const ptBR = {
     noMatches: 'Nenhum bloco encontrado.',
   },
   canvas: {
-    emptyBox: 'Solte blocos aqui dentro',
+    emptyElement: 'Solte blocos aqui dentro',
   },
 }
