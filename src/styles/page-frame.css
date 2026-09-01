@@ -101,12 +101,12 @@
       rgb(15 23 42 / 4%) 16px);
 }
 
-/* Editor affordance only: keep an empty Div / Link Block grabbable on the
+/* Editor affordance only: keep an empty Box / Link Block grabbable on the
    canvas. Block-level display, list indents, field chrome and the rest of the
    old `uf-*` defaults now live in each block's editable defaultStyle preset —
    user-owned classes that ship with a clean export. */
 
-.uf-div-block,
+.uf-box-block,
 .uf-link-block {
   min-height: 24px;
 }

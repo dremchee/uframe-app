@@ -94,6 +94,6 @@ export const zhCN = {
     noMatches: '未找到区块。',
   },
   canvas: {
-    emptySection: '将区块拖放到此分区中',
+    emptyBox: '将区块拖放到此处',
   },
 }

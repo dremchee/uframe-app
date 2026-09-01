@@ -522,7 +522,7 @@ export const ru = {
     },
   },
   classes: { add: 'Добавить класс', className: 'Название класса', search: 'Поиск классов', clearSearch: 'Очистить поиск', filterUsage: 'Фильтр классов по использованию', all: 'Все', used: 'Используемые', unused: 'Неиспользуемые', empty: 'Классов пока нет. Добавьте класс здесь или сохраните стили элемента как класс в панели свойств.', noMatches: 'Нет классов, подходящих под текущий поиск и фильтр.', editStyles: 'Редактировать стили класса', rename: 'Переименовать класс', delete: 'Удалить класс', newName: 'Новое название', combos: 'Комбинации', renameHint: 'Новое имя будет применено ко всем использованиям класса.', deleteClassHint: 'Класс будет удалён из всех элементов.', editComboStyles: 'Редактировать стили комбинации', deleteCombo: 'Удалить комбинацию', deleteComboHint: 'Комбинация будет удалена со всех элементов.' },
-  canvas: { body: 'Тело страницы', selectedPath: 'Путь к выбранному элементу', pageCanvas: 'Холст страницы', pagePreview: 'Предпросмотр страницы', resizePanel: 'Изменить размер панели', dragToMove: 'Перетащите для перемещения', empty: 'Страница пуста. Добавьте блок из библиотеки.', emptySection: 'Перетащите блоки внутрь этой секции', slotFallback: 'Содержимое слота', selectOptionFallback: 'Опция', circularComponent: 'Циклический компонент', missingComponent: 'Компонент не найден', unknownBlock: 'Неизвестный блок' },
+  canvas: { body: 'Тело страницы', selectedPath: 'Путь к выбранному элементу', pageCanvas: 'Холст страницы', pagePreview: 'Предпросмотр страницы', resizePanel: 'Изменить размер панели', dragToMove: 'Перетащите для перемещения', empty: 'Страница пуста. Добавьте блок из библиотеки.', emptyBox: 'Перетащите блоки внутрь', slotFallback: 'Содержимое слота', selectOptionFallback: 'Опция', circularComponent: 'Циклический компонент', missingComponent: 'Компонент не найден', unknownBlock: 'Неизвестный блок' },
   history: { initial: 'Начальное состояние', edit: 'Редактирование', globalDefaults: 'Глобальные настройки', fonts: 'Шрифты', aiEdit: 'Правка с ИИ', editBlock: 'Редактировать блок', pageStyle: 'Стили страницы', addBlockToSlot: 'Добавить блок в слот компонента', addComponentToSlot: 'Добавить компонент в слот', renamePage: 'Переименовать страницу', addBlock: 'Добавить блок', duplicate: 'Дублировать', wrap: 'Обернуть в div', removeWrapper: 'Убрать обёртку', hide: 'Скрыть', show: 'Показать', saveComponent: 'Сохранить компонент', insertComponent: 'Вставить компонент', detachComponent: 'Отвязать компонент', editComponentProperty: 'Редактировать свойство компонента', resetComponentProperty: 'Сбросить свойство компонента', addComponentSlot: 'Добавить слот компонента', moveBlockToSlot: 'Переместить блок в слот компонента', resetComponentSlot: 'Сбросить слот компонента', deleteBlock: 'Удалить блок', moveBlock: 'Переместить блок', spacing: 'Отступы', resizeTracks: 'Изменить треки', resizeGap: 'Изменить промежуток' },
   cssPreview: {
     open: 'Показать CSS',
@@ -534,12 +534,11 @@ export const ru = {
   blocks: {
     categories: { Structure: 'Структура', Basic: 'Основное', Typography: 'Типографика', Media: 'Медиа', Forms: 'Формы', Dynamic: 'Динамика', Other: 'Другое' },
     meta: {
+      box: { label: 'Бокс', description: 'Контейнер — выберите тег' },
       button: { label: 'Кнопка', description: 'Призыв к действию' },
       checkbox: { label: 'Чекбокс', description: 'Поле-переключатель' },
-      container: { label: 'Контейнер', description: 'Гибкий контейнер' },
       dataItem: { label: 'Элемент данных', description: 'Привязывает дочерние элементы к одной записи' },
       dataList: { label: 'Список данных', description: 'Повторяет шаблон элемента для каждой записи коллекции' },
-      div: { label: 'Блок div', description: 'Нейтральный контейнер' },
       divider: { label: 'Разделитель', description: 'Горизонтальная линия' },
       embed: { label: 'Встраивание', description: 'Пользовательский HTML / iframe / SVG' },
       form: { label: 'Форма', description: 'Контейнер формы' },
@@ -552,7 +551,6 @@ export const ru = {
       listItem: { label: 'Элемент списка', description: 'Запись списка' },
       paragraph: { label: 'Параграф', description: 'Обычный абзац' },
       radio: { label: 'Радиокнопка', description: 'Выбор одного варианта' },
-      section: { label: 'Секция', description: 'Семантическая секция на всю ширину' },
       select: { label: 'Селект', description: 'Выпадающий список' },
       selectOption: { label: 'Опция селекта', description: 'Пункт выпадающего списка' },
       slot: { label: 'Слот', description: 'Именованная область содержимого компонента' },
@@ -569,6 +567,7 @@ export const ru = {
     selectOption: { label: 'Подпись', value: 'Значение', selected: 'Выбрано', disabled: 'Отключено' },
     form: { action: 'Адрес отправки', actionPlaceholder: '/api/contact', method: 'Метод', name: 'Название (необязательно)', namePlaceholder: 'контакт' },
     button: { label: 'Подпись', kind: 'Тип', href: 'Ссылка', link: 'Ссылка (<a>)', button: 'Кнопка', submit: 'Отправить', reset: 'Сбросить' },
+    box: { tag: 'Тег', tagPlaceholder: 'Тег' },
     heading: { heading: 'Заголовок', level: 'Уровень', levelPlaceholder: 'Уровень' },
     embed: { html: 'HTML', htmlPlaceholder: 'Вставьте HTML: iframe, видео или пользовательскую разметку', trustHint: 'Содержимое отображается без изменений. Вставляйте только проверенный HTML.' },
     image: { media: 'Медиа', replace: 'Заменить', remove: 'Удалить', chooseMedia: 'Выбрать из медиа', url: 'URL', altText: 'Альтернативный текст', caption: 'Подпись' },

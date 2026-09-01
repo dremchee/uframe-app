@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="uf-div-block" :data-uf-slot="props.name">
+  <div class="uf-box-block" :data-uf-slot="props.name">
     <slot />
     <div v-if="!hasChildren && !hasBox" class="uf-container-placeholder">
       {{ slotFallbackLabel ? slotFallbackLabel(props.name) : `Drop fallback content into ${props.name}` }}

@@ -3,10 +3,9 @@ import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 // renderer (src/blocks/<type>/index.ts); this file just orders them for the
 // Add panel. Categories group automatically from each def's `category` field;
 // first occurrence wins for section order.
+import { boxDef } from '@/blocks/box'
 import { buttonDef } from '@/blocks/button'
 import { checkboxDef } from '@/blocks/checkbox'
-import { containerDef } from '@/blocks/container'
-import { divDef } from '@/blocks/div'
 import { dividerDef } from '@/blocks/divider'
 import { embedDef } from '@/blocks/embed'
 import { formDef } from '@/blocks/form'
@@ -19,7 +18,6 @@ import { listDef } from '@/blocks/list'
 import { listItemDef } from '@/blocks/list-item'
 import { paragraphDef } from '@/blocks/paragraph'
 import { radioDef } from '@/blocks/radio'
-import { sectionDef } from '@/blocks/section'
 import { selectDef } from '@/blocks/select'
 import { selectOptionDef } from '@/blocks/select-option'
 import { slotDef } from '@/blocks/slot'
@@ -36,13 +34,11 @@ export type { VueBlockDefinition } from '@/blocks/registry-helpers'
 // The registry treats every block uniformly at runtime, so erase the prop type here.
 export const defaultBlockDefinitions = [
   // Structure
-  sectionDef,
-  containerDef,
+  boxDef,
   dividerDef,
   spacerDef,
   slotDef,
   // Basic
-  divDef,
   linkDef,
   buttonDef,
   // Typography

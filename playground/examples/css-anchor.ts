@@ -16,9 +16,9 @@ export const cssAnchorTemplate: PageDocument = {
   blocks: [
     {
       id: 'anchor-stage',
-      type: 'section',
+      type: 'box',
       name: 'Anchor stage',
-      props: {},
+      props: { tag: 'section' },
       style: {
         position: 'relative',
         display: 'grid',

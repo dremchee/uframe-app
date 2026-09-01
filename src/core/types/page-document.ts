@@ -334,11 +334,21 @@ export interface SpacerBlockProps {
   height: number
 }
 
-export type SectionBlockProps = Record<string, never>
+/**
+ * The universal container block. Replaces the former Section / Container / Div
+ * trio, which differed by rendered tag alone — the tag is now a prop.
+ */
+export const BOX_BLOCK_TYPE = 'box'
 
-export type ContainerBlockProps = Record<string, never>
+/** Semantic elements a Box may render as. */
+export const BOX_TAGS = ['div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav'] as const
 
-export type DivBlockProps = Record<string, never>
+export type BoxTag = typeof BOX_TAGS[number]
+
+export interface BoxBlockProps {
+  /** Rendered element. Defaults to `div`. */
+  tag?: BoxTag
+}
 
 export interface SlotBlockProps {
   name: string

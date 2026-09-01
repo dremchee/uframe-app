@@ -838,7 +838,7 @@ describe('usePageEditor', () => {
       })
     })
 
-    it('detaches the materialized Slot content as an ordinary div', () => {
+    it('detaches the materialized Slot content as an ordinary Box', () => {
       withEditor((editor) => {
         editor.addBlock('container')
         const symbolId = editor.saveBlockAsSymbol(editor.selectedBlockId.value!, 'Card') as string
@@ -852,7 +852,7 @@ describe('usePageEditor', () => {
         editor.detachSymbolInstance(instanceId)
         const detached = editor.document.value.blocks[0]!
         expect(detached.type).toBe('container')
-        expect(detached.children?.[0]?.type).toBe('div')
+        expect(detached.children?.[0]?.type).toBe('box')
         expect(detached.children?.[0]?.children?.map(child => child.type)).toEqual(['heading', 'button'])
       })
     })

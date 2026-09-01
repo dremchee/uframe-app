@@ -9,8 +9,8 @@ the same whether the editor is [embedded over the iframe client](./embedding) or
 
 A page is a tree of **blocks**. Drag blocks in from the **Add** panel in the left
 rail, reorder or nest them on the canvas (or in the **Layers** tree), and edit
-their content inline. Built-ins cover structure (section, container, div, divider,
-spacer), typography (heading, paragraph, text, list, link), media (image, embed),
+their content inline. Built-ins cover structure (box, divider, spacer),
+typography (heading, paragraph, text, list, link), media (image, embed),
 and forms (form, label, input, textarea, checkbox, radio, select). Hosts can add
 or replace block types — see [Extending the editor](./extending).
 
@@ -136,7 +136,7 @@ and `control.options[].labelKey`; these keys are resolved through the active edi
 locale while the plain labels remain fallbacks.
 
 Use a named **Slot** when an instance needs to own a subtree instead of a scalar
-value. Slot is a Div-like container that can only be added while editing a
+value. Slot is a Box-like container that can only be added while editing a
 component, from the **Layers** panel; slot names must be unique inside that
 component. A slot renders its master children as fallback content until an
 instance customises or explicitly clears it. Instance-owned slot content remains
