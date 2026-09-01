@@ -4,6 +4,7 @@ import { Box as BoxIcon } from '@lucide/vue'
 import BoxBlock from '@/blocks/box/BoxBlock.vue'
 import BoxSettings from '@/blocks/box/BoxSettings.vue'
 import { resolveBoxTag } from '@/blocks/box/tag'
+import { tag } from '@/blocks/registry-helpers'
 import { BOX_BLOCK_TYPE, boxBlockPropsSchema } from '@/core'
 
 /**
@@ -23,7 +24,6 @@ export const boxDef: VueBlockDefinition<BoxBlockProps> = {
   icon: BoxIcon,
   acceptsChildren: true,
   renderHtml(block, ctx) {
-    const tag = resolveBoxTag(block.props.tag)
-    return `<${tag} class="${ctx.classes}">${ctx.renderChildren()}</${tag}>`
+    return tag(resolveBoxTag(block.props.tag), { class: ctx.classes }, ctx.renderChildren())
   },
 }

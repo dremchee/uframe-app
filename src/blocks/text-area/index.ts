@@ -1,7 +1,7 @@
 import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 import type { BaseBlockStyles, TextAreaBlockProps } from '@/core'
 import { TextCursorInput } from '@lucide/vue'
-import { boolAttr } from '@/blocks/registry-helpers'
+import { tag } from '@/blocks/registry-helpers'
 import TextAreaBlock from '@/blocks/text-area/TextAreaBlock.vue'
 import TextAreaSettings from '@/blocks/text-area/TextAreaSettings.vue'
 import { textAreaBlockPropsSchema } from '@/core'
@@ -43,13 +43,13 @@ export const textAreaDef: VueBlockDefinition<TextAreaBlockProps> = {
   icon: TextCursorInput,
   renderHtml(block, ctx) {
     const p = block.props
-    const attrs = [
-      ` name="${ctx.escape(p.name ?? '')}"`,
-      p.placeholder ? ` placeholder="${ctx.escape(p.placeholder)}"` : '',
-      ` rows="${p.rows ?? 4}"`,
-      boolAttr('required', p.required),
-      boolAttr('disabled', p.disabled),
-    ].join('')
-    return `<textarea class="${ctx.classes}"${attrs}></textarea>`
+    return tag('textarea', {
+      class: ctx.classes,
+      name: p.name ?? '',
+      placeholder: p.placeholder || undefined,
+      rows: p.rows ?? 4,
+      required: p.required,
+      disabled: p.disabled,
+    })
   },
 }

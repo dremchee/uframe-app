@@ -3,6 +3,7 @@ import type { BaseBlockStyles, ButtonBlockProps } from '@/core'
 import { MousePointerClick } from '@lucide/vue'
 import ButtonBlock from '@/blocks/button/ButtonBlock.vue'
 import ButtonSettings from '@/blocks/button/ButtonSettings.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { buttonBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles (a "primary" preset), not in
@@ -41,8 +42,8 @@ export const buttonDef: VueBlockDefinition<ButtonBlockProps> = {
   renderHtml(block, ctx) {
     const kind = block.props.kind ?? 'link'
     const label = ctx.escape(block.props.label ?? '')
-    if (kind === 'link')
-      return `<a class="${ctx.classes}" href="${ctx.escape(block.props.href ?? '#')}">${label}</a>`
-    return `<button class="${ctx.classes}" type="${kind}">${label}</button>`
+    return kind === 'link'
+      ? tag('a', { class: ctx.classes, href: block.props.href ?? '#' }, label)
+      : tag('button', { class: ctx.classes, type: kind }, label)
   },
 }

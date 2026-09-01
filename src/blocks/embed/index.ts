@@ -3,6 +3,7 @@ import type { EmbedBlockProps } from '@/core'
 import { Code } from '@lucide/vue'
 import EmbedBlock from '@/blocks/embed/EmbedBlock.vue'
 import EmbedSettings from '@/blocks/embed/EmbedSettings.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { embedBlockPropsSchema } from '@/core'
 
 export const embedDef: VueBlockDefinition<EmbedBlockProps> = {
@@ -21,9 +22,15 @@ export const embedDef: VueBlockDefinition<EmbedBlockProps> = {
     // iframe (no allow-same-origin) instead of inlining it. The sandbox iframe
     // can't auto-size to its content, so its default box is inlined — exported
     // markup carries no service classes to hang a rule on.
-    if (ctx.untrusted && html)
-      return `<div class="${ctx.classes}"><iframe style="display: block; width: 100%; min-height: 240px; border: 0" sandbox="allow-scripts allow-popups allow-forms" srcdoc="${ctx.escape(html)}"></iframe></div>`
+    if (ctx.untrusted && html) {
+      const frame = tag('iframe', {
+        style: 'display: block; width: 100%; min-height: 240px; border: 0',
+        sandbox: 'allow-scripts allow-popups allow-forms',
+        srcdoc: html,
+      })
+      return tag('div', { class: ctx.classes }, frame)
+    }
     // Trust boundary: editor-authored HTML, emitted verbatim.
-    return `<div class="${ctx.classes}">${html}</div>`
+    return tag('div', { class: ctx.classes }, html)
   },
 }

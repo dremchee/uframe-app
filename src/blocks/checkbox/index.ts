@@ -3,7 +3,7 @@ import type { BaseBlockStyles, CheckboxBlockProps } from '@/core'
 import { CheckSquare } from '@lucide/vue'
 import CheckboxBlock from '@/blocks/checkbox/CheckboxBlock.vue'
 import CheckboxSettings from '@/blocks/checkbox/CheckboxSettings.vue'
-import { boolAttr } from '@/blocks/registry-helpers'
+import { tag } from '@/blocks/registry-helpers'
 import { checkboxBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -30,13 +30,13 @@ export const checkboxDef: VueBlockDefinition<CheckboxBlockProps> = {
   icon: CheckSquare,
   renderHtml(block, ctx) {
     const p = block.props
-    const attrs = [
-      ` type="checkbox"`,
-      ` name="${ctx.escape(p.name ?? '')}"`,
-      ` value="${ctx.escape(p.value ?? 'on')}"`,
-      boolAttr('checked', p.checked),
-      boolAttr('required', p.required),
-    ].join('')
-    return `<label class="${ctx.classes}"><input${attrs}><span>${ctx.escape(p.label ?? '')}</span></label>`
+    const field = tag('input', {
+      type: 'checkbox',
+      name: p.name ?? '',
+      value: p.value ?? 'on',
+      checked: p.checked,
+      required: p.required,
+    })
+    return tag('label', { class: ctx.classes }, field + tag('span', {}, ctx.escape(p.label ?? '')))
   },
 }

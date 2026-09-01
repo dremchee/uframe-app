@@ -2,6 +2,7 @@ import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 import type { BaseBlockStyles, DividerBlockProps } from '@/core'
 import { Minus as MinusIcon } from '@lucide/vue'
 import DividerBlock from '@/blocks/divider/DividerBlock.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { dividerBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -28,6 +29,6 @@ export const dividerDef: VueBlockDefinition<DividerBlockProps> = {
   renderComponent: DividerBlock,
   icon: MinusIcon,
   renderHtml(_block, ctx) {
-    return `<hr class="${ctx.classes}">`
+    return tag('hr', { class: ctx.classes })
   },
 }

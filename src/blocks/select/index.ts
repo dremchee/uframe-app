@@ -1,7 +1,7 @@
 import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 import type { BaseBlockStyles, SelectBlockProps } from '@/core'
 import { ChevronDownSquare } from '@lucide/vue'
-import { boolAttr } from '@/blocks/registry-helpers'
+import { tag } from '@/blocks/registry-helpers'
 import SelectBlock from '@/blocks/select/SelectBlock.vue'
 import SelectSettings from '@/blocks/select/SelectSettings.vue'
 import { selectBlockPropsSchema } from '@/core'
@@ -44,11 +44,11 @@ export const selectDef: VueBlockDefinition<SelectBlockProps> = {
   acceptsChildren: true,
   renderHtml(block, ctx) {
     const p = block.props
-    const attrs = [
-      ` name="${ctx.escape(p.name ?? '')}"`,
-      boolAttr('required', p.required),
-      boolAttr('disabled', p.disabled),
-    ].join('')
-    return `<select class="${ctx.classes}"${attrs}>${ctx.renderChildren()}</select>`
+    return tag('select', {
+      class: ctx.classes,
+      name: p.name ?? '',
+      required: p.required,
+      disabled: p.disabled,
+    }, ctx.renderChildren())
   },
 }

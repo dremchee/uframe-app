@@ -3,7 +3,7 @@ import type { BaseBlockStyles, InputBlockProps } from '@/core'
 import { TextCursorInput } from '@lucide/vue'
 import InputBlock from '@/blocks/input/InputBlock.vue'
 import InputSettings from '@/blocks/input/InputSettings.vue'
-import { boolAttr } from '@/blocks/registry-helpers'
+import { tag } from '@/blocks/registry-helpers'
 import { inputBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -43,14 +43,14 @@ export const inputDef: VueBlockDefinition<InputBlockProps> = {
   icon: TextCursorInput,
   renderHtml(block, ctx) {
     const p = block.props
-    const attrs = [
-      ` type="${p.type ?? 'text'}"`,
-      ` name="${ctx.escape(p.name ?? '')}"`,
-      p.placeholder ? ` placeholder="${ctx.escape(p.placeholder)}"` : '',
-      p.value ? ` value="${ctx.escape(p.value)}"` : '',
-      boolAttr('required', p.required),
-      boolAttr('disabled', p.disabled),
-    ].join('')
-    return `<input class="${ctx.classes}"${attrs}>`
+    return tag('input', {
+      class: ctx.classes,
+      type: p.type ?? 'text',
+      name: p.name ?? '',
+      placeholder: p.placeholder || undefined,
+      value: p.value || undefined,
+      required: p.required,
+      disabled: p.disabled,
+    })
   },
 }

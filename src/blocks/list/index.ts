@@ -3,6 +3,7 @@ import type { BaseBlockStyles, ListBlockProps } from '@/core'
 import { List as ListIcon } from '@lucide/vue'
 import ListBlock from '@/blocks/list/ListBlock.vue'
 import ListSettings from '@/blocks/list/ListSettings.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { listBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -25,7 +26,6 @@ export const listDef: VueBlockDefinition<ListBlockProps> = {
   icon: ListIcon,
   acceptsChildren: true,
   renderHtml(block, ctx) {
-    const tag = block.props.ordered ? 'ol' : 'ul'
-    return `<${tag} class="${ctx.classes}">${ctx.renderChildren()}</${tag}>`
+    return tag(block.props.ordered ? 'ol' : 'ul', { class: ctx.classes }, ctx.renderChildren())
   },
 }

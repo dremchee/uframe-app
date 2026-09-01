@@ -1,6 +1,7 @@
 import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 import type { SpacerBlockProps } from '@/core'
 import { MoveVertical } from '@lucide/vue'
+import { tag } from '@/blocks/registry-helpers'
 import SpacerBlock from '@/blocks/spacer/SpacerBlock.vue'
 import SpacerSettings from '@/blocks/spacer/SpacerSettings.vue'
 import { spacerBlockPropsSchema } from '@/core'
@@ -16,6 +17,9 @@ export const spacerDef: VueBlockDefinition<SpacerBlockProps> = {
   settingsComponent: SpacerSettings,
   icon: MoveVertical,
   renderHtml(block, ctx) {
-    return `<div class="${ctx.classes}" style="height: ${Number(block.props.height) || 0}px"></div>`
+    return tag('div', {
+      class: ctx.classes,
+      style: `height: ${Number(block.props.height) || 0}px`,
+    })
   },
 }

@@ -3,6 +3,7 @@ import type { BaseBlockStyles, LabelBlockProps } from '@/core'
 import { TagIcon } from '@lucide/vue'
 import LabelBlock from '@/blocks/label/LabelBlock.vue'
 import LabelSettings from '@/blocks/label/LabelSettings.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { labelBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -25,7 +26,9 @@ export const labelDef: VueBlockDefinition<LabelBlockProps> = {
   settingsComponent: LabelSettings,
   icon: TagIcon,
   renderHtml(block, ctx) {
-    const forAttr = block.props.for ? ` for="${ctx.escape(block.props.for)}"` : ''
-    return `<label class="${ctx.classes}"${forAttr}>${ctx.escape(block.props.text ?? '')}</label>`
+    return tag('label', {
+      class: ctx.classes,
+      for: block.props.for || undefined,
+    }, ctx.escape(block.props.text ?? ''))
   },
 }

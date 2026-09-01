@@ -3,6 +3,7 @@ import type { HeadingBlockProps } from '@/core'
 import { Heading } from '@lucide/vue'
 import HeadingBlock from '@/blocks/heading/HeadingBlock.vue'
 import HeadingSettings from '@/blocks/heading/HeadingSettings.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { headingBlockPropsSchema } from '@/core'
 
 export const headingDef: VueBlockDefinition<HeadingBlockProps> = {
@@ -17,7 +18,6 @@ export const headingDef: VueBlockDefinition<HeadingBlockProps> = {
   bindableProps: ['content'],
   icon: Heading,
   renderHtml(block, ctx) {
-    const tag = `h${block.props.level ?? 2}`
-    return `<${tag} class="${ctx.classes}">${ctx.escape(block.props.content ?? '')}</${tag}>`
+    return tag(`h${block.props.level ?? 2}`, { class: ctx.classes }, ctx.escape(block.props.content ?? ''))
   },
 }

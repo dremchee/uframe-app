@@ -1,6 +1,7 @@
 import type { VueBlockDefinition } from '@/blocks/registry-helpers'
 import type { SlotBlockProps } from '@/core'
 import { PanelsTopLeft } from '@lucide/vue'
+import { tag } from '@/blocks/registry-helpers'
 import SlotBlock from '@/blocks/slot/SlotBlock.vue'
 import SlotSettings from '@/blocks/slot/SlotSettings.vue'
 import { COMPONENT_SLOT_BLOCK_TYPE, slotBlockPropsSchema } from '@/core'
@@ -18,6 +19,6 @@ export const slotDef: VueBlockDefinition<SlotBlockProps> = {
   icon: PanelsTopLeft,
   acceptsChildren: true,
   renderHtml(_block, ctx) {
-    return `<div class="${ctx.classes}">${ctx.renderChildren()}</div>`
+    return tag('div', { class: ctx.classes }, ctx.renderChildren())
   },
 }

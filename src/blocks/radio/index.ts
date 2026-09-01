@@ -3,7 +3,7 @@ import type { BaseBlockStyles, RadioBlockProps } from '@/core'
 import { CircleDot } from '@lucide/vue'
 import RadioBlock from '@/blocks/radio/RadioBlock.vue'
 import RadioSettings from '@/blocks/radio/RadioSettings.vue'
-import { boolAttr } from '@/blocks/registry-helpers'
+import { tag } from '@/blocks/registry-helpers'
 import { radioBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -30,13 +30,13 @@ export const radioDef: VueBlockDefinition<RadioBlockProps> = {
   icon: CircleDot,
   renderHtml(block, ctx) {
     const p = block.props
-    const attrs = [
-      ` type="radio"`,
-      ` name="${ctx.escape(p.name ?? '')}"`,
-      ` value="${ctx.escape(p.value ?? '')}"`,
-      boolAttr('checked', p.checked),
-      boolAttr('required', p.required),
-    ].join('')
-    return `<label class="${ctx.classes}"><input${attrs}><span>${ctx.escape(p.label ?? '')}</span></label>`
+    const field = tag('input', {
+      type: 'radio',
+      name: p.name ?? '',
+      value: p.value ?? '',
+      checked: p.checked,
+      required: p.required,
+    })
+    return tag('label', { class: ctx.classes }, field + tag('span', {}, ctx.escape(p.label ?? '')))
   },
 }

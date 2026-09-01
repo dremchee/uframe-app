@@ -3,6 +3,7 @@ import type { BaseBlockStyles, LinkBlockProps } from '@/core'
 import { Link as LinkIcon } from '@lucide/vue'
 import LinkBlock from '@/blocks/link/LinkBlock.vue'
 import LinkSettings from '@/blocks/link/LinkSettings.vue'
+import { tag } from '@/blocks/registry-helpers'
 import { linkBlockPropsSchema } from '@/core'
 
 // Default look lives in editable block styles, not hardcoded CSS — the user
@@ -25,11 +26,12 @@ export const linkDef: VueBlockDefinition<LinkBlockProps> = {
   icon: LinkIcon,
   acceptsChildren: true,
   renderHtml(block, ctx) {
-    const href = ctx.escape(block.props.href ?? '#')
-    const target = block.props.target ? ` target="${ctx.escape(block.props.target)}"` : ''
-    const rel = block.props.rel
-      ? ` rel="${ctx.escape(block.props.rel)}"`
-      : (block.props.target === '_blank' ? ' rel="noopener noreferrer"' : '')
-    return `<a class="${ctx.classes}" href="${href}"${target}${rel}>${ctx.renderChildren()}</a>`
+    const target = block.props.target
+    return tag('a', {
+      class: ctx.classes,
+      href: block.props.href ?? '#',
+      target: target || undefined,
+      rel: block.props.rel || (target === '_blank' ? 'noopener noreferrer' : undefined),
+    }, ctx.renderChildren())
   },
 }
