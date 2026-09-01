@@ -83,6 +83,12 @@ export function validateDocumentBlocks(document: PageDocument, registry: BlockRe
   visitBlockTree(roots, (block) => {
     if (block.type === SYMBOL_INSTANCE_BLOCK_TYPE || block.type === SYMBOL_SLOT_FILL_BLOCK_TYPE)
       return
+    // An unrecognised type is not a reason to reject the whole document: it is
+    // usually a plugin block whose plugin this host hasn't loaded. The canvas
+    // and the export render it as a Box and the stored block is left intact,
+    // so failing here would throw away everything else in the document too.
+    if (!registry[block.type])
+      return
     const result = validateBlockProps(block, registry)
     errors.push(...result.errors.map(error => `${block.id}: ${error}`))
   })

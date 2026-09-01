@@ -3,6 +3,7 @@ import type { BlockRegistry, PageBlock, ResolveContext, SymbolDefinition } from 
 import { computed } from 'vue'
 import {
   blockClassName,
+  BOX_BLOCK_TYPE,
   COMPONENT_SLOT_BLOCK_TYPE,
   resolveBlockHtmlAttributes,
   styleClassName,
@@ -104,8 +105,17 @@ const effectiveInteractive = computed(() =>
   && (props.editScopeRootId == null || selfInScope.value),
 )
 
-const definition = computed(() =>
+const registered = computed(() =>
   isSymbolInstance.value ? undefined : props.registry[props.block.type],
+)
+// A type this host doesn't know — a plugin block whose plugin isn't loaded, or
+// a document written by a newer build — falls back to Box, so its subtree stays
+// visible and the page keeps its shape instead of collapsing into a stub. The
+// stored `type` is left alone: only BLOCK_CONVERSIONS ever rewrites one, and
+// flattening a plugin block here would destroy it on the next autosave.
+const isFallback = computed(() => !isSymbolInstance.value && !registered.value)
+const definition = computed(() =>
+  isSymbolInstance.value ? undefined : (registered.value ?? props.registry[BOX_BLOCK_TYPE]),
 )
 const renderComponent = computed(() => definition.value?.renderComponent)
 // Framework-neutral blocks render via a custom element (`element`) instead of a
@@ -135,8 +145,10 @@ const hasOwnBox = computed(() => {
   const s = props.block.style as Record<string, unknown> | undefined
   return !!s && BOX_KEYS.some(k => s[k] != null && s[k] !== '')
 })
+// A fallback Box is never a drop target: dropping into a block whose real
+// definition is missing would edit content this host can't render properly.
 const acceptsChildren = computed(() =>
-  isSymbolInstance.value ? false : !!definition.value?.acceptsChildren,
+  isSymbolInstance.value || isFallback.value ? false : !!definition.value?.acceptsChildren,
 )
 
 // A Slot rendered inside a droppable instance advertises itself to the canvas
@@ -207,7 +219,7 @@ const slotDropTarget = computed(() =>
         :props="displayProps"
         :class="blockClass"
         :has-children="hasChildren"
-        :has-box="hasOwnBox"
+        :has-box="hasOwnBox || isFallback"
         :slot-fallback-label="slotFallbackLabel"
         :select-option-fallback-label="selectOptionFallbackLabel"
       >
