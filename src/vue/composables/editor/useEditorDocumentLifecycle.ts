@@ -1,7 +1,9 @@
 import type { ShallowRef } from 'vue'
-import type { BlockRegistry, GlobalSettings, PageDocument } from '@/core'
+import type { BlockConversion, BlockRegistry, GlobalSettings, PageDocument } from '@/core'
 import {
   cloneJsonValue,
+  convertLegacyBlocks,
+  convertLegacyGlobals,
   nameUnnamedStyles,
   safeParsePageDocument,
   validateComponentSlots,
@@ -16,6 +18,8 @@ export interface UseEditorDocumentLifecycleOptions {
   errors: ShallowRef<string[]>
   selectedBlockId: ShallowRef<string | null>
   resetHistory: () => void
+  /** Host / plugin block conversions, on top of the built-in table. */
+  conversions?: () => BlockConversion[]
 }
 
 /**
@@ -31,6 +35,19 @@ export function useEditorDocumentLifecycle(options: UseEditorDocumentLifecycleOp
     selectedBlockId,
     resetHistory,
   } = options
+
+  /**
+   * Rewrites retired block types (see `BLOCK_CONVERSIONS`) on every document
+   * handover. Nothing is written back to storage here — the converted document
+   * is only what the editor holds in memory, and autosave fires on the user's
+   * first real edit. Opening a document therefore leaves it untouched on disk.
+   */
+  function convert(next: PageDocument): PageDocument {
+    return convertLegacyBlocks(next, {
+      conversions: options.conversions?.(),
+      isRegistered: type => type in registry.value,
+    })
+  }
 
   // Block-local styles arriving from imports, AI, or host hydration are lifted
   // into named classes before they reach the editor. In shared-global mode the
@@ -79,13 +96,19 @@ export function useEditorDocumentLifecycle(options: UseEditorDocumentLifecycleOp
   }
 
   function normalizeInitialDocument() {
-    document.value = normalizeLoadedStyles(document.value)
+    document.value = normalizeLoadedStyles(convert(document.value))
     resetHistory()
   }
 
   function setGlobals(nextGlobals: GlobalSettings | null) {
-    globals.value = nextGlobals ? cloneJsonValue(nextGlobals) : null
-    document.value = normalizeLoadedStyles(document.value)
+    // Globals carry symbol masters, which are block trees of their own.
+    globals.value = nextGlobals
+      ? convertLegacyGlobals(cloneJsonValue(nextGlobals), {
+          conversions: options.conversions?.(),
+          isRegistered: type => type in registry.value,
+        })
+      : null
+    document.value = normalizeLoadedStyles(convert(document.value))
     resetHistory()
   }
 
@@ -98,7 +121,7 @@ export function useEditorDocumentLifecycle(options: UseEditorDocumentLifecycleOp
       return false
     }
 
-    const loaded = normalizeLoadedStyles(cloneJsonValue(parsed.data as PageDocument))
+    const loaded = normalizeLoadedStyles(convert(cloneJsonValue(parsed.data as PageDocument)))
     const validationDocument = globals.value
       ? { ...loaded, symbols: globals.value.symbols }
       : loaded

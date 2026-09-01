@@ -3,6 +3,7 @@ import type { BlockRegistry, GlobalSettings, PageBlock, PageDocument, StyleViewp
 import { computed, shallowRef, watch } from 'vue'
 import {
   cloneJsonValue,
+  collectPluginConversions,
   COMPONENT_SLOT_BLOCK_TYPE,
   createPageDocument,
   findBlock,
@@ -144,6 +145,7 @@ export function usePageEditor(options: UsePageEditorOptions = {}) {
     errors,
     selectedBlockId,
     resetHistory,
+    conversions: () => collectPluginConversions(registeredPlugins.value),
   })
   normalizeInitialDocument()
 

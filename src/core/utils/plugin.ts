@@ -1,5 +1,6 @@
 import type { BlockDefinition, BlockRegistry } from '@/core/types/block-registry'
 import type { EditorStyleTokens } from '@/core/types/editor-ui-theme'
+import type { BlockConversion } from '@/core/utils/block-conversions'
 
 /**
  * A uframe plugin bundles block definitions and editor-chrome style tokens that
@@ -33,6 +34,12 @@ export interface UframePlugin<TComponent = unknown> {
   messages?: Partial<Record<string, Record<string, unknown>>>
   /** Block definitions to register. Later entries win on a type collision. */
   blocks?: BlockDefinition[]
+  /**
+   * Conversions for this plugin's own retired block types, applied to every
+   * document the editor loads. Same contract as the built-in table: the old
+   * type is rewritten in memory, and unlisted types are never touched.
+   */
+  conversions?: BlockConversion[]
   /**
    * Prefix-free editor style tokens (e.g. `{ accent: '#7c3aed' }`). They are
    * converted to internal CSS properties by the editor. The canvas iframe is
@@ -121,6 +128,11 @@ export function collectSettingsSections<TComponent>(
 /** All block definitions contributed by the plugins, in registration order. */
 export function collectPluginBlocks(plugins: UframePlugin[] | undefined): BlockDefinition[] {
   return (plugins ?? []).flatMap(p => p.blocks ?? [])
+}
+
+/** All legacy-block conversions contributed by the plugins, in registration order. */
+export function collectPluginConversions(plugins: UframePlugin[] | undefined): BlockConversion[] {
+  return (plugins ?? []).flatMap(p => p.conversions ?? [])
 }
 
 /**
