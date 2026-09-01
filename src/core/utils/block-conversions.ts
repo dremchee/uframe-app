@@ -34,6 +34,11 @@ export const BLOCK_CONVERSIONS: BlockConversion[] = [
   { from: 'section', to: ELEMENT_BLOCK_TYPE, props: p => ({ ...p, tag: 'section' }), since: '0.18' },
   { from: 'container', to: ELEMENT_BLOCK_TYPE, props: p => ({ ...p, tag: 'div' }), since: '0.18' },
   { from: 'div', to: ELEMENT_BLOCK_TYPE, props: p => ({ ...p, tag: 'div' }), since: '0.18' },
+  // 0.18: the merged block was briefly called `box` before release. Props are
+  // unchanged — only the name moved. Nothing published carries this type, so
+  // the entry exists purely for drafts saved from a pre-release build and can
+  // be dropped once those are gone.
+  { from: 'box', to: ELEMENT_BLOCK_TYPE, since: '0.18' },
 ]
 
 export interface ConvertLegacyOptions {

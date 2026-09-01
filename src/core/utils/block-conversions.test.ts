@@ -44,6 +44,13 @@ describe('convertLegacyBlocks', () => {
     ])
   })
 
+  it('renames the pre-release box type, leaving its props alone', () => {
+    const out = convertLegacyBlocks(doc([
+      { id: 'b', type: 'box', props: { tag: 'section' } },
+    ]))
+    expect(out.blocks[0]).toMatchObject({ type: 'element', props: { tag: 'section' } })
+  })
+
   it('converts symbol masters, which carry block trees of their own', () => {
     const out = convertLegacyBlocks(doc([], { s: symbol(block('section', [block('div')])) }))
 
