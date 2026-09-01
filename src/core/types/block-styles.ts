@@ -18,6 +18,10 @@ export type TextTransform = 'none' | 'uppercase' | 'lowercase' | 'capitalize'
 export type TextDecoration = 'none' | 'underline' | 'line-through'
 /** Controls line breaking; `balance` is best suited to short headings. */
 export type TextWrap = 'wrap' | 'nowrap' | 'balance' | 'pretty'
+// How whitespace and newlines in the content itself are treated — distinct from
+// `text-wrap`, which only decides where lines may break. `pre-wrap` is what
+// makes an author's line breaks survive without markup.
+export type WhiteSpace = 'normal' | 'nowrap' | 'pre' | 'pre-wrap' | 'pre-line' | 'break-spaces'
 /** Any CSS numeric weight (1–1000), including variable-font instances. */
 export type FontWeight = number
 // The full CSS <line-style> set (`hidden` behaves like `none` outside table
@@ -109,6 +113,7 @@ export interface TypographyStyles {
   textTransform?: TextTransform
   textDecoration?: TextDecoration
   textWrap?: TextWrap
+  whiteSpace?: WhiteSpace
 }
 
 export interface BackgroundStyles {

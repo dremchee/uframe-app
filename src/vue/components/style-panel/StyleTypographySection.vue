@@ -34,6 +34,7 @@ type TextAlign = NonNullable<BaseBlockStyles['textAlign']>
 type TextTransform = NonNullable<BaseBlockStyles['textTransform']>
 type TextDecoration = NonNullable<BaseBlockStyles['textDecoration']>
 type TextWrap = NonNullable<BaseBlockStyles['textWrap']>
+type WhiteSpace = NonNullable<BaseBlockStyles['whiteSpace']>
 
 const fontStyleOptions = computed<Array<SegmentOption<FontStyle>>>(() => [
   { value: 'normal', label: t('style.fontStyleNormal'), icon: Type },
@@ -63,6 +64,8 @@ const textTransform = computed<TextTransform>(() => styles.value.textTransform ?
 const textDecoration = computed<TextDecoration>(() => styles.value.textDecoration ?? inheritedPh('textDecoration', 'none') as TextDecoration)
 const textWrap = computed<TextWrap>(() => styles.value.textWrap ?? inheritedPh('textWrap', 'wrap') as TextWrap)
 const textWrapOptions: TextWrap[] = ['wrap', 'nowrap', 'balance', 'pretty']
+const whiteSpace = computed<WhiteSpace>(() => styles.value.whiteSpace ?? inheritedPh('whiteSpace', 'normal') as WhiteSpace)
+const whiteSpaceOptions: WhiteSpace[] = ['normal', 'nowrap', 'pre', 'pre-wrap', 'pre-line', 'break-spaces']
 
 function updateFontWeight(value: number | undefined) {
   if (!Number.isFinite(value)) {
@@ -147,6 +150,16 @@ function updateFontWeight(value: number | undefined) {
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem v-for="option in textWrapOptions" :key="option" :value="option">
+              {{ option }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </StyleField>
+      <StyleField :label="t('style.whiteSpace')" field="whiteSpace">
+        <Select :model-value="whiteSpace" @update:model-value="value => update({ whiteSpace: value as WhiteSpace })">
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="option in whiteSpaceOptions" :key="option" :value="option">
               {{ option }}
             </SelectItem>
           </SelectContent>

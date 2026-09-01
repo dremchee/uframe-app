@@ -271,6 +271,7 @@ export const ru = {
     subgridSpanHint: 'Растяните блок на нужные колонки родителя.',
     subgridSpanAll: 'Растянуть на все колонки родителя',
     textWrap: 'Перенос текста',
+    whiteSpace: 'Пробелы и переносы',
     count: 'Количество',
     min: 'Мин.',
     max: 'Макс.',

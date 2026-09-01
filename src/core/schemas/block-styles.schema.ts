@@ -20,6 +20,7 @@ export const fontStyleSchema = z.enum(['normal', 'italic'])
 export const textTransformSchema = z.enum(['none', 'uppercase', 'lowercase', 'capitalize'])
 export const textDecorationSchema = z.enum(['none', 'underline', 'line-through'])
 export const textWrapSchema = z.enum(['wrap', 'nowrap', 'balance', 'pretty'])
+export const whiteSpaceSchema = z.enum(['normal', 'nowrap', 'pre', 'pre-wrap', 'pre-line', 'break-spaces'])
 // CSS supports every numeric font weight from 1 through 1000. Variable fonts
 // frequently expose intermediate values such as 450, 550, or 650.
 export const fontWeightSchema = z.number().finite().min(1).max(1000)
@@ -126,6 +127,7 @@ export const baseBlockStylesSchema = z.object({
   textTransform: textTransformSchema.optional(),
   textDecoration: textDecorationSchema.optional(),
   textWrap: textWrapSchema.optional(),
+  whiteSpace: whiteSpaceSchema.optional(),
 
   backgroundColor: z.string().optional(),
   backgroundImage: z.string().optional(),

@@ -371,6 +371,7 @@ export const en = {
     subgridSpanHint: 'To inherit more than one parent column, span this block across the parent grid first.',
     subgridSpanAll: 'Span all parent columns',
     textWrap: 'Text wrap',
+    whiteSpace: 'White space',
     count: 'Count',
     track: 'Track',
     min: 'Min',

@@ -47,6 +47,10 @@ describe('serializeStyleDeclarations', () => {
     expect(serializeStyleDeclarations({ textWrap: 'balance' })).toBe('text-wrap: balance')
   })
 
+  it('serializes whiteSpace to the white-space property', () => {
+    expect(serializeStyleDeclarations({ whiteSpace: 'pre-wrap' })).toBe('white-space: pre-wrap')
+  })
+
   it('serializes CSS anchor positioning declarations', () => {
     expect(serializeStyleDeclarations({
       anchorName: '--trigger',
