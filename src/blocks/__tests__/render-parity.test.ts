@@ -1,7 +1,10 @@
 import type { BlockHtmlContext } from '@/core'
-import { renderToString } from '@vue/server-renderer'
 import { describe, expect, it } from 'vitest'
 import { createSSRApp } from 'vue'
+// `vue/server-renderer` rather than `@vue/server-renderer`: the latter is only
+// a transitive dependency, so it is unresolvable under pnpm's strict layout in
+// CI. The subpath is public and pinned to the installed `vue`'s own version.
+import { renderToString } from 'vue/server-renderer'
 import { defaultBlockDefinitions } from '@/blocks/registry'
 import { escapeHtml } from '@/core'
 
