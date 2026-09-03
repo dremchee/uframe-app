@@ -350,9 +350,9 @@ single-instance usage upgrades transparently.
 
 ## Testing & build
 
-- **Unit tests** (Vitest) live next to `core/utils/*` and
-  `usePageEditor.test.ts` — pure tree/style/validation/storage logic is the most
-  tested surface.
+- **Unit tests** (Vitest) live in a `__tests__/` folder next to the code they
+  cover (`core/utils/__tests__/*`, `vue/composables/editor/__tests__/*`, …) —
+  pure tree/style/validation/storage logic is the most tested surface.
 - `npm run typecheck` (vue-tsc), `npm test` (vitest), `npm run build`
   (typecheck → lib → playground).
 
