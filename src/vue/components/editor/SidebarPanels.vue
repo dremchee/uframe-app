@@ -135,7 +135,7 @@ const btn = 'inline-flex items-center justify-center w-6 h-6 rounded-md bg-trans
       <BlockLibraryPanel
         v-else-if="s.mode.value === 'add'"
         :blocks="editor.blockDefinitions.value"
-        @add="editor.addBlock"
+        @add="(type: string, presetId?: string) => editor.addBlock(type, undefined, presetId)"
       />
       <PageTreePanel
         v-else-if="s.mode.value === 'layers'"

@@ -139,8 +139,9 @@ const hasChildren = computed(() => !!props.block.children?.length)
 // The empty "Drop blocks inside" placeholder only exists to keep a collapsed,
 // style-less container visible + droppable. Once the author gives it a box of
 // its own (explicit size or spacing) it's already visible, so the placeholder
-// is noise — suppress it.
-const BOX_KEYS = ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft'] as const
+// is noise — suppress it. A max-width alone is not a box: a centered container
+// preset with nothing inside would collapse to zero height without the hint.
+const BOX_KEYS = ['width', 'height', 'minWidth', 'minHeight', 'maxHeight', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft'] as const
 const hasOwnBox = computed(() => {
   const s = props.block.style as Record<string, unknown> | undefined
   return !!s && BOX_KEYS.some(k => s[k] != null && s[k] !== '')

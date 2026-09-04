@@ -4,13 +4,13 @@ import {
   blockWouldCreateSymbolCycle,
   cloneBlockWithNewIds,
   COMPONENT_SLOT_BLOCK_TYPE,
-  createBlock,
   createSymbolInstanceBlock,
   findBlock,
   getBlockPath,
   getInstanceSlotFills,
   getInstanceSymbolId,
   getSymbolSlots,
+  instantiateBlock,
   moveBlockTo,
   SYMBOL_INSTANCE_BLOCK_TYPE,
   SYMBOL_SLOT_FILL_BLOCK_TYPE,
@@ -77,11 +77,14 @@ export function useEditorInstanceSlots(options: UseEditorInstanceSlotsOptions) {
     return true
   }
 
-  function insertBlockIntoInstanceSlot(instanceId: string, slotId: string, blockType: string): boolean {
+  function insertBlockIntoInstanceSlot(instanceId: string, slotId: string, blockType: string, presetId?: string): boolean {
     const definition = registry.value[blockType]
     if (!definition || definition.availability === 'component')
       return false
-    return appendBlockToInstanceSlot(instanceId, slotId, createBlock(definition), 'history.addBlockToSlot')
+    const block = instantiateBlock(registry.value, blockType, presetId)
+    if (!block)
+      return false
+    return appendBlockToInstanceSlot(instanceId, slotId, block, 'history.addBlockToSlot')
   }
 
   function insertSymbolIntoInstanceSlot(instanceId: string, slotId: string, symbolId: string): boolean {

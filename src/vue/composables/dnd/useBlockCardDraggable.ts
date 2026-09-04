@@ -15,7 +15,8 @@ function resolveElement(value: ElOrInstance): HTMLElement | null {
   return root instanceof HTMLElement ? root : null
 }
 
-export function useBlockCardDraggable(el: Ref<ElOrInstance>, blockType: Ref<string>) {
+/** Makes a library card draggable; `presetId` rides along for preset cards. */
+export function useBlockCardDraggable(el: Ref<ElOrInstance>, blockType: Ref<string>, presetId?: Ref<string | undefined>) {
   let cleanup: (() => void) | null = null
 
   onMounted(() => {
@@ -29,6 +30,7 @@ export function useBlockCardDraggable(el: Ref<ElOrInstance>, blockType: Ref<stri
       getInitialData: () => ({
         [LIBRARY_DRAG_TYPE]: true,
         blockType: blockType.value,
+        presetId: presetId?.value,
       }),
     })
     draggableElement.addEventListener('dragstart', onDragStart)

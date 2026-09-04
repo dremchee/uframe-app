@@ -1,4 +1,4 @@
-import type { BlockDefinition, PageBlock } from '@/core'
+import type { BlockDefinition, BlockPreset, PageBlock } from '@/core'
 import type { I18n } from '@/vue/i18n'
 import { translatedOrFallback } from '@/vue/utils/translation-fallback'
 
@@ -34,6 +34,18 @@ export function localizedBlockDescription(
 ): string | undefined {
   const key = definition?.descriptionKey ?? `blocks.meta.${blockMetaKey(type)}.description`
   return translatedOrFallback(key, definition?.description, t)
+}
+
+/** Resolves an Add-panel preset label, including plugin keys and plain-label fallback. */
+export function localizedPresetLabel(preset: BlockPreset, t: I18n['t']): string {
+  const key = preset.labelKey ?? `blocks.presets.${blockMetaKey(preset.id)}.label`
+  return translatedOrFallback(key, preset.label, t) ?? preset.label
+}
+
+/** Resolves an Add-panel preset description, including plugin keys and plain fallback. */
+export function localizedPresetDescription(preset: BlockPreset, t: I18n['t']): string | undefined {
+  const key = preset.descriptionKey ?? `blocks.presets.${blockMetaKey(preset.id)}.description`
+  return translatedOrFallback(key, preset.description, t)
 }
 
 /** Resolves a block-library category, including plugin keys and plain fallback. */

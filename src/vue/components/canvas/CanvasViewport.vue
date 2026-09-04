@@ -21,7 +21,7 @@ import { TREE_DRAG_TYPE } from '@/vue/composables/dnd/useTreeNodeDnd'
 import { useIframeFonts } from '@/vue/composables/fonts/useIframeFonts'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
-import { localizedBlockCategory, localizedBlockLabel } from '@/vue/utils/block-label'
+import { localizedBlockCategory, localizedBlockLabel, localizedPresetLabel } from '@/vue/utils/block-label'
 
 defineProps<{ rulerMode?: boolean }>()
 const { editor, features, dataContext, pluginSlots, canvas, untrustedEmbeds } = useEditorContext()
@@ -118,9 +118,9 @@ const { indicator, isDragging } = useCanvasDropOverlay({
   onTreeDrop: (sourceId, target) => target.kind === 'slot'
     ? editor.moveBlockIntoInstanceSlot(target.instanceId, target.slotId, sourceId)
     : editor.moveBlockTo(sourceId, target.parentId, target.index),
-  onLibraryDrop: (blockType, target) => target.kind === 'slot'
-    ? editor.insertBlockIntoInstanceSlot(target.instanceId, target.slotId, blockType)
-    : editor.insertBlock(blockType, target.parentId, target.index),
+  onLibraryDrop: (blockType, target, presetId) => target.kind === 'slot'
+    ? editor.insertBlockIntoInstanceSlot(target.instanceId, target.slotId, blockType, presetId)
+    : editor.insertBlock(blockType, target.parentId, target.index, presetId),
   onLibrarySymbolDrop: (symbolId, target) => target.kind === 'slot'
     ? editor.insertSymbolIntoInstanceSlot(target.instanceId, target.slotId, symbolId)
     : editor.insertSymbolInstance(symbolId, target.parentId, target.index),
@@ -175,21 +175,38 @@ const selected = selectionForId(editor.selectedBlockId)
 const hovered = selectionForId(hoveredLabelId)
 const isInsertMenuOpen = shallowRef(false)
 const insertQuery = shallowRef('')
-const insertableBlocks = computed(() => Object.values(editor.registry.value)
-  .filter(block => block.availability !== 'component')
-  .sort((a, b) => localizedBlockLabel(a.type, a, t).localeCompare(localizedBlockLabel(b.type, b, t))))
+// One entry per insertable block plus one per preset (a preset inserts the
+// same type with a starting shape — see `BlockPreset`), sorted by label.
+interface InsertEntry {
+  key: string
+  type: string
+  presetId?: string
+  label: string
+  icon: unknown
+  category: string
+}
+const insertableEntries = computed<InsertEntry[]>(() => {
+  const entries: InsertEntry[] = []
+  for (const block of Object.values(editor.registry.value)) {
+    if (block.availability === 'component')
+      continue
+    const category = localizedBlockCategory(block, t)
+    entries.push({ key: block.type, type: block.type, label: localizedBlockLabel(block.type, block, t), icon: block.icon, category })
+    for (const preset of block.presets ?? [])
+      entries.push({ key: `${block.type}#${preset.id}`, type: block.type, presetId: preset.id, label: localizedPresetLabel(preset, t), icon: preset.icon ?? block.icon, category })
+  }
+  return entries.sort((a, b) => a.label.localeCompare(b.label))
+})
 const insertQueryNeedle = computed(() => insertQuery.value.trim().toLocaleLowerCase())
-const filteredInsertableBlocks = computed(() => insertableBlocks.value.filter((block) => {
+const filteredInsertableBlocks = computed(() => insertableEntries.value.filter((entry) => {
   const needle = insertQueryNeedle.value
-  return !needle || localizedBlockLabel(block.type, block, t).toLocaleLowerCase().includes(needle)
+  return !needle || entry.label.toLocaleLowerCase().includes(needle)
 }))
 const insertableBlockGroups = computed(() => {
-  const groups = new Map<string, typeof filteredInsertableBlocks.value>()
-  for (const block of filteredInsertableBlocks.value) {
-    const category = localizedBlockCategory(block, t)
-    groups.set(category, [...(groups.get(category) ?? []), block])
-  }
-  return [...groups].map(([category, blocks]) => ({ category, blocks }))
+  const groups = new Map<string, InsertEntry[]>()
+  for (const entry of filteredInsertableBlocks.value)
+    groups.set(entry.category, [...(groups.get(entry.category) ?? []), entry])
+  return [...groups].map(([category, entries]) => ({ category, entries }))
 })
 const filteredSymbols = computed(() => editor.symbols.value.filter(symbol =>
   !insertQueryNeedle.value || symbol.name.toLocaleLowerCase().includes(insertQueryNeedle.value),
@@ -205,8 +222,8 @@ watch(() => editor.selectedBlockId.value, () => {
   isInsertMenuOpen.value = false
 })
 
-function addBlockAtSelection(type: string) {
-  if (editor.addBlock(type))
+function addBlockAtSelection(type: string, presetId?: string) {
+  if (editor.addBlock(type, undefined, presetId))
     isInsertMenuOpen.value = false
 }
 
@@ -640,15 +657,15 @@ const {
                     {{ group.category }}
                   </p>
                   <button
-                    v-for="block in group.blocks"
-                    :key="block.type"
+                    v-for="entry in group.entries"
+                    :key="entry.key"
                     type="button"
                     class="flex w-full items-center rounded-sm px-2 py-1.5 text-left text-xs text-uf-text transition-colors hover:bg-uf-panel-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-uf-accent"
-                    @click="addBlockAtSelection(block.type)"
+                    @click="addBlockAtSelection(entry.type, entry.presetId)"
                   >
-                    <component :is="block.icon" v-if="block.icon" :size="13" :stroke-width="1.75" class="mr-1.5 shrink-0 text-uf-muted" />
+                    <component :is="entry.icon" v-if="entry.icon" :size="13" :stroke-width="1.75" class="mr-1.5 shrink-0 text-uf-muted" />
                     <ComponentIcon v-else :size="13" :stroke-width="1.75" class="mr-1.5 shrink-0 text-uf-muted" />
-                    {{ localizedBlockLabel(block.type, block, t) }}
+                    {{ entry.label }}
                   </button>
                 </section>
                 <section v-if="filteredSymbols.length" class="flex flex-col gap-0.5 px-1.5" :class="[insertableBlockGroups.length && 'mt-1.5 border-t border-uf-border pt-1.5']">

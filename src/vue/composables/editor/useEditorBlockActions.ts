@@ -9,6 +9,7 @@ import {
   findBlockParentId,
   getBlockPath,
   insertBlockInTree,
+  instantiateBlock,
   moveBlock,
   moveBlockTo,
   SYMBOL_INSTANCE_BLOCK_TYPE,
@@ -93,22 +94,26 @@ export function useEditorBlockActions(options: UseEditorBlockActionsOptions) {
     }, label)
   }
 
-  function addBlock(type: string, parentId?: string | null) {
-    const definition = registry.value[type]
-    if (!definition || !canInsertDefinition(type))
+  // `presetId` picks one of the type's presets (see `BlockPreset`); an unknown
+  // id falls back to the plain block so a stale drag payload still inserts.
+  function addBlock(type: string, parentId?: string | null, presetId?: string) {
+    if (!canInsertDefinition(type))
       return false
-    const block = createBlock(definition)
+    const block = instantiateBlock(registry.value, type, presetId)
+    if (!block)
+      return false
     const target = parentId === undefined ? resolveDefaultInsertion() : { parentId, index: undefined }
     spliceBlockInto(block, target.parentId, target.index, 'history.addBlock')
     selectedBlockId.value = block.id
     return true
   }
 
-  function insertBlock(type: string, parentId: string | null, index: number) {
-    const definition = registry.value[type]
-    if (!definition || !canInsertDefinition(type))
+  function insertBlock(type: string, parentId: string | null, index: number, presetId?: string) {
+    if (!canInsertDefinition(type))
       return false
-    const block = createBlock(definition)
+    const block = instantiateBlock(registry.value, type, presetId)
+    if (!block)
+      return false
     const next = insertBlockInTree(document.value.blocks, parentId, index, block)
     commit({ ...document.value, blocks: next }, 'history.addBlock')
     selectedBlockId.value = block.id

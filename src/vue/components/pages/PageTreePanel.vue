@@ -70,8 +70,8 @@ function dropBlockIntoSlot(row: LayerTreeRow, sourceId: string) {
     ensureSlotExpanded(row)
 }
 
-function dropBlockTypeIntoSlot(row: LayerTreeRow, blockType: string) {
-  if (row.kind === 'slot' && editor.insertBlockIntoInstanceSlot(row.instanceId, row.slotId, blockType))
+function dropBlockTypeIntoSlot(row: LayerTreeRow, blockType: string, presetId?: string) {
+  if (row.kind === 'slot' && editor.insertBlockIntoInstanceSlot(row.instanceId, row.slotId, blockType, presetId))
     ensureSlotExpanded(row)
 }
 
@@ -89,8 +89,8 @@ useTreeNodeDnd({
   onTreeDrop: (sourceId) => {
     editor.moveBlockTo(sourceId, null, props.blocks.length)
   },
-  onLibraryDrop: (blockType) => {
-    editor.insertBlock(blockType, null, props.blocks.length)
+  onLibraryDrop: (blockType, _parentId, _index, presetId) => {
+    editor.insertBlock(blockType, null, props.blocks.length, presetId)
   },
   onLibrarySymbolDrop: (symbolId) => {
     editor.insertSymbolInstance(symbolId, null, props.blocks.length)
@@ -172,7 +172,7 @@ const bodyItemClass = computed(() => cn(
               @activate="activateSlot(row.data)"
               @toggle="emit('toggle', row.data.key)"
               @drop-block="sourceId => dropBlockIntoSlot(row.data, sourceId)"
-              @drop-block-type="blockType => dropBlockTypeIntoSlot(row.data, blockType)"
+              @drop-block-type="(blockType, presetId) => dropBlockTypeIntoSlot(row.data, blockType, presetId)"
               @drop-symbol="symbolId => dropSymbolIntoSlot(row.data, symbolId)"
             />
           </template>

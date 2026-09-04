@@ -1,19 +1,31 @@
 <script setup lang="ts">
-import type { BlockDefinition } from '@/core'
+import type { BlockDefinition, BlockPreset } from '@/core'
 import { Search, X } from '@lucide/vue'
 import { computed, ref, watch } from 'vue'
 import { Input, ScrollArea } from '@/components/ui'
 import BlockLibraryCard from '@/vue/components/library/BlockLibraryCard.vue'
 import { useUframeI18n } from '@/vue/i18n'
-import { localizedBlockCategory, localizedBlockDescription, localizedBlockLabel } from '@/vue/utils/block-label'
+import { localizedBlockCategory, localizedBlockDescription, localizedBlockLabel, localizedPresetDescription, localizedPresetLabel } from '@/vue/utils/block-label'
 
 const props = defineProps<{
   blocks: BlockDefinition[]
 }>()
 
 const emit = defineEmits<{
-  add: [type: string]
+  add: [type: string, presetId?: string]
 }>()
+
+// One card per entry: the plain block, then each of its presets. Presets are
+// alternative starting shapes of the same type (see `BlockPreset`), so they
+// share the block's category and sit right after its card.
+interface LibraryEntry {
+  key: string
+  block: BlockDefinition
+  preset?: BlockPreset
+  label: string
+  description: string
+  category: string
+}
 
 const { t } = useUframeI18n()
 
@@ -31,41 +43,61 @@ const highlight = ref(-1)
 const tagNeedles = computed<string[]>(() => terms.value.map(t => t.trim().toLowerCase()).filter(Boolean))
 const queryNeedle = computed<string>(() => query.value.trim().toLowerCase())
 
-const sections = computed<Array<{ category: string, blocks: BlockDefinition[] }>>(() => {
-  const tags = tagNeedles.value
-  const q = queryNeedle.value
-  const map = new Map<string, BlockDefinition[]>()
+const entries = computed<LibraryEntry[]>(() => {
+  const out: LibraryEntry[] = []
   for (const block of props.blocks) {
     // Component-only blocks (currently Slot) are created from Layers while
     // editing a master, never from the page's general Add panel.
     if (block.availability === 'component')
       continue
-    const label = localizedBlockLabel(block.type, block, t)
-    const description = localizedBlockDescription(block.type, block, t) ?? ''
-    const c = localizedBlockCategory(block, t)
-    const haystack = `${label} ${description} ${block.type} ${c}`.toLowerCase()
+    const category = localizedBlockCategory(block, t)
+    out.push({
+      key: block.type,
+      block,
+      label: localizedBlockLabel(block.type, block, t),
+      description: localizedBlockDescription(block.type, block, t) ?? '',
+      category,
+    })
+    for (const preset of block.presets ?? []) {
+      out.push({
+        key: `${block.type}#${preset.id}`,
+        block,
+        preset,
+        label: localizedPresetLabel(preset, t),
+        description: localizedPresetDescription(preset, t) ?? '',
+        category,
+      })
+    }
+  }
+  return out
+})
+
+const sections = computed<Array<{ category: string, entries: LibraryEntry[] }>>(() => {
+  const tags = tagNeedles.value
+  const q = queryNeedle.value
+  const map = new Map<string, LibraryEntry[]>()
+  for (const entry of entries.value) {
+    const haystack = `${entry.label} ${entry.description} ${entry.block.type} ${entry.category}`.toLowerCase()
     if (tags.length && !tags.some(n => haystack.includes(n)))
       continue
     if (q && !haystack.includes(q))
       continue
-    const list = map.get(c)
+    const list = map.get(entry.category)
     if (list)
-      list.push(block)
-    else map.set(c, [block])
+      list.push(entry)
+    else map.set(entry.category, [entry])
   }
-  return Array.from(map, ([category, blocks]) => ({ category, blocks }))
+  return Array.from(map, ([category, list]) => ({ category, entries: list }))
 })
 
-// Suggestion pool: distinct block labels + category names. Selecting one (or
-// pressing Enter on free text) commits it as a filter tag.
+// Suggestion pool: distinct block / preset labels + category names. Selecting
+// one (or pressing Enter on free text) commits it as a filter tag.
 const suggestionPool = computed<string[]>(() => {
   const map = new Map<string, string>()
-  for (const block of props.blocks) {
-    const label = localizedBlockLabel(block.type, block, t)
-    if (label)
-      map.set(label.toLowerCase(), label)
-    const c = localizedBlockCategory(block, t)
-    map.set(c.toLowerCase(), c)
+  for (const entry of entries.value) {
+    if (entry.label)
+      map.set(entry.label.toLowerCase(), entry.label)
+    map.set(entry.category.toLowerCase(), entry.category)
   }
   return [...map.values()].sort((a, b) => a.localeCompare(b))
 })
@@ -196,10 +228,11 @@ function onKeydown(event: KeyboardEvent) {
         </div>
         <div class="flex flex-col gap-1.5">
           <BlockLibraryCard
-            v-for="block in section.blocks"
-            :key="block.type"
-            :block="block"
-            @add="emit('add', $event)"
+            v-for="entry in section.entries"
+            :key="entry.key"
+            :block="entry.block"
+            :preset="entry.preset"
+            @add="(type, presetId) => emit('add', type, presetId)"
           />
         </div>
       </div>

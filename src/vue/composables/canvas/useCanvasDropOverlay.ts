@@ -31,7 +31,7 @@ interface UseCanvasDropOverlayOptions {
   isDescendantOf: (ancestorId: string, descendantId: string) => boolean
   resolveDropTarget: (hit: CanvasDropIndicator) => { parentId: string | null, index: number } | null
   onTreeDrop: (sourceId: string, target: CanvasDropTarget) => void
-  onLibraryDrop: (blockType: string, target: CanvasDropTarget) => void
+  onLibraryDrop: (blockType: string, target: CanvasDropTarget, presetId?: string) => void
   onLibrarySymbolDrop?: (symbolId: string, target: CanvasDropTarget) => void
 }
 
@@ -202,7 +202,7 @@ export function useCanvasDropOverlay(options: UseCanvasDropOverlayOptions) {
             }
             const blockType = source.data.blockType as string | undefined
             if (blockType)
-              options.onLibraryDrop(blockType, target)
+              options.onLibraryDrop(blockType, target, source.data.presetId as string | undefined)
           }
         },
       }),

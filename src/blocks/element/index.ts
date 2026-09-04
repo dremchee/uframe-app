@@ -3,6 +3,7 @@ import type { ElementBlockProps } from '@/core'
 import { Box as ElementIcon } from '@lucide/vue'
 import ElementBlock from '@/blocks/element/ElementBlock.vue'
 import ElementSettings from '@/blocks/element/ElementSettings.vue'
+import { elementPresets } from '@/blocks/element/presets'
 import { resolveElementTag } from '@/blocks/element/tag'
 import { tag } from '@/blocks/registry-helpers'
 import { ELEMENT_BLOCK_TYPE, elementBlockPropsSchema } from '@/core'
@@ -21,6 +22,8 @@ export const elementDef: VueBlockDefinition<ElementBlockProps> = {
   propsSchema: elementBlockPropsSchema,
   renderComponent: ElementBlock,
   settingsComponent: ElementSettings,
+  // Structural starting points (Section, stacks, Grid, …) — see presets.ts.
+  presets: elementPresets,
   icon: ElementIcon,
   acceptsChildren: true,
   renderHtml(block, ctx) {

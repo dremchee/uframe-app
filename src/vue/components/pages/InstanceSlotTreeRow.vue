@@ -16,7 +16,7 @@ const emit = defineEmits<{
   activate: []
   toggle: []
   dropBlock: [sourceId: string]
-  dropBlockType: [blockType: string]
+  dropBlockType: [blockType: string, presetId?: string]
   dropSymbol: [symbolId: string]
 }>()
 
@@ -33,7 +33,7 @@ useTreeNodeDnd({
   draggableSource: false,
   insideOnly: true,
   onTreeDrop: sourceId => emit('dropBlock', sourceId),
-  onLibraryDrop: blockType => emit('dropBlockType', blockType),
+  onLibraryDrop: (blockType, _parentId, _index, presetId) => emit('dropBlockType', blockType, presetId),
   onLibrarySymbolDrop: symbolId => emit('dropSymbol', symbolId),
   getSiblings: () => [props.row.key],
   setDropPosition: (position) => {

@@ -15,8 +15,8 @@ interface TreeNodeDndOptions {
   acceptsChildren: Ref<boolean>
   /** Reorder an existing block within the tree. */
   onTreeDrop: (sourceId: string, targetParentId: string | null, targetIndex: number) => void
-  /** Insert a brand-new block of `type` from the library. */
-  onLibraryDrop: (blockType: string, targetParentId: string | null, targetIndex: number) => void
+  /** Insert a brand-new block of `type` (optionally from one of its presets) from the library. */
+  onLibraryDrop: (blockType: string, targetParentId: string | null, targetIndex: number, presetId?: string) => void
   /** Insert a user-defined component instance from the library. */
   onLibrarySymbolDrop?: (symbolId: string, targetParentId: string | null, targetIndex: number) => void
   /** Make this node draggable too (root pseudo-nodes opt out). */
@@ -140,7 +140,8 @@ export function useTreeNodeDnd(options: TreeNodeDndOptions) {
           const blockType = source.data.blockType as string | undefined
           if (!blockType)
             return
-          options.onLibraryDrop(blockType, targetParentId, targetIndex)
+          const presetId = source.data.presetId as string | undefined
+          options.onLibraryDrop(blockType, targetParentId, targetIndex, presetId)
         }
       },
     }))

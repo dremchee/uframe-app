@@ -702,6 +702,14 @@ export const en = {
       text: { label: 'Text', description: 'Plain text copy' },
       textArea: { label: 'Text Area', description: 'Multi-line input' },
     },
+    presets: {
+      section: { label: 'Section', description: 'Full-width band with a centered container' },
+      container: { label: 'Container', description: 'Centered max-width wrapper' },
+      vStack: { label: 'V Stack', description: 'Vertical flex stack' },
+      hStack: { label: 'H Stack', description: 'Horizontal flex row' },
+      grid: { label: 'Grid', description: 'Three equal columns' },
+      wrap: { label: 'Wrap', description: 'Row that wraps onto new lines' },
+    },
     select: {
       label: 'Label',
       labelPlaceholder: 'Option',

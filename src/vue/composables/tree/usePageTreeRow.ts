@@ -113,8 +113,8 @@ export function usePageTreeRow(options: UsePageTreeRowOptions) {
     onTreeDrop: (sourceId, targetParentId, targetIndex) => {
       editor.moveBlockTo(sourceId, targetParentId, targetIndex)
     },
-    onLibraryDrop: (blockType, targetParentId, targetIndex) => {
-      editor.insertBlock(blockType, targetParentId, targetIndex)
+    onLibraryDrop: (blockType, targetParentId, targetIndex, presetId) => {
+      editor.insertBlock(blockType, targetParentId, targetIndex, presetId)
     },
     onLibrarySymbolDrop: (symbolId, targetParentId, targetIndex) => {
       editor.insertSymbolInstance(symbolId, targetParentId, targetIndex)
