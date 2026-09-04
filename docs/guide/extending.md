@@ -92,6 +92,8 @@ const calloutBlock: BlockDefinition = {
   propsSchema: calloutPropsSchema, // optional — any Standard Schema (zod 4 / valibot / arktype)
   renderComponent: CalloutBlock, // drawn on the canvas (Vue component)
   settingsComponent: CalloutSettings, // Content-tab fields (Vue component)
+  quickPanel: CalloutQuickPanel, // optional compact controls (Style tab section + floating canvas panel)
+  presets: [{ id: 'warning', label: 'Warning', props: { tone: 'warning' } }], // extra Add-panel cards
   acceptsChildren: false,
   css: '.callout { padding: 1rem }', // injected once into the canvas + export
   renderHtml: block => `<div class="callout">${block.props.text}</div>`, // HTML export
@@ -110,6 +112,19 @@ Notable fields:
   canvas iframe nor the export, so block styles belong here.
 - **`renderHtml`** — framework-free HTML string for the built-in HTML export. The
   raw-JSON + your-own-components rendering path (e.g. SSR) doesn't need it.
+- **`presets`** — alternative starting points for the type, each an extra card in
+  the Add panel (and the canvas insert menu): preset `props`, insert-time `style`
+  and an optional starter `children` subtree. A preset exists only at insertion —
+  the document stores an ordinary block of the type, so the block's settings and
+  quick panel are those of its type. The built-in Element ships Section,
+  Container, V Stack, H Stack, Grid and Wrap this way.
+- **`quickPanel`** — a compact controls component bound like a Style-panel
+  section (`modelValue` / `update:modelValue` of the active `BaseBlockStyles`
+  slice, plus the selected `block`). The editor renders it as the *Quick layout*
+  section of the properties panel and, when the author toggles it from the
+  selection badge, as a floating panel next to the block on the canvas, where it
+  receives `compact: true` until expanded. Both mounts share one style target,
+  so edits land in the same class / breakpoint / state.
 
 ### Prop validation
 
