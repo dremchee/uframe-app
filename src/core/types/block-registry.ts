@@ -56,6 +56,46 @@ export interface SettingsField {
   placeholderKey?: string
 }
 
+/**
+ * A child block described by a preset: its `type` plus optional props,
+ * insert-time styles and nested children. Resolved against the registry when
+ * the preset is instantiated; a type the registry lacks is skipped.
+ */
+export interface BlockPresetChild {
+  type: string
+  props?: Record<string, unknown>
+  style?: BaseBlockStyles
+  children?: BlockPresetChild[]
+}
+
+/**
+ * A named starting point for a block type — an extra card in the Add panel
+ * that creates the same type with preset props, insert-time styles and,
+ * optionally, a starter subtree. Presets exist only at insertion: the document
+ * stores an ordinary block of the owning type with no memory of the preset, so
+ * the block's settings and quick panel are those of its type. Variations that
+ * differ by styles alone (a column stack vs. a grid) belong here; a block that
+ * needs props of its own is a separate type.
+ */
+export interface BlockPreset<TProps = Record<string, unknown>, TComponent = unknown> {
+  /** Stable id, unique within the owning block type. */
+  id: string
+  label: string
+  /** Optional i18n key for the Add-panel label. */
+  labelKey?: string
+  description?: string
+  /** Optional i18n key for the Add-panel description. */
+  descriptionKey?: string
+  /** Defaults to the owning definition's icon. */
+  icon?: TComponent
+  /** Merged over the definition's `defaultProps`. */
+  props?: Partial<TProps>
+  /** Merged over the definition's `defaultStyle` into the block's local styles. */
+  style?: BaseBlockStyles
+  /** Starter subtree, resolved against the registry on insertion. */
+  children?: BlockPresetChild[]
+}
+
 export interface BlockDefinition<TProps = Record<string, unknown>, TComponent = unknown> {
   type: string
   label: string
@@ -88,6 +128,21 @@ export interface BlockDefinition<TProps = Record<string, unknown>, TComponent = 
    */
   element?: string
   settingsComponent?: TComponent
+  /**
+   * Compact layout controls for this block type. Bound like a Style-panel
+   * section — `modelValue` / `update:modelValue` carry the active
+   * `BaseBlockStyles` slice (breakpoint + state aware), and the selected
+   * `block` is passed alongside — so edits land in the same class or block the
+   * properties panel targets. The editor mounts it twice: as the Quick layout
+   * section of the properties panel and, on request, as a floating panel next
+   * to the block on the canvas, where a `compact` prop asks for the essentials.
+   */
+  quickPanel?: TComponent
+  /**
+   * Alternative starting points for this type, listed in the Add panel next to
+   * the plain block card. See `BlockPreset`.
+   */
+  presets?: BlockPreset<TProps, TComponent>[]
   /**
    * Schema-driven settings (Content tab) for blocks without a Vue
    * `settingsComponent`: `'auto'` infers fields from `defaultProps`, or pass an
