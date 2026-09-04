@@ -6,6 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui'
+import CanvasQuickPanel from '@/vue/components/canvas/CanvasQuickPanel.vue'
 import CanvasViewport from '@/vue/components/canvas/CanvasViewport.vue'
 import PagePreview from '@/vue/components/canvas/PagePreview.vue'
 import EditorToolbar from '@/vue/components/editor/EditorToolbar.vue'
@@ -189,5 +190,7 @@ defineExpose({ openAddBreakpoint, runPanelAction })
     </div>
     <!-- Plugin-contributed free-floating layers (e.g. the AI chat window). -->
     <component :is="c" v-for="(c, i) in pluginSlots.overlays" :key="i" />
+    <!-- The selected block's quick layout controls, floating next to it. -->
+    <CanvasQuickPanel v-if="!editor.isPreviewMode.value" />
   </div>
 </template>

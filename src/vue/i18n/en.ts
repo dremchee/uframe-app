@@ -649,6 +649,12 @@ export const en = {
     circularComponent: 'Circular component reference',
     missingComponent: 'Missing component',
     unknownBlock: 'Unknown block: {type}',
+    quickPanel: 'Quick layout',
+    showQuickPanel: 'Show quick layout panel',
+    hideQuickPanel: 'Hide quick layout panel',
+    expandQuickPanel: 'More controls',
+    collapseQuickPanel: 'Fewer controls',
+    dragPanel: 'Drag to move the panel',
   },
   history: {
     initial: 'Initial',

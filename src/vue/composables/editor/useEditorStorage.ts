@@ -28,6 +28,13 @@ export interface EditorStorage {
    */
   styleSections: Record<string, boolean>
   /**
+   * The floating Quick layout panel on the canvas: whether it shows for a
+   * selected block that offers one, and whether it shows the full control set
+   * rather than the compact row.
+   */
+  quickPanelOpen: boolean
+  quickPanelExpanded: boolean
+  /**
    * Per-plugin preference bag, namespaced by plugin name — so official and
    * third-party plugins can persist their own settings (API keys, caches, …)
    * without core knowing their shape. A plugin owns its `plugins[name]` slot;
@@ -45,6 +52,8 @@ const DEFAULTS: EditorStorage = {
   sidebarWidth: 264,
   theme: 'system',
   styleSections: {},
+  quickPanelOpen: false,
+  quickPanelExpanded: false,
   plugins: {},
 }
 

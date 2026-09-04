@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { CanvasDropIndicator } from '@/vue/composables/canvas/useCanvasDropOverlay'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { Component as ComponentIcon, GripVertical, Plus } from '@lucide/vue'
+import { Component as ComponentIcon, GripVertical, Plus, SlidersHorizontal } from '@lucide/vue'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { computed, h, nextTick, render, shallowRef, useTemplateRef, watch } from 'vue'
-import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigger } from '@/components/ui'
+import { Alert, AlertTitle, Button, Input, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@/components/ui'
 import { findBlock, findBlockParentId, isDescendantOf } from '@/core'
 import CanvasBreadcrumbs from '@/vue/components/canvas/CanvasBreadcrumbs.vue'
 import CanvasFrameDocument from '@/vue/components/canvas/CanvasFrameDocument.vue'
@@ -208,6 +208,15 @@ const insertableBlockGroups = computed(() => {
     groups.set(entry.category, [...(groups.get(entry.category) ?? []), entry])
   return [...groups].map(([category, entries]) => ({ category, entries }))
 })
+// The selection badge offers a toggle for the floating quick panel when the
+// selected block's type provides one.
+const selectedHasQuickPanel = computed(() => {
+  const block = editor.selectedBlock.value
+  return !!block && !!editor.registry.value[block.type]?.quickPanel
+})
+function toggleQuickPanel() {
+  editor.storage.value.quickPanelOpen = !editor.storage.value.quickPanelOpen
+}
 const filteredSymbols = computed(() => editor.symbols.value.filter(symbol =>
   !insertQueryNeedle.value || symbol.name.toLocaleLowerCase().includes(insertQueryNeedle.value),
 ))
@@ -689,6 +698,22 @@ const {
               </p>
             </PopoverContent>
           </Popover>
+          <Tooltip v-if="selectedHasQuickPanel" :text="editor.storage.value.quickPanelOpen ? t('canvas.hideQuickPanel') : t('canvas.showQuickPanel')">
+            <button
+              type="button"
+              class="inline-flex size-5 shrink-0 items-center justify-center rounded-[2px] transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+              :class="[
+                isSelectedSymbol ? 'bg-uf-symbol text-white' : isSelectedData ? 'bg-uf-data text-white' : isGapContainer ? 'bg-uf-gap text-white' : 'bg-uf-accent text-uf-accent-foreground',
+                !editor.storage.value.quickPanelOpen && 'opacity-70',
+              ]"
+              :aria-pressed="editor.storage.value.quickPanelOpen"
+              :aria-label="editor.storage.value.quickPanelOpen ? t('canvas.hideQuickPanel') : t('canvas.showQuickPanel')"
+              @pointerdown.stop
+              @click.stop="toggleQuickPanel"
+            >
+              <SlidersHorizontal :size="12" :stroke-width="2.25" />
+            </button>
+          </Tooltip>
         </div>
         <div
           v-if="indicator"
