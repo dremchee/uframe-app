@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ELEMENT_TAGS } from '@/core/types/page-document'
+import { ELEMENT_TAGS, PLACEHOLDER_KINDS, PLACEHOLDER_RATIOS } from '@/core/types/page-document'
 
 export const textBlockPropsSchema = z.object({
   content: z.string(),
@@ -62,6 +62,12 @@ export const embedBlockPropsSchema = z.object({
 })
 
 export const dividerBlockPropsSchema = z.object({})
+
+export const placeholderBlockPropsSchema = z.object({
+  label: z.string().optional(),
+  kind: z.enum(PLACEHOLDER_KINDS).optional(),
+  ratio: z.enum(PLACEHOLDER_RATIOS).optional(),
+})
 
 // ── Forms ───────────────────────────────────────────────────────────────────
 

@@ -388,6 +388,30 @@ export interface EmbedBlockProps {
 
 export type DividerBlockProps = Record<string, never>
 
+// ── Prototyping ─────────────────────────────────────────────────────────────
+
+/** What a Placeholder stands in for; picks its glyph and default shape. */
+export const PLACEHOLDER_KINDS = ['box', 'image', 'text', 'avatar', 'video'] as const
+
+export type PlaceholderKind = typeof PLACEHOLDER_KINDS[number]
+
+/** Intrinsic aspect ratio of a Placeholder; `auto` sizes to its content. */
+export const PLACEHOLDER_RATIOS = ['auto', '16:9', '4:3', '3:2', '1:1', '21:9'] as const
+
+export type PlaceholderRatio = typeof PLACEHOLDER_RATIOS[number]
+
+/**
+ * Wireframe stand-in for content that does not exist yet. Unlike the layout
+ * presets, its parameters are semantic (what it represents, its caption, its
+ * proportions) rather than styles — which is why it is a block type of its own.
+ */
+export interface PlaceholderBlockProps {
+  /** Caption drawn in the middle of the box. */
+  label?: string
+  kind?: PlaceholderKind
+  ratio?: PlaceholderRatio
+}
+
 // ── Forms ───────────────────────────────────────────────────────────────────
 // The editor renders the markup; the host app handles submission. Each field
 // carries `name` (used in form-data on POST) and most carry `required` so

@@ -17,6 +17,7 @@ import { linkDef } from '@/blocks/link'
 import { listDef } from '@/blocks/list'
 import { listItemDef } from '@/blocks/list-item'
 import { paragraphDef } from '@/blocks/paragraph'
+import { placeholderDef } from '@/blocks/placeholder'
 import { radioDef } from '@/blocks/radio'
 import { selectDef } from '@/blocks/select'
 import { selectOptionDef } from '@/blocks/select-option'
@@ -37,6 +38,7 @@ export const defaultBlockDefinitions = [
   elementDef,
   dividerDef,
   spacerDef,
+  placeholderDef,
   slotDef,
   // Basic
   linkDef,
