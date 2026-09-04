@@ -7,6 +7,7 @@ import { elementPresets } from '@/blocks/element/presets'
 import { resolveElementTag } from '@/blocks/element/tag'
 import { tag } from '@/blocks/registry-helpers'
 import { ELEMENT_BLOCK_TYPE, elementBlockPropsSchema } from '@/core'
+import QuickLayoutControls from '@/vue/components/style-panel/QuickLayoutControls.vue'
 
 /**
  * The one container primitive. Section / Container / Div used to be three
@@ -22,8 +23,10 @@ export const elementDef: VueBlockDefinition<ElementBlockProps> = {
   propsSchema: elementBlockPropsSchema,
   renderComponent: ElementBlock,
   settingsComponent: ElementSettings,
-  // Structural starting points (Section, stacks, Grid, …) — see presets.ts.
+  // Structural starting points (Section, stacks, Grid, …) and the compact
+  // layout controls that make them quick to reshape — see presets.ts.
   presets: elementPresets,
+  quickPanel: QuickLayoutControls,
   icon: ElementIcon,
   acceptsChildren: true,
   renderHtml(block, ctx) {

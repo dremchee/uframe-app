@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { PageBlock } from '@/core'
 import type { BreakpointDraft } from '@/vue/components/breakpoints/BreakpointForm.vue'
-import type { StateKey, ViewportKey } from '@/vue/components/style-panel/StyleVariantSelector.vue'
-import type { EditingTarget } from '@/vue/composables/style/useBlockClasses'
 import {
   Ellipsis,
   Plus,
@@ -20,7 +18,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui'
-import { COMPONENT_SLOT_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
+import { COMPONENT_SLOT_BLOCK_TYPE, getInstanceSymbolId, isComboKey, parseClassKey, QUICK_LAYOUT_KEYS, resolveBlockHtmlAttributes, resolveSettingsFields, SYMBOL_INSTANCE_BLOCK_TYPE, SYMBOL_SLOT_FILL_BLOCK_TYPE } from '@/core'
 import { preventOverlayDismiss } from '@/lib/overlay-guard'
 import { cn } from '@/lib/utils'
 import AttributesSection from '@/vue/components/properties/AttributesSection.vue'
@@ -30,6 +28,7 @@ import ContentTab from '@/vue/components/properties/ContentTab.vue'
 import CssPreviewPopover from '@/vue/components/properties/CssPreviewPopover.vue'
 import BlockActionsMenu from '@/vue/components/shared/BlockActionsMenu.vue'
 import StylePanel from '@/vue/components/style-panel/StylePanel.vue'
+import StyleSection from '@/vue/components/style-panel/StyleSection.vue'
 import StyleVariantSelector from '@/vue/components/style-panel/StyleVariantSelector.vue'
 import SymbolInstancePanel from '@/vue/components/symbols/SymbolInstancePanel.vue'
 import SymbolMasterPropertiesSection from '@/vue/components/symbols/SymbolMasterPropertiesSection.vue'
@@ -38,9 +37,9 @@ import {
 } from '@/vue/composables/style/useBlockClasses'
 import { useBlockParentLayout } from '@/vue/composables/style/useBlockParentLayout'
 import { useBlockPropsModel } from '@/vue/composables/style/useBlockPropsModel'
-import { useBlockStyleModel } from '@/vue/composables/style/useBlockStyleModel'
 import { useStyleContrast } from '@/vue/composables/style/useStyleContrast'
 import { useStyleInheritance } from '@/vue/composables/style/useStyleInheritance'
+import { useStyleTarget } from '@/vue/composables/style/useStyleTarget'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { makePanelEdgeReference, PANEL_POPOVER_ANCHOR } from '@/vue/context/panel-popover-anchor'
 import { useUframeI18n } from '@/vue/i18n'
@@ -57,14 +56,10 @@ provide(PANEL_POPOVER_ANCHOR, { boundaryEl: panelEl, side: 'left' })
 const activeTab = ref<'content' | 'style'>('style')
 const elementNameInput = useTemplateRef<{ focus: () => void }>('elementNameInput')
 
-// The edited breakpoint is the toolbar viewport — single source of truth, so
-// the panel tabs and the toolbar stay in sync both ways.
-const viewport = computed<ViewportKey>({
-  get: () => editor.editBreakpoint.value,
-  set: value => editor.setEditBreakpoint(value),
-})
-const styleState = ref<StateKey>('default')
-const editingTarget = ref<EditingTarget>({ kind: 'block' })
+// The style-editing target (block / class, breakpoint, state) and the slice the
+// StylePanel binds to live on the editor and are shared with the canvas quick
+// panel — see useStyleTarget. Both panels therefore write to the same layer.
+const { block, editingTarget, viewport, styleState, blockSlice } = useStyleTarget()
 const newClassName = ref('')
 
 function addBreakpoint(draft: BreakpointDraft) {
@@ -95,7 +90,6 @@ watch(newClassName, (value) => {
     newClassName.value = cleaned
 })
 
-const block = computed(() => editor.selectedBlock.value)
 const isPageSelected = computed(() => !block.value)
 const editingSymbol = computed(() => {
   const id = editor.editingSymbolId.value
@@ -147,6 +141,13 @@ const definition = computed(() =>
   block.value ? editor.registry.value[block.value.type] : undefined,
 )
 const settingsComponent = computed(() => definition.value?.settingsComponent)
+// Compact layout controls the block type offers (Element does) — rendered as
+// the Quick layout section above the full Style panel.
+const quickPanel = computed(() => definition.value?.quickPanel)
+const quickLayoutModified = computed(() => {
+  const slice = blockSlice.value as Record<string, unknown>
+  return QUICK_LAYOUT_KEYS.some(key => slice[key] !== undefined)
+})
 // Framework-neutral blocks declare `settings` (schema-driven) instead of a Vue
 // settingsComponent — the editor renders the form (SchemaSettings).
 const settingsFields = computed(() => resolveSettingsFields(definition.value))
@@ -215,46 +216,6 @@ const canRenameSelectedBlock = computed(() => !!block.value
   && block.value.type !== COMPONENT_SLOT_BLOCK_TYPE
   && block.value.type !== SYMBOL_SLOT_FILL_BLOCK_TYPE,
 )
-
-// Switch editing target whenever the selected block changes. A block that
-// already carries classes opens on its FIRST class: style edits land in the
-// class instead of silently piling up in the element's unnamed local layer
-// (the uf-block-<id> rule). A class-less block lands on the `block` target
-// with the full editor visible — its first style edit auto-creates a class
-// (see useBlockStyleModel), so styles still only ever live in classes.
-watch(
-  () => block.value?.id,
-  () => {
-    if (isPageSelected.value) {
-      editingTarget.value = { kind: 'page' }
-      return
-    }
-    const classes = block.value?.classes ?? []
-    editingTarget.value = classes.length
-      ? { kind: 'class', name: classes[0]! }
-      : { kind: 'block' }
-  },
-  // `immediate` covers a panel mounted with a block already selected (dev HMR
-  // remounts, restored editor state): without it the target would sit on the
-  // initial `block` kind and the first edit would mint a spurious class.
-  { immediate: true },
-)
-
-// The class manager (left sidebar) requests opening a class for style editing.
-// Registered after the block-selection reset above so that, when a single click
-// both selects an element and asks to edit its class, focusing the class wins.
-watch(
-  () => editor.editClassRequest.value?.nonce,
-  () => {
-    const req = editor.editClassRequest.value
-    if (req)
-      editingTarget.value = { kind: 'class', name: req.name }
-  },
-)
-
-// Style editing model: active-style sync + the per-breakpoint/state slice the
-// StylePanel binds to.
-const { blockSlice } = useBlockStyleModel({ editor, block, editingTarget, viewport, styleState })
 
 useStyleInheritance({ editor, block, t })
 useStyleContrast({ editor, block })
@@ -490,6 +451,18 @@ const targetLabel = computed(() => {
             :breakpoints="editor.breakpoints.value"
             @add-breakpoint="addBreakpoint"
           />
+          <!-- Quick layout: the block type's compact controls, bound to the same
+               style slice as the StylePanel below (same class / breakpoint /
+               state target). The floating canvas panel mounts the same component. -->
+          <StyleSection
+            v-if="quickPanel && block"
+            id="quick-layout"
+            :title="t('style.quickLayout')"
+            open
+            :modified="quickLayoutModified"
+          >
+            <component :is="quickPanel" v-model="blockSlice" :block="block" />
+          </StyleSection>
           <!-- A class-less element (fresh from the library, or after removing
                its last class) shows the full editor too: the first edit
                extracts into an auto-named class and the panel retargets to it,

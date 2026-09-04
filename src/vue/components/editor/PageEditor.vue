@@ -14,6 +14,7 @@ import { useEditorHotkeys } from '@/vue/composables/editor/useEditorHotkeys'
 import { useEditorPluginChrome } from '@/vue/composables/editor/useEditorPluginChrome'
 import { usePageEditor } from '@/vue/composables/editor/usePageEditor'
 import { usePageEditorHostBindings } from '@/vue/composables/editor/usePageEditorHostBindings'
+import { provideStyleTarget } from '@/vue/composables/style/useStyleTarget'
 import { useEditorRootStyleTokens } from '@/vue/composables/ui/useEditorRootStyleTokens'
 import { useEditorThemeClass } from '@/vue/composables/ui/useEditorThemeClass'
 import { pageEditorContextKey } from '@/vue/context/editor-context'
@@ -198,6 +199,9 @@ const context: PageEditorContext = {
 }
 
 provide(pageEditorContextKey, context)
+// One style-editing target for the selection, shared by the properties panel
+// and the canvas quick panel so both write to the same class / breakpoint.
+provideStyleTarget(editor)
 provideUframeI18n(() => props.locale, () => props.messages, () => pluginMessages.value)
 
 // Runtime plugin registration for hosts that drive the editor from outside the
