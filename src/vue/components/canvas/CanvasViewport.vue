@@ -706,6 +706,7 @@ const {
                 isSelectedSymbol ? 'bg-uf-symbol text-white' : isSelectedData ? 'bg-uf-data text-white' : isGapContainer ? 'bg-uf-gap text-white' : 'bg-uf-accent text-uf-accent-foreground',
                 !editor.storage.value.quickPanelOpen && 'opacity-70',
               ]"
+              data-uf-quick-panel-trigger
               :aria-pressed="editor.storage.value.quickPanelOpen"
               :aria-label="editor.storage.value.quickPanelOpen ? t('canvas.hideQuickPanel') : t('canvas.showQuickPanel')"
               @pointerdown.stop
