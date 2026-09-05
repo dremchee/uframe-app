@@ -53,7 +53,7 @@ function add() {
     <BlockPresetPreview v-if="preset" :preset="preset" />
     <span
       v-else-if="icon"
-      class="grid place-items-center shrink-0 size-8 rounded-md bg-uf-accent/10 text-uf-accent"
+      class="grid place-items-center shrink-0 size-10 rounded-md bg-uf-accent/10 text-uf-accent"
     >
       <component
         :is="icon"
