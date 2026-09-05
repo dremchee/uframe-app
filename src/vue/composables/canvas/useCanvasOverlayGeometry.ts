@@ -103,6 +103,12 @@ export function useCanvasOverlayGeometry(options: UseCanvasOverlayGeometryOption
   const selectionIsSymbolInstance = computed(
     () => editor.selectedBlock.value?.type === SYMBOL_INSTANCE_BLOCK_TYPE,
   )
+  // Leaf blocks may use grid/flex internally (e.g. Placeholder's icon and
+  // caption). Their implementation layout is not an editable child layout.
+  const selectionAcceptsChildren = computed(() => {
+    const block = editor.selectedBlock.value
+    return !!block && !!editor.registry.value[block.type]?.acceptsChildren
+  })
 
   function recomputeSelection() {
     const id = selectedDomId()
@@ -122,7 +128,7 @@ export function useCanvasOverlayGeometry(options: UseCanvasOverlayGeometryOption
   }
 
   function recomputeGrid() {
-    gridBox.value = selectionIsSymbolInstance.value ? null : measureGridBox(selectedDomId())
+    gridBox.value = selectionIsSymbolInstance.value || !selectionAcceptsChildren.value ? null : measureGridBox(selectedDomId())
   }
 
   function measureFlexBox(id: string | null): FlexBox | null {
@@ -177,7 +183,7 @@ export function useCanvasOverlayGeometry(options: UseCanvasOverlayGeometryOption
   }
 
   function recomputeFlex() {
-    flexBox.value = selectionIsSymbolInstance.value || editor.selectedInstanceId.value
+    flexBox.value = selectionIsSymbolInstance.value || !selectionAcceptsChildren.value || editor.selectedInstanceId.value
       ? null
       : measureFlexBox(editor.selectedBlockId.value)
   }
