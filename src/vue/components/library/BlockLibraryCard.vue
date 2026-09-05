@@ -2,7 +2,7 @@
 import type { BlockDefinition, BlockPreset } from '@/core'
 import { computed, toRef, useTemplateRef } from 'vue'
 import { Card, CardDescription, CardTitle } from '@/components/ui'
-import TruncatedText from '@/components/ui/segment-control/TruncatedText.vue'
+import BlockPresetPreview from '@/vue/components/library/BlockPresetPreview.vue'
 import { useBlockCardDraggable } from '@/vue/composables/dnd/useBlockCardDraggable'
 import { useUframeI18n } from '@/vue/i18n'
 import { localizedBlockDescription, localizedBlockLabel, localizedPresetDescription, localizedPresetLabel } from '@/vue/utils/block-label'
@@ -50,8 +50,9 @@ function add() {
     @keydown.enter.prevent="add"
     @keydown.space.prevent="add"
   >
+    <BlockPresetPreview v-if="preset" :preset="preset" />
     <span
-      v-if="icon"
+      v-else-if="icon"
       class="grid place-items-center shrink-0 size-8 rounded-md bg-uf-accent/10 text-uf-accent"
     >
       <component
@@ -66,7 +67,7 @@ function add() {
         {{ label }}
       </CardTitle>
       <CardDescription v-if="description" class="text-[11px] leading-tight">
-        <TruncatedText :text="description" />
+        {{ description }}
       </CardDescription>
     </div>
   </Card>

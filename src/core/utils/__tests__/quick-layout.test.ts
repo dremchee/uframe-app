@@ -57,6 +57,19 @@ describe('grid columns', () => {
 })
 
 describe('alignment', () => {
+  it.each(['row', 'column'] as const)('preserves spatial alignment for %s-reverse', (mode) => {
+    const initial = { flexDirection: `${mode}-reverse` as const }
+    const start = applyAlignment(initial, mode, 'start', 'start')
+    expect(start.justifyContent).toBe('flex-end')
+    expect(resolveAlignment(start, mode)).toEqual({ horizontal: 'start', vertical: 'start', distributed: false })
+    const end = applyAlignment(initial, mode, 'end', 'end')
+    expect(end.justifyContent).toBe('flex-start')
+    expect(resolveAlignment(end, mode)).toEqual({ horizontal: 'end', vertical: 'end', distributed: false })
+    const center = applyAlignment(initial, mode, 'center', 'center')
+    expect(center.justifyContent).toBe('center')
+    expect(resolveAlignment(center, mode)).toEqual({ horizontal: 'center', vertical: 'center', distributed: false })
+  })
+
   it('maps a flex row to justify (x) and align-items (y)', () => {
     const styles = applyAlignment({}, 'row', 'center', 'end')
     expect(styles).toEqual({ justifyContent: 'center', alignItems: 'flex-end' })

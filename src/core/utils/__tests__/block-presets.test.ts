@@ -40,6 +40,7 @@ describe('createPresetBlock', () => {
   it('merges preset props and styles over the definition defaults', () => {
     const block = createPresetBlock(element, element.presets![1]!, registry)
     expect(block.type).toBe('element')
+    expect(block.name).toBe('Grid')
     expect(block.props).toEqual({ tag: 'section' })
     expect(block.style).toEqual({ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' })
   })

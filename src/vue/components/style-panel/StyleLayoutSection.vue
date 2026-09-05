@@ -13,6 +13,7 @@ import StyleSection from './StyleSection.vue'
 
 const props = defineProps<{
   modelValue: BaseBlockStyles
+  advanced?: boolean
   parentIsGrid?: boolean
   parentIsFlex?: boolean
 }>()
@@ -39,7 +40,7 @@ const isGrid = computed(() => styles.value.display === 'grid')
 </script>
 
 <template>
-  <StyleSection id="layout" :title="t('style.layout')" open :modified="sectionModified(sectionKeys.Layout)">
+  <StyleSection :id="advanced ? 'advanced-layout' : 'layout'" :title="t(advanced ? 'style.advancedLayout' : 'style.layout')" :open="!advanced" :modified="sectionModified(sectionKeys.Layout)">
     <StyleField :label="t('style.display')" field="display">
       <Select
         :model-value="styles.display"

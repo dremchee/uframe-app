@@ -5,8 +5,8 @@ import { createBlock } from '@/core/utils/document-tree'
 /**
  * Presets exist only at insertion time. They resolve to an ordinary block of
  * the owning type — `props` over `defaultProps`, `style` over `defaultStyle`,
- * plus an optional starter subtree — and leave no marker behind: the document
- * never knows which preset a block came from. See `BlockPreset`.
+ * plus an optional starter subtree and an editable display name. No preset id
+ * is stored: subsequent edits are ordinary block edits. See `BlockPreset`.
  */
 
 function withPresetStyle(block: PageBlock, style: BlockPreset['style']): PageBlock {
@@ -43,7 +43,7 @@ export function createPresetBlock<TProps>(
 ): PageBlock<TProps> {
   const block = withPresetStyle(createBlock(definition, preset.props) as PageBlock, preset.style)
   const children = createPresetChildren(preset.children, registry)
-  return (children ? { ...block, children } : block) as PageBlock<TProps>
+  return { ...block, name: preset.label, ...(children ? { children } : {}) } as PageBlock<TProps>
 }
 
 /** The preset with `presetId` on `definition`, if any. */

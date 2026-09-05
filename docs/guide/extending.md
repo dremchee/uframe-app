@@ -114,7 +114,7 @@ Notable fields:
   raw-JSON + your-own-components rendering path (e.g. SSR) doesn't need it.
 - **`presets`** — alternative starting points for the type, each an extra card in
   the Add panel (and the canvas insert menu): preset `props`, insert-time `style`
-  and an optional starter `children` subtree. A preset exists only at insertion —
+  and an optional starter `children` subtree. Its label seeds an editable block name. A preset exists only at insertion —
   the document stores an ordinary block of the type, so the block's settings and
   quick panel are those of its type. The built-in Element ships Section,
   Container, V Stack, H Stack, Grid and Wrap this way.

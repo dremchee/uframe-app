@@ -121,6 +121,14 @@ function toAlign(value: string | undefined): AlignValue | null {
   return value ? TO_ALIGN[value] ?? null : null
 }
 
+function reverseAlign(value: AlignValue | null): AlignValue | null {
+  return value === 'start' ? 'end' : value === 'end' ? 'start' : value
+}
+
+function isReverse(styles: BaseBlockStyles, mode: LayoutMode): boolean {
+  return styles.flexDirection === `${mode}-reverse`
+}
+
 /**
  * Reads the alignment cell for the current mode. A flex row justifies along X
  * and aligns items along Y; a column swaps the two; a grid aligns its items
@@ -128,12 +136,16 @@ function toAlign(value: string | undefined): AlignValue | null {
  */
 export function resolveAlignment(styles: BaseBlockStyles, mode: LayoutMode): QuickAlignment {
   const justify = styles.justifyContent
+  // Logical start/end do not reverse; flex-start/flex-end follow flex direction.
+  const main = isReverse(styles, mode) && (justify === 'flex-start' || justify === 'flex-end')
+    ? reverseAlign(toAlign(justify))
+    : toAlign(justify)
   const distributed = justify === 'space-between' || justify === 'space-around' || justify === 'space-evenly'
   switch (mode) {
     case 'row':
-      return { horizontal: toAlign(justify), vertical: toAlign(styles.alignItems), distributed }
+      return { horizontal: main, vertical: toAlign(styles.alignItems), distributed }
     case 'column':
-      return { horizontal: toAlign(styles.alignItems), vertical: toAlign(justify), distributed }
+      return { horizontal: toAlign(styles.alignItems), vertical: main, distributed }
     case 'grid':
       return { horizontal: toAlign(styles.justifyItems), vertical: toAlign(styles.alignItems), distributed: false }
     default:
@@ -149,9 +161,9 @@ export function applyAlignment(
 ): BaseBlockStyles {
   switch (mode) {
     case 'row':
-      return mergeStyles(styles, { justifyContent: TO_FLEX[horizontal], alignItems: TO_FLEX[vertical] })
+      return mergeStyles(styles, { justifyContent: TO_FLEX[isReverse(styles, mode) ? reverseAlign(horizontal)! : horizontal], alignItems: TO_FLEX[vertical] })
     case 'column':
-      return mergeStyles(styles, { alignItems: TO_FLEX[horizontal], justifyContent: TO_FLEX[vertical] })
+      return mergeStyles(styles, { alignItems: TO_FLEX[horizontal], justifyContent: TO_FLEX[isReverse(styles, mode) ? reverseAlign(vertical)! : vertical] })
     case 'grid':
       return mergeStyles(styles, { justifyItems: horizontal, alignItems: TO_FLEX[vertical] })
     default:

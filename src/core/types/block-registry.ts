@@ -72,7 +72,8 @@ export interface BlockPresetChild {
  * A named starting point for a block type — an extra card in the Add panel
  * that creates the same type with preset props, insert-time styles and,
  * optionally, a starter subtree. Presets exist only at insertion: the document
- * stores an ordinary block of the owning type with no memory of the preset, so
+ * stores an ordinary block of the owning type with an editable name seeded from
+ * the preset label (no preset id), so
  * the block's settings and quick panel are those of its type. Variations that
  * differ by styles alone (a column stack vs. a grid) belong here; a block that
  * needs props of its own is a separate type.

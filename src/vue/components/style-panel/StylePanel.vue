@@ -15,6 +15,7 @@ import StyleTypographySection from './StyleTypographySection.vue'
 
 const props = defineProps<{
   modelValue: BaseBlockStyles
+  quickLayout?: boolean
   /** True when the selected block's parent is a grid — reveals item placement. */
   parentIsGrid?: boolean
   /** True when the selected block's parent is flex — reveals flex-item controls. */
@@ -42,6 +43,7 @@ const {
   <div class="grid">
     <StyleLayoutSection
       :model-value="styles"
+      :advanced="quickLayout"
       :parent-is-grid="parentIsGrid"
       :parent-is-flex="parentIsFlex"
       @update:model-value="emit('update:modelValue', $event)"
@@ -49,7 +51,7 @@ const {
 
     <StyleSizeSection :model-value="styles" @update:model-value="emit('update:modelValue', $event)" />
 
-    <StyleSection id="spacing" :title="t('style.spacing')" open :modified="sectionModified(sectionKeys.Spacing)">
+    <StyleSection :id="quickLayout ? 'advanced-spacing' : 'spacing'" :title="t('style.spacing')" :open="!quickLayout" :modified="sectionModified(sectionKeys.Spacing)">
       <SpacingControl :model-value="styles" @update:model-value="updateSpacing" />
     </StyleSection>
 

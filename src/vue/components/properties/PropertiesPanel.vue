@@ -60,6 +60,18 @@ const elementNameInput = useTemplateRef<{ focus: () => void }>('elementNameInput
 // StylePanel binds to live on the editor and are shared with the canvas quick
 // panel — see useStyleTarget. Both panels therefore write to the same layer.
 const { block, editingTarget, viewport, styleState, blockSlice } = useStyleTarget()
+// Track first visits for this panel's lifetime. New placeholders
+// start on their primary controls without overriding the user's later choice.
+const visitedBlocks = new Set<string>()
+watch(() => block.value?.id, (id) => {
+  if (id && !visitedBlocks.has(id)) {
+    visitedBlocks.add(id)
+    if (block.value?.type === 'placeholder')
+      activeTab.value = 'content'
+    else if (block.value && editor.registry.value[block.value.type]?.quickPanel)
+      activeTab.value = 'style'
+  }
+}, { immediate: true })
 const newClassName = ref('')
 
 function addBreakpoint(draft: BreakpointDraft) {
@@ -469,6 +481,7 @@ const targetLabel = computed(() => {
                so styles still always land in a named class. -->
           <StylePanel
             v-model="blockSlice"
+            :quick-layout="!!quickPanel"
             :parent-is-grid="parentIsGrid"
             :parent-is-flex="parentIsFlex"
             :plugin-sections="pluginSlots.styleSections"

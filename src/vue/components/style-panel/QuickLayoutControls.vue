@@ -33,7 +33,6 @@ import {
   applyAlignment,
   applyLayoutMode,
   applyWidthMode,
-  COMPONENT_SLOT_BLOCK_TYPE,
   composeGap,
   ELEMENT_BLOCK_TYPE,
   gapAxis,
@@ -49,6 +48,7 @@ import {
 } from '@/core'
 import { useEditorContext } from '@/vue/context/editor-context'
 import { useUframeI18n } from '@/vue/i18n'
+import { canRemoveLayoutCell } from '@/vue/utils/quick-layout-cell'
 import BindableField from './BindableField.vue'
 
 /**
@@ -96,13 +96,14 @@ function setMode(next: LayoutMode) {
 
 const ALIGN_VALUES: AlignValue[] = ['start', 'center', 'end']
 const alignment = computed(() => resolveAlignment(styles.value, mode.value))
-const alignLabel: Record<AlignValue, string> = { start: 'alignStart', center: 'alignMiddle', end: 'alignEnd' }
+const alignHorizontal: Record<AlignValue, string> = { start: 'alignHorizontalStart', center: 'alignMiddle', end: 'alignHorizontalEnd' }
+const alignVertical: Record<AlignValue, string> = { start: 'alignTop', center: 'alignMiddle', end: 'alignBottom' }
 const alignCells = computed(() => ALIGN_VALUES.flatMap(vertical => ALIGN_VALUES.map(horizontal => ({
   key: `${horizontal}-${vertical}`,
   horizontal,
   vertical,
   active: alignment.value.horizontal === horizontal && alignment.value.vertical === vertical,
-  label: t('style.alignTo', { horizontal: t(`style.${alignLabel[horizontal]}`), vertical: t(`style.${alignLabel[vertical]}`) }),
+  label: t('style.alignTo', { horizontal: t(`style.${alignHorizontal[horizontal]}`), vertical: t(`style.${alignVertical[vertical]}`) }),
 }))))
 
 function setAlignment(horizontal: AlignValue, vertical: AlignValue) {
@@ -166,9 +167,7 @@ const container = computed(() => {
 })
 const cellCount = computed(() => container.value?.children?.length ?? 0)
 const lastCell = computed(() => container.value?.children?.at(-1))
-const canRemoveCell = computed(() =>
-  !!lastCell.value && !lastCell.value.children?.length && lastCell.value.type !== COMPONENT_SLOT_BLOCK_TYPE,
-)
+const canRemoveCell = computed(() => canRemoveLayoutCell(lastCell.value))
 
 function addCell() {
   const target = container.value
@@ -191,7 +190,7 @@ function removeCell() {
 }
 
 const fieldLabel = 'text-uf-muted text-[11px] font-semibold uppercase tracking-wider leading-none'
-const alignCellClass = 'grid size-6 place-items-center rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-uf-accent'
+const alignCellClass = 'grid size-7 place-items-center rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-uf-accent'
 </script>
 
 <template>
@@ -205,21 +204,21 @@ const alignCellClass = 'grid size-6 place-items-center rounded-sm transition-col
       @update:model-value="setMode"
     />
     <template v-if="mode !== 'block'">
-      <div class="w-24 shrink-0">
+      <div class="w-28 shrink-0">
         <BindableField type="size" :model-value="gap" @update:model-value="setGap">
           <template #default="{ value, setValue, requestBind }">
             <SizeInput bindable :min="0" :placeholder="t('style.gap')" :model-value="value" @request-bind="requestBind" @update:model-value="setValue" />
           </template>
         </BindableField>
       </div>
-      <Tooltip v-if="mode === 'grid'" :text="columnCount == null ? t('style.editTracks') : t('style.columns')">
-        <div class="w-24 shrink-0">
-          <NumberField :model-value="columnCount ?? undefined" :min="1" :max="24" :aria-label="t('style.columns')" @update:model-value="setColumnCount">
+      <Tooltip v-if="mode === 'grid'" :text="columnCount == null ? t('style.editTracks') : t('style.columnsPerRow')">
+        <div class="w-28 shrink-0">
+          <NumberField :model-value="columnCount ?? undefined" :min="1" :max="24" :aria-label="t('style.columnsPerRow')" @update:model-value="setColumnCount">
             <NumberFieldContent>
               <NumberFieldInput :placeholder="t('style.customTracks')" />
-              <NumberFieldStepper>
-                <NumberFieldIncrement />
-                <NumberFieldDecrement />
+              <NumberFieldStepper class="w-14 flex-row">
+                <NumberFieldIncrement class="h-full w-7" />
+                <NumberFieldDecrement class="h-full w-7" />
               </NumberFieldStepper>
             </NumberFieldContent>
           </NumberField>
@@ -239,7 +238,7 @@ const alignCellClass = 'grid size-6 place-items-center rounded-sm transition-col
       </template>
     </template>
     <div v-if="container" class="ml-auto flex items-center gap-0.5">
-      <span class="px-1 text-[11px] tabular-nums text-uf-muted">{{ t('style.cells') }} · {{ cellCount }}</span>
+      <span :title="t('style.cellsHint')" class="px-1 text-[11px] tabular-nums text-uf-muted">{{ t('style.cells') }} · {{ cellCount }}</span>
       <Tooltip :text="canRemoveCell ? t('style.removeCell') : t('style.removeCellBlocked')">
         <IconButton size="sm" :disabled="!canRemoveCell" :aria-label="t('style.removeCell')" @click="removeCell">
           <Minus :size="13" :stroke-width="2" />
@@ -297,26 +296,26 @@ const alignCellClass = 'grid size-6 place-items-center rounded-sm transition-col
           </BindableField>
         </div>
         <div v-if="mode === 'grid'" class="grid gap-1">
-          <span :class="fieldLabel">{{ t('style.columns') }}</span>
+          <span :class="fieldLabel">{{ t('style.columnsPerRow') }}</span>
           <Tooltip v-if="columnCount == null" :text="t('style.editTracks')">
             <div>
-              <NumberField :model-value="undefined" :min="1" :max="24" :aria-label="t('style.columns')" @update:model-value="setColumnCount">
+              <NumberField :model-value="undefined" :min="1" :max="24" :aria-label="t('style.columnsPerRow')" @update:model-value="setColumnCount">
                 <NumberFieldContent>
                   <NumberFieldInput :placeholder="t('style.customTracks')" />
-                  <NumberFieldStepper>
-                    <NumberFieldIncrement />
-                    <NumberFieldDecrement />
+                  <NumberFieldStepper class="w-14 flex-row">
+                    <NumberFieldIncrement class="h-full w-7" />
+                    <NumberFieldDecrement class="h-full w-7" />
                   </NumberFieldStepper>
                 </NumberFieldContent>
               </NumberField>
             </div>
           </Tooltip>
-          <NumberField v-else :model-value="columnCount" :min="1" :max="24" :aria-label="t('style.columns')" @update:model-value="setColumnCount">
+          <NumberField v-else :model-value="columnCount" :min="1" :max="24" :aria-label="t('style.columnsPerRow')" @update:model-value="setColumnCount">
             <NumberFieldContent>
               <NumberFieldInput />
-              <NumberFieldStepper>
-                <NumberFieldIncrement />
-                <NumberFieldDecrement />
+              <NumberFieldStepper class="w-14 flex-row">
+                <NumberFieldIncrement class="h-full w-7" />
+                <NumberFieldDecrement class="h-full w-7" />
               </NumberFieldStepper>
             </NumberFieldContent>
           </NumberField>
@@ -364,8 +363,11 @@ const alignCellClass = 'grid size-6 place-items-center rounded-sm transition-col
       </BindableField>
     </div>
 
+    <p v-if="container && mode === 'grid'" class="text-[11px] leading-snug text-uf-muted">
+      {{ t('style.cellsHint') }}
+    </p>
     <div v-if="container" class="flex items-center justify-between gap-2">
-      <span :class="fieldLabel">{{ t('style.cells') }} · <span class="tabular-nums">{{ cellCount }}</span></span>
+      <span :title="t('style.cellsHint')" :class="fieldLabel">{{ t('style.cells') }} · <span class="tabular-nums">{{ cellCount }}</span></span>
       <div class="flex items-center gap-0.5">
         <Tooltip :text="canRemoveCell ? t('style.removeCell') : t('style.removeCellBlocked')">
           <IconButton :disabled="!canRemoveCell" :aria-label="t('style.removeCell')" @click="removeCell">
