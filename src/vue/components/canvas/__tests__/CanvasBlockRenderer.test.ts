@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, nextTick } from 'vue'
 import { buttonDef } from '@/blocks/button'
+import { elementDef } from '@/blocks/element'
 import CanvasBlockRenderer from '@/vue/components/canvas/CanvasBlockRenderer.vue'
 
 const apps: Array<{ unmount: () => void }> = []
@@ -36,5 +37,19 @@ describe('canvasBlockRenderer attributes', () => {
     expect(root.dataset.testid).toBe('hero-button')
     expect(root.getAttribute('aria-label')).toBe('Open hero')
     expect(root.hasAttribute('onclick')).toBe(false)
+  })
+})
+
+describe('empty structural containers', () => {
+  it('shows the drop hint in an empty centered container', async () => {
+    const container = document.createElement('div')
+    const app = createApp(CanvasBlockRenderer, {
+      block: { id: 'container', type: 'element', props: { tag: 'div' }, style: { maxWidth: '1200px', marginLeft: 'auto', marginRight: 'auto' } },
+      registry: { element: elementDef },
+    })
+    app.mount(container)
+    apps.push(app)
+    await nextTick()
+    expect(container.textContent).toContain('Drop blocks inside')
   })
 })

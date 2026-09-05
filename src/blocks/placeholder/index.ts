@@ -19,7 +19,7 @@ export const placeholderDef: VueBlockDefinition<PlaceholderBlockProps> = {
   label: 'Placeholder',
   description: 'Wireframe stand-in for content',
   category: 'Structure',
-  defaultProps: { label: 'Image', kind: 'image', ratio: '16:9' },
+  defaultProps: { kind: 'image' },
   propsSchema: placeholderBlockPropsSchema,
   renderComponent: PlaceholderBlock,
   settingsComponent: PlaceholderSettings,

@@ -406,7 +406,7 @@ export type PlaceholderRatio = typeof PLACEHOLDER_RATIOS[number]
  * proportions) rather than styles — which is why it is a block type of its own.
  */
 export interface PlaceholderBlockProps {
-  /** Caption drawn in the middle of the box. */
+  /** Caption drawn in the middle of the box. Omit to follow the kind default. */
   label?: string
   kind?: PlaceholderKind
   ratio?: PlaceholderRatio

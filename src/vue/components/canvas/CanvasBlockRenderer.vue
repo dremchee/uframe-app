@@ -138,13 +138,16 @@ const blockClass = computed(() => {
 const hasChildren = computed(() => !!props.block.children?.length)
 // The empty "Drop blocks inside" placeholder only exists to keep a collapsed,
 // style-less container visible + droppable. Once the author gives it a box of
-// its own (explicit size or spacing) it's already visible, so the placeholder
-// is noise — suppress it. A max-width alone is not a box: a centered container
+// its own (positive vertical size or padding) it's already visible, so the placeholder
+// is noise — suppress it. Horizontal sizes and margins do not give an empty block height: a centered container
 // preset with nothing inside would collapse to zero height without the hint.
-const BOX_KEYS = ['width', 'height', 'minWidth', 'minHeight', 'maxHeight', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft'] as const
+const BOX_KEYS = ['height', 'minHeight', 'paddingTop', 'paddingBottom'] as const
 const hasOwnBox = computed(() => {
   const s = props.block.style as Record<string, unknown> | undefined
-  return !!s && BOX_KEYS.some(k => s[k] != null && s[k] !== '')
+  return !!s && BOX_KEYS.some((key) => {
+    const value = String(s[key] ?? '').trim()
+    return !!value && !['auto', 'none', 'initial', 'unset'].includes(value) && !/^0[a-z%]*$/i.test(value)
+  })
 })
 // A fallback Box is never a drop target: dropping into a block whose real
 // definition is missing would edit content this host can't render properly.

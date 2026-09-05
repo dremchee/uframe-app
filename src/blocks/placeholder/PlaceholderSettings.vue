@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PlaceholderBlockProps } from '@/core'
+import { placeholderLabel, placeholderRatio, resolvePlaceholderKind } from '@/blocks/placeholder/render'
 import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui'
 import { PLACEHOLDER_KINDS, PLACEHOLDER_RATIOS } from '@/core'
 import { useUframeI18n } from '@/vue/i18n'
@@ -16,11 +17,11 @@ function kindLabel(kind: string): string {
   <div class="grid gap-2">
     <Label>
       <span>{{ t('blocks.placeholder.label') }}</span>
-      <Input v-model="model.label" type="text" :placeholder="t('blocks.placeholder.labelPlaceholder')" />
+      <Input :model-value="placeholderLabel(model)" type="text" :placeholder="t('blocks.placeholder.labelPlaceholder')" @update:model-value="value => model = { ...model, label: String(value) }" />
     </Label>
     <Label>
       <span>{{ t('blocks.placeholder.kind') }}</span>
-      <Select v-model="model.kind">
+      <Select :model-value="model.kind" @update:model-value="value => model = { ...model, kind: resolvePlaceholderKind(value) }">
         <SelectTrigger>
           <SelectValue :placeholder="kindLabel('box')" />
         </SelectTrigger>
@@ -33,7 +34,7 @@ function kindLabel(kind: string): string {
     </Label>
     <Label>
       <span>{{ t('blocks.placeholder.ratio') }}</span>
-      <Select v-model="model.ratio">
+      <Select :model-value="placeholderRatio(model)" @update:model-value="value => model = { ...model, ratio: value as PlaceholderBlockProps['ratio'] }">
         <SelectTrigger>
           <SelectValue :placeholder="t('blocks.placeholder.ratioAuto')" />
         </SelectTrigger>
