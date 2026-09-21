@@ -15,6 +15,7 @@ uframe поставляет эталонные интеграции в
 | --- | --- | --- | --- |
 | [Расширение Directus](https://github.com/dremchee/uframe-app/tree/main/integrations/directus) | Создание и хранение | Directus 11 | Доступно |
 | [Nuxt-фронтенд](https://github.com/dremchee/uframe-app/tree/main/integrations/nuxt) | Рендеринг и публикация | Nuxt 3 | Доступно |
+| [Astro frontend](https://github.com/dremchee/uframe-app/tree/main/integrations/astro) | Render & publish | Astro | Доступно |
 | [Плагин Strapi](https://github.com/dremchee/uframe-app/tree/main/integrations/strapi) | Создание и хранение | Strapi (React) | Планируется |
 
 ## Расширение Directus

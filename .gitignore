@@ -35,3 +35,6 @@ docs/public/embed
 .agents
 .codex
 skills-lock.json
+
+# Astro generated types and cache
+.astro

@@ -1,0 +1,16 @@
+{
+  "name": "uframe-frontend-astro",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "astro build && node --test __tests__/page.smoke.mjs"
+  },
+  "dependencies": {
+    "@dremchee/uframe": "workspace:*",
+    "astro": "^6.0.0"
+  }
+}

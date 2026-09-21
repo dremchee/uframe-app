@@ -1,0 +1,8 @@
+---
+import UframePage from '@dremchee/uframe/astro'
+import { context, document } from '../data/sample'
+---
+
+<UframePage document={document} context={context}>
+  <meta slot="head" name="description" content="An Astro page rendered from a uframe document." />
+</UframePage>

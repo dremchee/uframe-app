@@ -9,8 +9,12 @@ import Vue from 'unplugin-vue/rolldown'
 const rawCss = {
   name: 'raw-css',
   resolveId(id: string, importer?: string) {
-    if (id.endsWith('.css?raw') && importer)
-      return `${resolve(dirname(importer), id.replace(/\?raw$/, ''))}?raw`
+    if (id.endsWith('.css?raw') && importer) {
+      const path = id.replace(/\?raw$/, '')
+      return `${path.startsWith('@/')
+        ? resolve(import.meta.dirname, 'src', path.slice(2))
+        : resolve(dirname(importer), path)}?raw`
+    }
   },
   load(id: string) {
     if (id.endsWith('.css?raw'))

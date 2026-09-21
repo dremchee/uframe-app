@@ -16,6 +16,7 @@ They split into two roles:
 | --- | --- | --- | --- |
 | [Directus extension](https://github.com/dremchee/uframe-app/tree/main/integrations/directus) | Author & store | Directus 11 | Available |
 | [Nuxt frontend](https://github.com/dremchee/uframe-app/tree/main/integrations/nuxt) | Render & publish | Nuxt 3 | Available |
+| [Astro frontend](https://github.com/dremchee/uframe-app/tree/main/integrations/astro) | Render & publish | Astro | Available |
 | [Strapi plugin](https://github.com/dremchee/uframe-app/tree/main/integrations/strapi) | Author & store | Strapi (React) | Planned |
 
 ## Directus extension

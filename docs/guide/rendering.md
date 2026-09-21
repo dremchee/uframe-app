@@ -172,3 +172,11 @@ is served from the edge.
 For caching specifically, the **string renderer** is the better fit: its output
 is static HTML with no hydration state, so it caches and serves cleanly. Reach
 for the component renderer only where a page genuinely needs client interactivity.
+
+## Astro
+
+Import the full-page component from `@dremchee/uframe/astro` and pass
+`document` plus optional `context`. It includes CSS and font links and works
+with static generation or SSR without client hydration. A runnable example
+and setup instructions live in
+[`integrations/astro`](https://github.com/dremchee/uframe-app/tree/main/integrations/astro).

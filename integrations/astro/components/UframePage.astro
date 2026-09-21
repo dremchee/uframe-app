@@ -1,0 +1,50 @@
+---
+import type { BlockRegistry, PageDocument, ResolveContext } from '@dremchee/uframe/core'
+import { defaultBlockDefinitions } from '@dremchee/uframe/blocks'
+import { createBlockRegistry, fontStylesheetLinks, renderDocumentToFragment } from '@dremchee/uframe/core'
+import { dataPlugin, resolveDataDocument } from '@dremchee/uframe/plugins/data'
+import { exportBaseStyles } from '@dremchee/uframe/styles/page-frame'
+
+export interface Props {
+  document: PageDocument
+  /** Already fetched data, bindings and assets. */
+  context?: ResolveContext
+  /** Include custom block definitions with renderHtml implementations. */
+  registry?: BlockRegistry
+  lang?: string
+  title?: string
+  /** Replace the default page reset, or pass an empty string to omit it. */
+  baseStyles?: string
+  untrustedEmbeds?: boolean
+}
+
+const {
+  document,
+  context = {},
+  registry = createBlockRegistry([...defaultBlockDefinitions, ...(dataPlugin.blocks ?? [])]),
+  lang = 'en',
+  title = document.title ?? 'Untitled page',
+  baseStyles = exportBaseStyles,
+  untrustedEmbeds = false,
+} = Astro.props
+const resolved = resolveDataDocument(document, context)
+const { html, css } = renderDocumentToFragment(resolved, registry, { untrustedEmbeds })
+const styles = [baseStyles, css].filter(Boolean).join('\n')
+const fonts = fontStylesheetLinks(resolved.fonts?.families)
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {fonts.map(href => <link rel="stylesheet" href={href} />)}
+    <style is:inline set:html={styles} />
+    <slot name="head" />
+  </head>
+  <body>
+    <Fragment set:html={html} />
+    <slot />
+  </body>
+</html>
